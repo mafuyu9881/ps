@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
@@ -11,15 +9,11 @@ internal class Program
         string[] tokens = input.Split();
         if (tokens.Length < 1)
             return;
-        
-        int n = int.Parse(tokens[0]);
 
-        StringBuilder output = new StringBuilder();
-        for (int i = 1; i <= n; ++i)
-        {
-            output.AppendLine(i.ToString());
-        }
-        Console.WriteLine(output);
+        int year = int.Parse(tokens[0]);
+
+        bool leap = (year % 400 == 0) || ((year % 4 == 0) && (year % 100 != 0));
+        Console.Write(leap ? 1 : 0);
     }
 }
 
