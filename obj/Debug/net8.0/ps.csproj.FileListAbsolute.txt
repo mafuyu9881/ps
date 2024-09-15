@@ -1,0 +1,14 @@
+f:\ps\bin\Debug\net8.0\ps.exe
+f:\ps\bin\Debug\net8.0\ps.deps.json
+f:\ps\bin\Debug\net8.0\ps.runtimeconfig.json
+f:\ps\bin\Debug\net8.0\ps.dll
+f:\ps\bin\Debug\net8.0\ps.pdb
+f:\ps\obj\Debug\net8.0\ps.GeneratedMSBuildEditorConfig.editorconfig
+f:\ps\obj\Debug\net8.0\ps.AssemblyInfoInputs.cache
+f:\ps\obj\Debug\net8.0\ps.AssemblyInfo.cs
+f:\ps\obj\Debug\net8.0\ps.csproj.CoreCompileInputs.cache
+f:\ps\obj\Debug\net8.0\ps.dll
+f:\ps\obj\Debug\net8.0\refint\ps.dll
+f:\ps\obj\Debug\net8.0\ps.pdb
+f:\ps\obj\Debug\net8.0\ps.genruntimeconfig.cache
+f:\ps\obj\Debug\net8.0\ref\ps.dll
