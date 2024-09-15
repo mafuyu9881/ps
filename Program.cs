@@ -8,24 +8,16 @@
             return;
         
         string[] tokens = input.Split();
-        if (tokens.Length < 2)
+        if (tokens.Length < 5)
             return;
-
-        int token0 = int.Parse(tokens[0]);
-        int token1 = int.Parse(tokens[1]);
-
-        if (token0 > token1)
+        
+        int i = 0;
+        for (int j = 0; j < tokens.Length; ++j)
         {
-            Console.Write('>');
+            int k = int.Parse(tokens[j]);
+            i += k * k;
         }
-        else if (token0 < token1)
-        {
-            Console.Write('<');
-        }
-        else
-        {
-            Console.WriteLine("==");
-        }
+        Console.Write(i % 10);
     }
 }
 

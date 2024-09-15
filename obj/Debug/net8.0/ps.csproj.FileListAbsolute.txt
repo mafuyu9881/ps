@@ -12,3 +12,4 @@ f:\ps\obj\Debug\net8.0\refint\ps.dll
 f:\ps\obj\Debug\net8.0\ps.pdb
 f:\ps\obj\Debug\net8.0\ps.genruntimeconfig.cache
 f:\ps\obj\Debug\net8.0\ref\ps.dll
+F:\ps\obj\Debug\net8.0\ps.sourcelink.json
