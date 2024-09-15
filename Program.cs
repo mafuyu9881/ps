@@ -10,10 +10,28 @@
         if (tokens.Length < 1)
             return;
 
-        int year = int.Parse(tokens[0]);
+        int score = int.Parse(tokens[0]);
 
-        bool leap = (year % 400 == 0) || ((year % 4 == 0) && (year % 100 != 0));
-        Console.Write(leap ? 1 : 0);
+        Tuple<int, char>[] cutoffs =
+        {
+            new (90, 'A'),
+            new (80, 'B'),
+            new (70, 'C'),
+            new (60, 'D'),
+        };
+
+        int cutoffsLength = cutoffs.Length;
+        for (int i = 0; i < cutoffsLength; ++i)
+        {
+            var cutoff = cutoffs[i];
+            if (score >= cutoff.Item1)
+            {
+                Console.Write(cutoff.Item2);
+                return;
+            }
+        }
+        
+        Console.Write('F');
     }
 }
 
