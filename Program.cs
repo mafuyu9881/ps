@@ -4,53 +4,42 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int? a = ReadNumberLine();
-        int? b = ReadNumberLine();
-        int? c = ReadNumberLine();
-
-        if (a == null || b == null || c == null)
-            return;
-
-        string s = (a * b * c).Value.ToString();
-        if (s == null)
-            return;
-
-        int s_length = s.Length;
-        if (s_length < 1)
-            return;
-
-        int usage_count_map_length = 10;
-        int[] usage_count_map = Enumerable.Repeat(element: 0, count: usage_count_map_length).ToArray();
+        string input = Console.ReadLine()!;
         
-        for (int i = 0; i < s_length; ++i)
-        {
-            int n = s[i] - '0';
-            if (n < usage_count_map_length)
-            {
-                ++usage_count_map[n];
-            }
-        }
-
-        StringBuilder output = new StringBuilder();
-        
-        for (int i = 0; i < usage_count_map_length; ++i)
-        {
-            output.AppendLine(usage_count_map[i].ToString());
-        }
-
-        Console.Write(output);
-    }
-
-    private static int? ReadNumberLine()
-    {
-        string? input = Console.ReadLine();
-        if (input == null)
-            return null;
-
         string[] tokens = input.Split();
-        if (tokens == null || tokens.Length < 1)
-            return null;
-        
-        return int.Parse(tokens[0]);
+        if (tokens == null)
+            return;
+
+        int tokens_length = tokens.Length;
+        if (tokens_length < 1)
+            return;
+
+        bool ascending = true;
+        bool descending = true;
+        for (int i = 0; i < tokens_length; ++i)
+        {
+            int semantics_index = i + 1;
+
+            int c_major_index = int.Parse(tokens[i]);
+
+            if (c_major_index != semantics_index)
+                ascending = false;
+
+            if (c_major_index != 9 - semantics_index)
+                descending = false;
+        }
+
+        if (ascending)
+        {
+            Console.Write("ascending");
+        }
+        else if (descending)
+        {
+            Console.Write("descending");
+        }
+        else
+        {
+            Console.Write("mixed");
+        }
     }
 }
