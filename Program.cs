@@ -6,28 +6,29 @@ internal class Program
     {
         StringBuilder output = new();
 
-        string? a_s = Console.ReadLine();
-        string? b_s = Console.ReadLine();
-        string? c_s = Console.ReadLine();
-        
-        int? a_n = GetNumberFromString(a_s);
-        int? b_n = GetNumberFromString(b_s);
-        int? c_n = GetNumberFromString(c_s);
-        if (a_n == null || b_n == null || c_n == null)
-            return;
+        int input_length = 9;
 
-        output.AppendLine((a_n + b_n - c_n).ToString());
-        output.Append(int.Parse(a_s + b_s) - c_n);
+        int max = 0;
+        int max_index = -1;
+        
+        for (int i = 0; i < input_length; ++i)
+        {
+            string? input = Console.ReadLine();
+            if (input == null)
+                continue;
+            
+            int a = int.Parse(input);
+            if (a < max)
+                continue;
+
+            max = a;
+            max_index = i + 1;
+        }
+
+        output.AppendLine(max.ToString());
+        output.Append(max_index);
 
         Console.Write(output);
-    }
-
-    private static int? GetNumberFromString(string? s)
-    {
-        if (string.IsNullOrEmpty(s))
-            return null;
-
-        return int.Parse(s);
     }
 }
 
