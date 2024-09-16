@@ -15,12 +15,25 @@
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            // Below are the required settings to step into .NET Core source code
+            "justMyCode": false,
+            "suppressJITOptimizations": true,
+            "sourceLinkOptions": {
+                "*": {
+                    "enabled": true
+                }
+            },
+            "symbolOptions": {
+                "searchPaths": [],
+                "searchMicrosoftSymbolServer": true,
+                "searchNuGetOrgSymbolServer": true
+            }
         },
         {
             "name": ".NET Core Attach",
             "type": "coreclr",
-            "request": "attach"
+            "request": "attach",
         }
     ]
 }
