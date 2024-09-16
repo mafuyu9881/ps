@@ -5,41 +5,46 @@ internal class Program
     private static void Main(string[] args)
     {
         string input = Console.ReadLine()!;
-        
+
         string[] tokens = input.Split();
-        if (tokens == null)
+        if (tokens == null || tokens.Length < 1)
             return;
 
-        int tokens_length = tokens.Length;
-        if (tokens_length < 1)
-            return;
+        int t = int.Parse(tokens[0]);
 
-        bool ascending = true;
-        bool descending = true;
-        for (int i = 0; i < tokens_length; ++i)
+        StringBuilder output = new();
+
+        for (int i = 0; i < t; ++i)
         {
-            int semantics_index = i + 1;
+            input = Console.ReadLine()!;
 
-            int c_major_index = int.Parse(tokens[i]);
+            tokens = input.Split();
+            if (tokens == null || tokens.Length < 2)
+                continue;
 
-            if (c_major_index != semantics_index)
-                ascending = false;
+            int r = int.Parse(tokens[0]);
+            string s = tokens[1];
+            int s_length = s.Length;
 
-            if (c_major_index != 9 - semantics_index)
-                descending = false;
+            int s2_length = r * s_length;
+            StringBuilder s2 = new(s2_length);
+            s2.Length = s2_length;
+            int s2_written_index = 0;
+
+            for (int j = 0; j < s_length; ++j)
+            {
+                char c = s[j];
+                for (int k = 0; k < r; ++k)
+                {
+                    s2[s2_written_index] = c;
+                    ++s2_written_index;
+                }
+            }
+
+            output.Append(s2);
+            output.Append(Environment.NewLine);
         }
 
-        if (ascending)
-        {
-            Console.Write("ascending");
-        }
-        else if (descending)
-        {
-            Console.Write("descending");
-        }
-        else
-        {
-            Console.Write("mixed");
-        }
+        Console.Write(output);
     }
 }
