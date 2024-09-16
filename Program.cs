@@ -4,35 +4,53 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        // n을 읽고 버린다.
-        string? input = Console.ReadLine();
-        input = Console.ReadLine();
-        if (input == null)
+        int? a = ReadNumberLine();
+        int? b = ReadNumberLine();
+        int? c = ReadNumberLine();
+
+        if (a == null || b == null || c == null)
             return;
 
-        string[] tokens = input.Split();
-        if (tokens == null)
+        string s = (a * b * c).Value.ToString();
+        if (s == null)
             return;
 
-        int tokensLength = tokens.Length;
-        if (tokensLength < 1)
+        int s_length = s.Length;
+        if (s_length < 1)
             return;
 
-        int? min = null;
-        int? max = null;
-        for (int i = 0; i < tokensLength; ++i)
+        int usage_count_map_length = 10;
+        int[] usage_count_map = Enumerable.Repeat(element: 0, count: usage_count_map_length).ToArray();
+        
+        for (int i = 0; i < s_length; ++i)
         {
-            int num = int.Parse(tokens[i]);
-            
-            if (min == null || num < min)
-                min = num;
-
-            if (max == null || num > max)
-                max = num;
+            int n = s[i] - '0';
+            if (n < usage_count_map_length)
+            {
+                ++usage_count_map[n];
+            }
         }
 
-        Console.WriteLine($"{min} {max}");
+        StringBuilder output = new StringBuilder();
+        
+        for (int i = 0; i < usage_count_map_length; ++i)
+        {
+            output.AppendLine(usage_count_map[i].ToString());
+        }
+
+        Console.Write(output);
+    }
+
+    private static int? ReadNumberLine()
+    {
+        string? input = Console.ReadLine();
+        if (input == null)
+            return null;
+
+        string[] tokens = input.Split();
+        if (tokens == null || tokens.Length < 1)
+            return null;
+        
+        return int.Parse(tokens[0]);
     }
 }
-
-//Console.ReadKey();
