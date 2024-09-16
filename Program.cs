@@ -4,31 +4,23 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        StringBuilder output = new();
+        // n에 대한 입력이다. 굳이 필요하진 않으므로 읽고 버린다.
+        string? input = Console.ReadLine();
+        input = Console.ReadLine();
+        
+        if (input == null)
+            return;
 
-        while (true)
+        int input_length = input.Length;
+        
+        int sum = 0;
+
+        for (int i = 0; i < input_length; ++i)
         {
-            string? input = Console.ReadLine();
-            if (input == null)
-                break;
-
-            string[] tokens = input.Split();
-            if (tokens == null)
-                break;
-
-            if (tokens.Length < 2)
-                break;
-
-            int a = int.Parse(tokens[0]);
-            int b = int.Parse(tokens[1]);
-
-            if (a == 0 && b == 0)
-                break;
-
-            output.AppendLine((a + b).ToString());
+            sum += input[i] - '0';
         }
 
-        Console.Write(output);
+        Console.Write(sum);
     }
 }
 
