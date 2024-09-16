@@ -4,31 +4,33 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        StringBuilder output = new();
+        string? input = Console.ReadLine();
+        if (input == null)
+            return;
 
-        int input_length = 9;
+        string[] tokens = input.Split();
+        if (tokens == null)
+            return;
 
-        int max = 0;
-        int max_index = -1;
-        
-        for (int i = 0; i < input_length; ++i)
+        if (tokens.Length < 2)
+            return;
+
+        int h = int.Parse(tokens[0]);
+        int m = int.Parse(tokens[1]);
+        m -= 45;
+
+        if (m < 0)
         {
-            string? input = Console.ReadLine();
-            if (input == null)
-                continue;
-            
-            int a = int.Parse(input);
-            if (a < max)
-                continue;
-
-            max = a;
-            max_index = i + 1;
+            h -= 1;
+            m += 60;
         }
 
-        output.AppendLine(max.ToString());
-        output.Append(max_index);
+        if (h < 0)
+        {
+            h += 24;
+        }
 
-        Console.Write(output);
+        Console.Write($"{h} {m}");
     }
 }
 
