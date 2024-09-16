@@ -4,48 +4,34 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        // n을 읽고 버린다.
         string? input = Console.ReadLine();
+        input = Console.ReadLine();
         if (input == null)
             return;
 
         string[] tokens = input.Split();
-        if (tokens == null || tokens.Length < 1)
+        if (tokens == null)
             return;
 
-        int t = int.Parse(tokens[0]);
+        int tokensLength = tokens.Length;
+        if (tokensLength < 1)
+            return;
 
-        StringBuilder output = new();
-
-        for (int i = 0; i < t; ++i)
+        int? min = null;
+        int? max = null;
+        for (int i = 0; i < tokensLength; ++i)
         {
-            input = Console.ReadLine();
-            if (input == null)
-                continue;
+            int num = int.Parse(tokens[i]);
+            
+            if (min == null || num < min)
+                min = num;
 
-            tokens = input.Split();
-            if (tokens == null || tokens.Length < 3)
-                continue;
-
-            int h = int.Parse(tokens[0]);
-            int w = int.Parse(tokens[1]);
-            int n = int.Parse(tokens[2]);
-
-            int x = (n - 1) / h + 1;
-            int y = n % h;
-            if (y == 0)
-                y = h;
-
-            string xx;
-            if (x < 10)
-                xx = "0" + x.ToString();
-            else
-                xx = x.ToString();
-            string yy = y.ToString();
-
-            output.AppendLine(yy + xx);
+            if (max == null || num > max)
+                max = num;
         }
 
-        Console.Write(output);
+        Console.WriteLine($"{min} {max}");
     }
 }
 
