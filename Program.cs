@@ -9,28 +9,43 @@ internal class Program
             return;
 
         string[] tokens = input.Split();
-        if (tokens == null)
+        if (tokens == null || tokens.Length < 1)
             return;
 
-        if (tokens.Length < 2)
-            return;
+        int t = int.Parse(tokens[0]);
 
-        int h = int.Parse(tokens[0]);
-        int m = int.Parse(tokens[1]);
-        m -= 45;
+        StringBuilder output = new();
 
-        if (m < 0)
+        for (int i = 0; i < t; ++i)
         {
-            h -= 1;
-            m += 60;
+            input = Console.ReadLine();
+            if (input == null)
+                continue;
+
+            tokens = input.Split();
+            if (tokens == null || tokens.Length < 3)
+                continue;
+
+            int h = int.Parse(tokens[0]);
+            int w = int.Parse(tokens[1]);
+            int n = int.Parse(tokens[2]);
+
+            int x = (n - 1) / h + 1;
+            int y = n % h;
+            if (y == 0)
+                y = h;
+
+            string xx;
+            if (x < 10)
+                xx = "0" + x.ToString();
+            else
+                xx = x.ToString();
+            string yy = y.ToString();
+
+            output.AppendLine(yy + xx);
         }
 
-        if (h < 0)
-        {
-            h += 24;
-        }
-
-        Console.Write($"{h} {m}");
+        Console.Write(output);
     }
 }
 
