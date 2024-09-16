@@ -9,30 +9,30 @@ internal class Program
             return;
         
         string[] tokens = input.Split();
-        if (tokens.Length < 2)
+        if (tokens.Length < 1)
             return;
 
-        int n = int.Parse(tokens[0]);
-        int x = int.Parse(tokens[1]);
-
-        input = Console.ReadLine();
-        if (input == null)
-            return;
-
-        tokens = input.Split();
-        if (tokens.Length < n)
-            return;
+        int t = int.Parse(tokens[0]);
 
         StringBuilder output = new();
-        for (int i = 0; i < n; ++i)
+
+        for (int i = 0; i < t; ++i)
         {
-            int m = int.Parse(tokens[i]);
-            if (x > m)
-            {
-                output.Append($"{m} ");
-            }
+            input = Console.ReadLine();
+            if (input == null)
+                continue;
+            
+            tokens = input.Split();
+            if (tokens.Length < 2)
+                continue;
+
+            int a = int.Parse(tokens[0]);
+            int b = int.Parse(tokens[1]);
+
+            output.AppendLine((a + b).ToString());
         }
-        Console.Write(output);
+        
+        Console.WriteLine(output);
     }
 }
 
