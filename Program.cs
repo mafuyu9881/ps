@@ -3,35 +3,28 @@
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
-
-        string[] tokens = Console.ReadLine()!.Split();
         
-        int prime_count = 0;
+        int? output = null;
 
-        for (int i = 0; i < n; ++i)
+        for (int candidate = 0; candidate < n; ++candidate)
         {
-            if (IsPrime(int.Parse(tokens[i])))
+            string candidate_string = candidate.ToString();
+            int candidate_string_length = candidate_string.Length;
+
+            int sum = candidate;
+            
+            for (int i = 0; i < candidate_string_length; ++i)
             {
-                ++prime_count;
+                sum += candidate_string[i] - '0';
+            }
+
+            if (sum == n)
+            {
+                output = candidate;
+                break;
             }
         }
-
-        Console.Write(prime_count);
-    }
-
-    private static bool IsPrime(int n)
-    {
-        if (n < 2)
-            return false;
-
-        for (int i = 2; i <= Math.Sqrt(n); ++i)
-        {
-            if (n % i == 0)
-            {
-                return false;
-            }
-        }
-
-        return true;
+        
+        Console.Write((output == null) ? 0 : output);
     }
 }
