@@ -26,6 +26,7 @@
     // drawn_card_indices: 이 값 이하의 카드들은 모두 뽑힌 것으로 취급합니다. 그래서 int형임에도 변수명을 복수형으로 작성하였습니다. 또한, 반드시 0 이상의 값이 들어온다고 전제합니다.
     private static void ComputeMaxSum(ref int? max_sum, ref int[] cards, int sum_limit, int tno_cards_to_draw, int? tno_cards_drawn = null, int? drawn_card_indices = null, int? candidate_sum = null)
     {
+        // TODO: Span의 Slice 활용을 통해 begin_index를 생략할 수 있을 것이다.
         int begin_index = (drawn_card_indices == null) ? 0 : (drawn_card_indices.Value + 1);
 
         if (tno_cards_drawn == null)
