@@ -3,28 +3,16 @@
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
-        
-        int? output = null;
+        n -= 1;
 
-        for (int candidate = 0; candidate < n; ++candidate)
+        int strides = 1;
+
+        for (int i = 1; n > 0; ++i)
         {
-            string candidate_string = candidate.ToString();
-            int candidate_string_length = candidate_string.Length;
-
-            int sum = candidate;
-            
-            for (int i = 0; i < candidate_string_length; ++i)
-            {
-                sum += candidate_string[i] - '0';
-            }
-
-            if (sum == n)
-            {
-                output = candidate;
-                break;
-            }
+            ++strides;
+            n -= 6 * i;
         }
-        
-        Console.Write((output == null) ? 0 : output);
+
+        Console.Write(strides);
     }
 }
