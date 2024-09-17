@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
@@ -31,27 +29,15 @@ internal class Program
         {
             int applicant = int.Parse(applicant_tokens[i]);
 
-            if (applicant % t == 0)
+            t_sum += applicant / t;
+
+            if (applicant % t > 0)
             {
-                if (t == 0)
-                {
-                    t_sum += 0;
-                }
-                else
-                {
-                    t_sum += applicant / t;
-                }
-            }
-            else
-            {
-                t_sum += (applicant / t) + 1;
+                t_sum += 1;
             }
         }
 
-        StringBuilder output = new();
-        output.AppendLine(t_sum.ToString());
-        output.Append($"{n / p} {n % p}");
-
-        Console.Write(output);
+        Console.WriteLine(t_sum.ToString());
+        Console.Write($"{n / p} {n % p}");
     }
 }
