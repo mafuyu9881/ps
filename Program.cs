@@ -10,23 +10,47 @@ internal class Program
         if (tokens == null || tokens.Length < 1)
             return;
 
-        int t = int.Parse(tokens[0]);
+        int n = int.Parse(tokens[0]);
+
+        input = Console.ReadLine()!;
+        string[] applicant_tokens = input.Split();
+        if (applicant_tokens == null)
+            return;
+
+        input = Console.ReadLine()!;
+        string[] tp_tokens = input.Split();
+        if (tp_tokens == null || tp_tokens.Length < 2)
+            return;
+
+        int t = int.Parse(tp_tokens[0]);
+        int p = int.Parse(tp_tokens[1]);
+
+        int t_sum = 0;
+
+        for (int i = 0; i < applicant_tokens.Length; ++i)
+        {
+            int applicant = int.Parse(applicant_tokens[i]);
+
+            if (applicant % t == 0)
+            {
+                if (t == 0)
+                {
+                    t_sum += 0;
+                }
+                else
+                {
+                    t_sum += applicant / t;
+                }
+            }
+            else
+            {
+                t_sum += (applicant / t) + 1;
+            }
+        }
 
         StringBuilder output = new();
-
-        for (int i = 0; i < t; ++i)
-        {
-            input = Console.ReadLine()!;
-
-            tokens = input.Split();
-            if (tokens == null || tokens.Length < 2)
-                continue;
-
-            int a = int.Parse(tokens[0]);
-            int b = int.Parse(tokens[1]);
-
-            output.AppendLine($"Case #{i + 1}: {a} + {b} = {a + b}");
-        }
+        output.AppendLine(t_sum.ToString());
+        output.Append($"{n / p} {n % p}");
 
         Console.Write(output);
     }
