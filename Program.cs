@@ -4,35 +4,27 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        StringBuilder output = new();
+        int n = int.Parse(Console.ReadLine()!);
         
-        while (true)
+        string[] tokens = Console.ReadLine()!.Split();
+        
+        float? max_score = null;
+        
+        // score_sum에 대입될 수 있는 최댓값은 1000개의 과목을 모두 100점을 맞았을 경우 즉 1000000입니다.
+        // 따라서 float의 범위 내에서 해결 가능하다고 판단합니다.
+        float score_sum = 0.0f;
+        for (int i = 0; i < tokens.Length; ++i)
         {
-            string n = Console.ReadLine()!;
-            int n_length = n.Length;
-            
-            // n이 빈 문자열일 수는 없음을 전제합니다.
-            if (n_length < 2)
+            float score = float.Parse(tokens[i]);
+
+            if (max_score == null || score > max_score)
             {
-                if (n[0] == '0')
-                {
-                    break;
-                }
+                max_score = score;
             }
 
-            bool palindrome = true;
-            for (int i = 0; i < n_length / 2; ++i)
-            {
-                if (n[i] != n[n_length - 1 - i])
-                {
-                    palindrome = false;
-                    break;
-                }
-            }
-
-            output.AppendLine(palindrome ? "yes" : "no");
+            score_sum += score;
         }
 
-        Console.Write(output);
+        Console.Write(score_sum / max_score * 100.0f / n);
     }
 }
