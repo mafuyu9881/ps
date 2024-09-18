@@ -2,43 +2,30 @@
 {
     private static void Main(string[] args)
     {
-        string[] tokens = Console.ReadLine()!.Split();
+        int[] arr = { 4, 5, 1, 3, 2 };
 
-        // 1 <= B < A <= V <= 10억이다.
-        // 'https://discord.com/channels/1285075305987309590/1285593827498790912'에 따라 일반적인 코테 환경에선 1초에 10억번 정도의 연산이 지원된다.
-        // 그러나 문제에서 제시한 시간 제한이 0.25초인 것으로 보아, 간단한 반복문으로는 풀게 해주지 않을 모양으로 생각된다.
+        bubble_sort(ref arr);
 
-        int a = int.Parse(tokens[0]);
-        int b = int.Parse(tokens[1]);
-        int v = int.Parse(tokens[2]);
+        return;
+    }
+    
+    private static void bubble_sort(ref int[] arr)
+    {
+        int arr_length = arr.Length;
 
-        int v_b = v - b;
-        int a_b = a - b;
-
-        int days = (v - b) / (a - b);
-
-        if (v_b % a_b > 0)
+        for (int i = 0; i < arr_length - 1; ++i)
         {
-            ++days;
+            for (int j = 0; j < arr_length - i - 1; ++j)
+            {
+                int arr_j = arr[j];
+                int arr_j_1 = arr[j + 1];
+
+                if (arr_j > arr_j_1)
+                {
+                    arr[j] = arr_j_1;
+                    arr[j + 1] = arr_j;
+                }
+            }
         }
-
-        Console.Write(days);
-        
-        // 나이브하게 푼 버전의 코드
-        //int days = 0;
-
-        //while (true)
-        //{
-        //    ++days;
-
-        //    v -= a;
-
-        //    if (v < 1)
-        //        break;
-
-        //    v += b;
-        //}
-
-        //Console.Write(days);
     }
 }
