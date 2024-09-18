@@ -4,28 +4,30 @@
     {
         int[] arr = { 4, 5, 1, 3, 2 };
 
-        bubble_sort(ref arr);
+        selection_sort(ref arr);
 
         return;
     }
     
-    private static void bubble_sort(ref int[] arr)
+    private static void selection_sort(ref int[] arr)
     {
         int arr_length = arr.Length;
 
-        for (int i = 0; i < arr_length - 1; ++i)
+        for (int i = 0; i < arr_length; ++i)
         {
-            for (int j = 0; j < arr_length - i - 1; ++j)
-            {
-                int arr_j = arr[j];
-                int arr_j_1 = arr[j + 1];
+            int elected_index = i;
 
-                if (arr_j > arr_j_1)
+            for (int j = i; j < arr_length; ++j)
+            {
+                if (arr[j] < arr[elected_index])
                 {
-                    arr[j] = arr_j_1;
-                    arr[j + 1] = arr_j;
+                    elected_index = j;
                 }
             }
+
+            int temp = arr[i];
+            arr[i] = arr[elected_index];
+            arr[elected_index] = temp;
         }
     }
 }
