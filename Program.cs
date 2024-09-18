@@ -1,23 +1,38 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int l = int.Parse(Console.ReadLine()!);
-
-        string s = Console.ReadLine()!;
+        StringBuilder output = new();
         
-        ulong sum = 0;
-        ulong r_term = 1;
-        ulong m = 1234567891L;
-        for (int i = 0; i < l; ++i)
+        while (true)
         {
-            // 아래의 코드는 50점으로 이어지는 코드이다.
-            // sum += Convert.ToUInt64(s[i] - 'a' + 1) * r_term % m;
-            sum += Convert.ToUInt64(s[i] - 'a' + 1) * r_term;
-            sum %= m;
-            r_term = r_term * 31L % m;
+            string n = Console.ReadLine()!;
+            int n_length = n.Length;
+            
+            // n이 빈 문자열일 수는 없음을 전제합니다.
+            if (n_length < 2)
+            {
+                if (n[0] == '0')
+                {
+                    break;
+                }
+            }
+
+            bool palindrome = true;
+            for (int i = 0; i < n_length / 2; ++i)
+            {
+                if (n[i] != n[n_length - 1 - i])
+                {
+                    palindrome = false;
+                    break;
+                }
+            }
+
+            output.AppendLine(palindrome ? "yes" : "no");
         }
-        
-        Console.Write(sum);
+
+        Console.Write(output);
     }
 }
