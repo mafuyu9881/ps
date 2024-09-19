@@ -1,26 +1,57 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] lookup = new int[10001];
+        int[] arr = { 4, 2, 1, 5, 3 };
 
-        int n = int.Parse(Console.ReadLine()!);
-
-        for (int i = 0; i < n; ++i)
-        {
-            ++lookup[int.Parse(Console.ReadLine()!)];
-        }
+        counting_sort(arr);
         
-        using (StreamWriter stream_writer = new(Console.OpenStandardOutput()))
+        StringBuilder output = new();
+        for (int i = 0; i < arr.Length; ++i)
         {
-            for (int i = 1; i < lookup.Length; ++i)
+            output.AppendLine(arr[i].ToString());
+        }
+
+        Console.Write(output);
+    }
+
+    private static void counting_sort(int[] arr)
+    {
+        int? max = null;
+
+        int arr_length = arr.Length;
+
+        for (int i = 0; i < arr_length; ++i)
+        {
+            int num = arr[i];
+
+            if (max == null || num > max)
             {
-                // c#도 컴파일 단계에서 이 lookup[i]에 대한 최적화가 이루어질까?
-                for (int j = 0; j < lookup[i]; ++j)
-                {
-                    stream_writer.WriteLine(i);
-                }
+                max = num;
             }
+        }
+
+        if (max == null)
+            return;
+
+        int[] counts = new int[max.Value + 1];
+
+        for (int i = 0; i < arr_length; ++i)
+        {
+            ++counts[arr[i]];
+        }
+
+        int written_index = 0;
+        for (int i = 1; i < counts.Length; ++i)
+        {
+            int count = counts[i];
+            if (count < 1)
+                continue;
+
+            arr[written_index] = i;
+            ++written_index;
         }
     }
 }
