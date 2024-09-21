@@ -1,4 +1,4 @@
-﻿// n! / r!(n-r)!에서 반복문의 조건식을 활용하여 r!으로 n!을 나누는 효과를 구현하는 방법
+﻿// 이항 계수의 성질(nC0 = nCn = 1, nCk = n-1Ck-1 + n-1Ck)을 이용한 풀이
 internal class Program
 {
     private static void Main(string[] args)
@@ -8,15 +8,14 @@ internal class Program
         int n = int.Parse(tokens[0]);
         int k = int.Parse(tokens[1]);
 
-        int a = 1;
-        int b = 1;
+        Console.Write(binomial_coefficient(n, k));
+    }
 
-        for (int i = 0; i < k; ++i)
-        {
-            a *= n - i;
-            b *= k - i;
-        }
+    private static int binomial_coefficient(int n, int k)
+    {
+        if (k == 0 || n == k)
+            return 1;
 
-        Console.Write(a / b);
+        return binomial_coefficient(n - 1, k - 1) + binomial_coefficient(n - 1, k);
     }
 }
