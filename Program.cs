@@ -1,84 +1,30 @@
-﻿// 1 ≤ N ≤ 20,000
-// N^2 = 400,000,000
-// 시간 제한은 2초
-// 주어지는 최대 문자열 길이의 총합은 1,000,000자 (2byte * 1,000,000) = 2,000,000
-// 조금 아슬아슬 할 것 같긴 한데, 일단은 N^2으로 풀어본다.
-using System.Text;
+﻿/*
+N <= 10,000
+따라서, 브루트 포스로 탐색할 경우 최대 10,000,666의 순회가 요구된다. (실제로는 사이사이에 껴 있는 수들이 있을테니 10,000,666까지는 안 나올 것이다.)
+이 정도 순회면 브루트 포스로도 널널하게 풀릴 것 같다. 시도해보자.
+*/
 
 internal class Program
 {
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
+        
+        int number = 666;
 
-        LinkedList<string> list = new();
-        HashSet<string> added_strings = new();
-
-        for (int i = 0; i < n; ++i)
+        while (true)
         {
-            string s = Console.ReadLine()!;
+            // 간단하게 검증할 수 있지만 부하가 큰 방법이다.
+            if (number.ToString().Contains("666"))
+                --n;
 
-            if (added_strings.Contains(s))
-                continue;
-
-            int s_length = s.Length;
-
-            LinkedListNode<string> target_node = null!;
-            for (LinkedListNode<string> node = list.First!; node != null; node = node.Next!)
+            if (n < 1)
             {
-                string node_s = node.Value;
-                int node_s_length = node_s.Length;
-
-                if (node_s_length > s_length)
-                    break;
-
-                if (node_s_length == s_length)
-                {
-                    bool do_break = false;
-                    for (int j = 0; j < s_length; ++j)
-                    {
-                        char s_j = s[j];
-                        char node_s_j = node_s[j];
-                        
-                        if (s_j == node_s_j)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            if (s_j < node_s_j)
-                            {
-                                do_break = true;
-                            }
-                            break;
-                        }
-                    }
-
-                    if (do_break)
-                        break;
-                }
-
-                target_node = node;
+                Console.Write(number);
+                break;
             }
 
-            if (target_node != null)
-            {
-                list.AddAfter(target_node, s);
-            }
-            else
-            {
-                list.AddFirst(s);
-            }
-
-            added_strings.Add(s);
+            ++number;
         }
-
-        StringBuilder output = new();
-        for (LinkedListNode<string> node = list.First!; node != null; node = node.Next!)
-        {
-            output.AppendLine(node.Value);
-        }
-
-        Console.Write(output);
     }
 }
