@@ -1,33 +1,32 @@
 ﻿// 0 ≤ N ≤ 500
-// N!의 최대는 1.220136825991110068701238785423e+1134로, 대충 11__자리 정도 되어보인다.
-// 2byte * 1200 = 2400byte = 2.4 kilobyte
-// 메모리 제한이 128MB이므로 문자열로 풀어도 문제없을 것으로 보인다.
-
-using System.Numerics;
+// 팩토리얼을 구성하는 인수들 중 10이 몇 개가 있는지 파악하는 방법입니다.
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        BigInteger n = BigInteger.Parse(Console.ReadLine()!);
-        
-        BigInteger n_factorial = 1;
-        for (BigInteger i = 1; i <= n; ++i)
-        {
-            n_factorial *= i;
-        }
+        int n = int.Parse(Console.ReadLine()!);
 
-        string n_factorial_string = n_factorial.ToString();
+        int factor_two_counts = 0;
+        int factor_five_counts = 0;
 
-        int output = 0;
-        for (int i = n_factorial_string.Length - 1; i > -1; --i)
+        for (int i = 1; i <= n; ++i)
         {
-            if (n_factorial_string[i] != '0')
-                break;
+            int factorial_factor = i;
             
-            ++output;
+            while (factorial_factor % 2 == 0)
+            {
+                factorial_factor /= 2;
+                ++factor_two_counts;
+            }
+
+            while (factorial_factor % 5 == 0)
+            {
+                factorial_factor /= 5;
+                ++factor_five_counts;
+            }
         }
 
-        Console.Write(output);
+        Console.Write(Math.Min(factor_two_counts, factor_five_counts));
     }
 }
