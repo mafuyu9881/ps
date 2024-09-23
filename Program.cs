@@ -1,9 +1,7 @@
-﻿// 4byte * 1,000,000 = 4,000,000 = 4megabyte
-// 공간 복잡도에 대한 고민은 하지 않아도 좋은 것으로 보인다.
-// 1,000,000 * 1,000,000 = 1,000,000,000,000
-// 다만 시간 제한이 2초이기 때문에, 시간 복잡도에 대한 고민이 요구되는 것으로 생각된다.
+﻿// 2 ≤ N ≤ 50, 10 ≤ x, y ≤ 200
 
 using System.Text;
+using Size = System.Tuple<int, int>;
 
 internal class Program
 {
@@ -11,82 +9,36 @@ internal class Program
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int[] arr = new int[n];
-
+        Size[] sizes = new Size[n];
+        
         for (int i = 0; i < n; ++i)
         {
-            arr[i] = int.Parse(Console.ReadLine()!);
+            string[] size_token = Console.ReadLine()!.Split();
+
+            sizes[i] = new Size(int.Parse(size_token[0]), int.Parse(size_token[1]));
         }
 
-        merge_sort(arr);
-        
         StringBuilder output = new();
-        for (int i = 0; i < arr.Length; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            output.AppendLine(arr[i].ToString());
-        }
+            var size_i = sizes[i];
 
-        Console.WriteLine(output);
-    }
-
-    private static void merge_sort(int[] arr)
-    {
-        merge_sort(new Span<int>(arr));
-    }
-    
-    private static void merge_sort(Span<int> arr)
-    {
-        int arr_length = arr.Length;
-
-        if (arr_length < 2)
-            return;
-
-        int mid = arr_length / 2;
-
-        merge_sort(arr.Slice(0, mid));
-        merge_sort(arr.Slice(mid));
-
-        merge(arr, mid);
-    }
-
-    private static void merge(Span<int> arr, int mid)
-    {
-        int[] backedup = arr.ToArray();
-
-        int arr_length = arr.Length;
-
-        int left_read_index = 0;
-        int right_read_index = mid;
-        int written_index = 0;
-
-        while (left_read_index < mid && right_read_index < arr_length)
-        {
-            if (backedup[left_read_index] < backedup[right_read_index])
+            int rank_i = 1;
+            for (int j = 0; j < n; ++j)
             {
-                arr[written_index] = backedup[left_read_index];
-                ++left_read_index;
-            }
-            else
-            {
-                arr[written_index] = backedup[right_read_index];
-                ++right_read_index;
+                if (i == j)
+                    continue;
+
+                var size_j = sizes[j];
+                if (size_j.Item1 > size_i.Item1 && size_j.Item2 > size_i.Item2)
+                {
+                    ++rank_i;
+                }
             }
 
-            ++written_index;
+            output.Append($"{rank_i} ");
         }
 
-        while (left_read_index < mid)
-        {
-            arr[written_index] = backedup[left_read_index];
-            ++left_read_index;
-            ++written_index;
-        }
-
-        while (right_read_index < arr_length)
-        {
-            arr[written_index] = backedup[right_read_index];
-            ++right_read_index;
-            ++written_index;
-        }
+        Console.Write(output);
     }
 }
