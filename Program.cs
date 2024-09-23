@@ -1,5 +1,9 @@
-﻿// 0 ≤ N ≤ 500
-// 팩토리얼을 구성하는 인수들 중 10이 몇 개가 있는지 파악하는 방법입니다.
+﻿// 4byte * 1,000,000 = 4,000,000 = 4megabyte
+// 공간 복잡도에 대한 고민은 하지 않아도 좋은 것으로 보인다.
+// 1,000,000 * 1,000,000 = 1,000,000,000,000
+// 다만 시간 제한이 2초이기 때문에, 시간 복잡도에 대한 고민이 요구되는 것으로 생각된다.
+
+using System.Text;
 
 internal class Program
 {
@@ -7,26 +11,82 @@ internal class Program
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int factor_two_counts = 0;
-        int factor_five_counts = 0;
+        int[] arr = new int[n];
 
-        for (int i = 1; i <= n; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            int factorial_factor = i;
-            
-            while (factorial_factor % 2 == 0)
-            {
-                factorial_factor /= 2;
-                ++factor_two_counts;
-            }
-
-            while (factorial_factor % 5 == 0)
-            {
-                factorial_factor /= 5;
-                ++factor_five_counts;
-            }
+            arr[i] = int.Parse(Console.ReadLine()!);
         }
 
-        Console.Write(Math.Min(factor_two_counts, factor_five_counts));
+        merge_sort(arr);
+        
+        StringBuilder output = new();
+        for (int i = 0; i < arr.Length; ++i)
+        {
+            output.AppendLine(arr[i].ToString());
+        }
+
+        Console.WriteLine(output);
+    }
+
+    private static void merge_sort(int[] arr)
+    {
+        merge_sort(new Span<int>(arr));
+    }
+    
+    private static void merge_sort(Span<int> arr)
+    {
+        int arr_length = arr.Length;
+
+        if (arr_length < 2)
+            return;
+
+        int mid = arr_length / 2;
+
+        merge_sort(arr.Slice(0, mid));
+        merge_sort(arr.Slice(mid));
+
+        merge(arr, mid);
+    }
+
+    private static void merge(Span<int> arr, int mid)
+    {
+        int[] backedup = arr.ToArray();
+
+        int arr_length = arr.Length;
+
+        int left_read_index = 0;
+        int right_read_index = mid;
+        int written_index = 0;
+
+        while (left_read_index < mid && right_read_index < arr_length)
+        {
+            if (backedup[left_read_index] < backedup[right_read_index])
+            {
+                arr[written_index] = backedup[left_read_index];
+                ++left_read_index;
+            }
+            else
+            {
+                arr[written_index] = backedup[right_read_index];
+                ++right_read_index;
+            }
+
+            ++written_index;
+        }
+
+        while (left_read_index < mid)
+        {
+            arr[written_index] = backedup[left_read_index];
+            ++left_read_index;
+            ++written_index;
+        }
+
+        while (right_read_index < arr_length)
+        {
+            arr[written_index] = backedup[right_read_index];
+            ++right_read_index;
+            ++written_index;
+        }
     }
 }
