@@ -66,9 +66,9 @@ internal class Program
             Point left_read_point = backedup[left_read_index];
             Point right_read_point = backedup[right_read_index];
 
-            if (left_read_point.X < right_read_point.X ||
-               (left_read_point.X == right_read_point.X &&
-                left_read_point.Y < right_read_point.Y))
+            if (left_read_point.Y < right_read_point.Y ||
+               (left_read_point.Y == right_read_point.Y &&
+                left_read_point.X < right_read_point.X))
             {
                 arr[written_index] = left_read_point;
                 ++left_read_index;
