@@ -1,113 +1,115 @@
-﻿internal class Program
+﻿// 시간 제한: 1초
+// 메모리 제한: 128MB
+// 1 ≤ N ≤ 100,000, 1 ≤ M ≤ 100,000
+// 100,000(N) * 100,000(M) = 10,000,000,000
+
+using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        avl_tree tree = new();
-        tree.insert(5);
-        tree.insert(3);
-        tree.insert(4);
-        tree.insert(1);
-        tree.insert(2);
-        tree.inorder(true);
-    }
-}
+        int n = int.Parse(Console.ReadLine()!);
+        string[] n_tokens = Console.ReadLine()!.Split();
 
-public class avl_tree
-{
-    private class node
-    {
-        public int data;
-        public node left = null!;
-        public node right = null!;
+        int m = int.Parse(Console.ReadLine()!);
+        string[] m_tokens = Console.ReadLine()!.Split();
+
+        int[] arr = new int[n];
+        for (int i = 0; i < n; ++i)
+        {
+            arr[i] = int.Parse(n_tokens[i]);
+        }
+        merge_sort(arr);
         
-        public node(int data)
+        StringBuilder output = new();
+        for (int i = 0; i < m; ++i)
         {
-            this.data = data;
+            output.AppendLine(binary_search(arr, int.Parse(m_tokens[i])).ToString());
         }
-    }
-    
-    private node root = null!;
-    
-    public void insert(int data)
-    {
-        node new_node = new(data);
-
-        if (root != null)
-        {
-            insert(root, new_node);
-        }
-        else
-        {
-            root = new_node;
-        }
+        Console.Write(output);
     }
 
-    public void inorder(bool print)
+    private static int binary_search(int[] arr, int objective)
     {
-        inorder_implementation(print, root);
-    }
-    private void inorder_implementation(bool print, node parent_node)
-    {
-        if (parent_node == null)
-            return;
+        int arr_length = arr.Length;
 
-        node left_child_node = parent_node.left;
-        if (left_child_node != null)
+        int left_read_index = 0;
+        int right_read_index = arr_length - 1;
+
+        while (left_read_index <= right_read_index)
         {
-            inorder_implementation(print, left_child_node);
-        }
+            int mid_index = left_read_index + (right_read_index - left_read_index) / 2;
 
-        if (print)
-        {
-            Console.WriteLine(parent_node.data);
-        }
-
-        node right_child_node = parent_node.right;
-        if (right_child_node != null)
-        {
-            inorder_implementation(print, right_child_node);
-        }
-    }
-
-    private void insert(node parent_node, node new_node)
-    {
-        //if (parent_node == null)
-        //    return;
-
-        int new_node_data = new_node.data;
-        int parent_data = parent_node.data;
-
-        if (new_node_data < parent_data)
-        {
-            node child_node = parent_node.left;
-            if (child_node != null)
+            if (arr[mid_index] == objective)
             {
-                insert(child_node, new_node);
+                return 1;
+            }
+            else if (arr[mid_index] < objective)
+            {
+                left_read_index = mid_index + 1;
             }
             else
             {
-                parent_node.left = new_node;
-                // TODO: set_height(..)
+                right_read_index = mid_index - 1;
             }
         }
-        else if (new_node_data > parent_data)
+
+        return 0;
+    }
+
+    private static void merge_sort(Span<int> arr)
+    {
+        int arr_length = arr.Length;
+
+        if (arr_length < 2)
+            return;
+
+        int mid = arr_length / 2;
+
+        merge_sort(arr.Slice(0, mid));
+        merge_sort(arr.Slice(mid));
+        merge(arr, mid);
+    }
+
+    private static void merge(Span<int> arr, int mid)
+    {
+        int[] backedup = arr.ToArray();
+
+        int arr_length = arr.Length;
+
+        int left_read_index = 0;
+        int right_read_index = mid;
+        int written_index = 0;
+
+        while (left_read_index < mid && right_read_index < arr_length)
         {
-            node child_node = parent_node.right;
-            if (child_node != null)
+            if (backedup[left_read_index] < backedup[right_read_index])
             {
-                insert(child_node, new_node);
+                arr[written_index] = backedup[left_read_index];
+                ++left_read_index;
             }
             else
             {
-                parent_node.right = new_node;
-                // TODO: set_height(..)
+                arr[written_index] = backedup[right_read_index];
+                ++right_read_index;
             }
+
+            ++written_index;
         }
-        else
+
+        while (left_read_index < mid)
         {
-            // 같은 값은 저장하지 않습니다.
-            // TODO: 삽입을 시도하기 이전에 탐색을 통해 핸들해야 합니다.
-            return;
+            arr[written_index] = backedup[left_read_index];
+            ++left_read_index;
+            ++written_index;
+        }
+
+        while (right_read_index < arr_length)
+        {
+            arr[written_index] = backedup[right_read_index];
+            ++right_read_index;
+            ++written_index;
         }
     }
 }
