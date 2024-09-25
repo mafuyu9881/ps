@@ -4,7 +4,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        stack stack = new();
+        queue queue = new();
 
         int n = int.Parse(Console.ReadLine()!);
 
@@ -17,23 +17,27 @@ internal class Program
 
             if (command == "push")
             {
-                stack.push(int.Parse(tokens[1]));
+                queue.push(int.Parse(tokens[1]));
             }
             else if (command == "pop")
             {
-                output.AppendLine(stack.pop().ToString());
+                output.AppendLine(queue.pop().ToString());
             }
             else if (command == "size")
             {
-                output.AppendLine(stack.size().ToString());
+                output.AppendLine(queue.size().ToString());
             }
             else if (command == "empty")
             {
-                output.AppendLine(stack.empty().ToString());
+                output.AppendLine(queue.empty().ToString());
             }
-            else if (command == "top")
+            else if (command == "front")
             {
-                output.AppendLine(stack.top().ToString());
+                output.AppendLine(queue.print_front().ToString());
+            }
+            else if (command == "back")
+            {
+                output.AppendLine(queue.print_back().ToString());
             }
         }
         Console.Write(output);
@@ -41,7 +45,7 @@ internal class Program
 }
 
 // 메모리 지역성보다 삽입 삭제 과정에서 발생하는 메모리 재할당의 오버헤드가 더 클 것 같아 구현체로 링크드리스트를 채택.
-public class stack
+public class queue
 {
     private class node
     {
@@ -85,21 +89,22 @@ public class stack
         }
     }
     
-    private node? first = null;
+    private node? front = null;
+    private node? back = null;
     private int count = 0;
 
     public void push(int data)
     {
-        node new_node = new(data);
-
-        if (first != null)
+        node? new_node = new(data);
+        if (back != null)
         {
-            first.Prev = new_node;
-            first = new_node;
+            back.Next = new_node;
         }
-        else
+        back = new_node;
+
+        if (front == null)
         {
-            first = new_node;
+            front = new_node;
         }
 
         ++count;
@@ -107,38 +112,37 @@ public class stack
 
     public int pop()
     {
-        int output = top();
+        if (front == null)
+            return -1;
 
-        if (first != null)
+        int output = front.Data;
+        
+        node? new_front = front.Next;
+        if (new_front != null)
         {
-            node? new_first = first.Next;
-            if (new_first != null)
-            {
-                new_first.Prev = null;
-            }
-            first = new_first;
-
-            --count;
+            new_front.Prev = null;
+            front = new_front;
         }
+        else
+        {
+            front = null;
+            back = null;
+        }
+
+        --count;
 
         return output;
     }
 
-    public int top()
+    public int size()
     {
-        if (first != null)
-        {
-            return first.Data;
-        }
-        else
-        {
-            return -1;
-        }
+        return count;
     }
 
     public int empty()
     {
-        if (first != null)
+        //return Math.Min(1, count);
+        if (count > 0)
         {
             return 0;
         }
@@ -148,8 +152,27 @@ public class stack
         }
     }
 
-    public int size()
+    public int print_front()
     {
-        return count;
+        if (front != null)
+        {
+            return front.Data;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+    public int print_back()
+    {
+        if (back != null)
+        {
+            return back.Data;
+        }
+        else
+        {
+            return -1;
+        }
     }
 }
