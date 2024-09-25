@@ -1,4 +1,4 @@
-﻿// 1 ≤ N ≤ 500,000
+﻿// 3 ≤ N ≤ 5000
 
 internal class Program
 {
@@ -6,19 +6,22 @@ internal class Program
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        LinkedList<int> list = new();
-        for (int i = 0; i < n; ++i)
-        {
-            list.AddLast(i + 1);
-        }
+        int big_bag_size = 5;
+        int small_bag_size = 3;
 
-        while (list.Count > 1)
+        int tno_bags = -1;
+        
+        for (int i = 0; i * big_bag_size <= n; ++i)
         {
-            list.RemoveFirst();
-            list.AddLast(list.First!.Value);
-            list.RemoveFirst();
-        }
+            int remain_sugar = n - (i * big_bag_size);
 
-        Console.Write(list.First!.Value);
+            if (remain_sugar % small_bag_size != 0)
+                continue;
+
+            tno_bags = i; // tno_big_big
+            tno_bags += remain_sugar / small_bag_size; // tno_small_bag
+        }
+        
+        Console.Write(tno_bags);
     }
 }
