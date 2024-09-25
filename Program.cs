@@ -1,6 +1,6 @@
 ﻿// 시간 제한: 1초
 // 메모리 제한: 128MB
-// 입력되는 문자열 한 줄의 최대 길이: 100
+// 괄호 문자열의 길이는 2 이상 50 이하
 
 using System.Text;
 
@@ -8,47 +8,34 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        SortedSet<char> begin_brackets = new();
-        begin_brackets.Add('(');
-        begin_brackets.Add('[');
+        SortedSet<char> begin_parenthesises = new();
+        begin_parenthesises.Add('(');
 
-        SortedSet<char> end_brackets = new();
-        end_brackets.Add(')');
-        end_brackets.Add(']');
+        SortedSet<char> end_parenthesises = new();
+        end_parenthesises.Add(')');
 
-        Dictionary<char, char> opposite_bracket_map = new Dictionary<char, char>
-        {
-            {'(', ')'},
-            {')', '('},
-            {'[', ']'},
-            {']', '['},
-        };
+        int n = int.Parse(Console.ReadLine()!);
 
         StringBuilder output = new();
-        while (true)
+        for (int i = 0; i < n; ++i)
         {
-            string input = Console.ReadLine()!;
-            if (input == ".")
-                break;
+            string ps = Console.ReadLine()!;
             
             Stack<char> stack = new();
-
-            for (int i = 0; i < input.Length; ++i)
+            for (int j = 0; j < ps.Length; ++j)
             {
-                char c = input[i];
-
-                if (begin_brackets.Contains(c))
+                char c = ps[j];
+                
+                if (begin_parenthesises.Contains(c))
                 {
                     stack.Push(c);
                 }
 
-                if (end_brackets.Contains(c))
+                if (end_parenthesises.Contains(c))
                 {
-                    if (stack.Count == 0 ||
-                        opposite_bracket_map[c] != stack.Peek())
+                    if (stack.Count < 1)
                     {
-                        // stack.Count == 0 케이스의 대응 코드입니다.
-                        // 이를 통해 일관된 코드로 yes 혹은 no를 작성할 수 있게합니다.
+                        // 에러를 명시
                         stack.Push(c);
                         break;
                     }
@@ -58,8 +45,8 @@ internal class Program
                     }
                 }
             }
-
-            output.AppendLine((stack.Count == 0) ? "yes" : "no");
+            
+            output.AppendLine((stack.Count < 1) ? "YES" : "NO");
         }
         Console.Write(output);
     }
