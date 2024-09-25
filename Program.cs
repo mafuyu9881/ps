@@ -1,53 +1,101 @@
-﻿// Span<T>를 활용한 간결한 이진 탐색 구현
-
-using System.Text;
+﻿using System.Text;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        string[] tokens = Console.ReadLine()!.Split();
+        int[] arr = [5, 2, 3, 1, 4];
 
-        int[] arr = new int[n];
-        for (int i = 0; i < n; ++i)
-        {
-            arr[i] = int.Parse(tokens[i]);
-        }
         merge_sort(arr);
 
-        int m = int.Parse(Console.ReadLine()!);
-        tokens = Console.ReadLine()!.Split();
-
-        StringBuilder output = new();
-        for (int i = 0; i < m; ++i)
+        for (int i = 0; i < arr.Length; ++i)
         {
-            output.AppendLine(binary_search(arr, int.Parse(tokens[i])).ToString());
+            Console.WriteLine(arr[i]);
         }
-        Console.Write(output);
     }
 
-    private static int binary_search(Span<int> arr, int objective)
+    private static void bubble_sort(int[] arr)
     {
-        while (arr.Length > 0)
-        {
-            int mid_index = arr.Length / 2;
+        int visit_limit = arr.Length - 1;
 
-            if (arr[mid_index] > objective)
+        for (int i = 0; i < visit_limit; ++i)
+        {
+            for (int j = 0; j < visit_limit; ++j)
             {
-                arr = arr.Slice(0, mid_index);
-            }
-            else if (arr[mid_index] < objective)
-            {
-                arr = arr.Slice(mid_index + 1);
-            }
-            else
-            {
-                return 1;
+                int j_element = arr[j];
+                int j_1_element = arr[j + 1];
+                
+                if (j_element > j_1_element)
+                {
+                    arr[j] = j_1_element;
+                    arr[j + 1] = j_element;
+                }
             }
         }
+    }
 
-        return 0;
+    private static void selection_sort(int[] arr)
+    {
+        int arr_length = arr.Length;
+
+        for (int i = 0; i < arr_length - 1; ++i)
+        {
+            int min_index = i;
+            for (int j = i + 1; j < arr_length; ++j)
+            {
+                if (arr[j] < arr[min_index])
+                {
+                    min_index = j;
+                }
+            }
+
+            int temp = arr[i];
+            arr[i] = arr[min_index];
+            arr[min_index] = temp;
+        }
+    }
+
+    private static void insertion_sort_1(int[] arr)
+    {
+        for (int i = 1; i < arr.Length; ++i)
+        {
+            int insertion_index = i;
+            for (int j = i - 1; j >= 0; --j)
+            {
+                if (arr[j] > arr[insertion_index])
+                {
+                    int temp = arr[j];
+                    arr[j] = arr[insertion_index];
+                    arr[insertion_index] = temp;
+                    insertion_index = j;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    private static void insertion_sort_2(int[] arr)
+    {
+        for (int i = 1; i < arr.Length; ++i)
+        {
+            int insertion_element = arr[i];
+            int predecessor_index = i - 1;
+            for (; predecessor_index >= 0; --predecessor_index)
+            {
+                if (arr[predecessor_index] > insertion_element)
+                {
+                    arr[predecessor_index + 1] = arr[predecessor_index];
+                }
+                else
+                {
+                    break;
+                }
+            }
+            arr[predecessor_index + 1] = insertion_element;
+        }
     }
 
     private static void merge_sort(Span<int> arr)
@@ -69,7 +117,7 @@ internal class Program
         int[] backedup = arr.ToArray();
 
         int arr_length = arr.Length;
-        
+
         int left_read_index = 0;
         int right_read_index = mid_index;
         int written_index = 0;
@@ -95,7 +143,7 @@ internal class Program
             ++left_read_index;
             ++written_index;
         }
-        
+
         while (right_read_index < arr_length)
         {
             arr[written_index] = backedup[right_read_index];
