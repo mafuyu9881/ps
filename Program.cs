@@ -1,92 +1,42 @@
-﻿// 시간 제한: 1초
-// 메모리 제한: 1024MB
+﻿// 시간 제한: 2초
+// 메모리 제한: 256MB
+// 1 ≤ M ≤ N ≤ 1,000,000
+
+using System.Text;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        if (n == 0)
+        string[] tokens = Console.ReadLine()!.Split();
+
+        int m = int.Parse(tokens[0]);
+        int n = int.Parse(tokens[1]);
+
+        StringBuilder output = new();
+        for (int i = m; i <= n; ++i)
         {
-            Console.Write(0);
-            return;
+            if (is_prime(i))
+            {
+                output.AppendLine(i.ToString());
+            }
         }
-
-        int[] ratings = new int[n];
-
-        int trimmed = Convert.ToInt32(Math.Round(n * 0.15f, MidpointRounding.AwayFromZero));
-
-        for (int i = 0; i < n; ++i)
-        {
-            ratings[i] = int.Parse(Console.ReadLine()!);
-        }
-
-        merge_sort(ratings);
-
-        float average_rating = 0.0f;
-        for (int i = trimmed; i < n - trimmed; ++i)
-        {
-            average_rating += ratings[i];
-        }
-        average_rating /= n - trimmed * 2;
-
-        Console.Write(Convert.ToInt32(Math.Round(average_rating, MidpointRounding.AwayFromZero)));
+        Console.Write(output);
     }
 
-    private static void merge_sort(Span<int> arr)
+    private static bool is_prime(int n)
     {
-        int arr_length = arr.Length;
+        if (n < 2)
+            return false;
 
-        if (arr_length < 2)
-            return;
-
-        int mid_index = arr_length / 2;
-        
-        merge_sort(arr.Slice(0, mid_index));
-        merge_sort(arr.Slice(mid_index));
-        merge(arr, mid_index);
-    }
-
-    private static void merge(Span<int> arr, int mid_index)
-    {
-        int[] backedup = arr.ToArray();
-
-        int arr_length = arr.Length;
-
-        int left_read_index = 0;
-        int right_read_index = mid_index;
-        int written_index = 0;
-
-        while (left_read_index < mid_index && right_read_index < arr_length)
+        for (int i = 2; i <= Math.Sqrt(n); ++i)
         {
-            int left_read_element = backedup[left_read_index];
-            int right_read_element = backedup[right_read_index];
-
-            if (left_read_element < right_read_element)
+            if (n % i == 0)
             {
-                arr[written_index] = left_read_element;
-                ++left_read_index;
+                return false;
             }
-            else
-            {
-                arr[written_index] = right_read_element;
-                ++right_read_index;
-            }
-            ++written_index;
-        }
-        
-        while (left_read_index < mid_index)
-        {
-            arr[written_index] = backedup[left_read_index];
-            ++left_read_index;
-            ++written_index;
         }
 
-        while (right_read_index < arr_length)
-        {
-            arr[written_index] = backedup[right_read_index];
-            ++right_read_index;
-            ++written_index;
-        }
+        return true;
     }
 }
