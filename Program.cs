@@ -4,14 +4,9 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] arr = [ 5, 3, 2, 1, 4 ];
+        int[] arr = [ 1, 2, 3, 4, 5 ];
         
-        StringBuilder output = new();
-        for (int i = 0; i < arr.Length; ++i)
-        {
-            output.AppendLine(binary_search(arr, 1).ToString());
-        }
-        Console.Write(output);
+        Console.Write(binary_search(new Span<int>(arr), 12));
     }
 
     private static int binary_search(int[] arr, int objective)
@@ -36,6 +31,29 @@ internal class Program
             else
             {
                 right_read_index = mid_index - 1;
+            }
+        }
+
+        return 0;
+    }
+
+    private static int binary_search(Span<int> arr, int objective)
+    {
+        while (arr.Length > 0)
+        {
+            int mid_index = arr.Length / 2;
+
+            if (arr[mid_index] > objective)
+            {
+                arr = arr.Slice(0, mid_index);
+            }
+            else if (arr[mid_index] < objective)
+            {
+                arr = arr.Slice(mid_index + 1);
+            }
+            else
+            {
+                return 1;
             }
         }
 
