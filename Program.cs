@@ -1,72 +1,97 @@
 ﻿// 시간 제한: 2초
-// 메모리 제한: 128MB
-// 1 ≤ N ≤ 100
+// 메모리 제한: 256MB
+// 1 ≤ N ≤ 500,000
+// |입력되는 정수의 크기| ≤ 4,000
+// 4B * 500,000 = 2,000,000B = 2MB
 
 using System.Text;
-using document = System.Tuple<int, int>;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int abs_number_limit = 4000;
+        int[] counts = new int[abs_number_limit * 2 + 1];
 
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
+        int n = int.Parse(Console.ReadLine()!);
+        int sum = 0;
+        int? min = null;
+        int? max = null;
+        for (int i = 0; i < n; ++i)
         {
-            string[] tokens = Console.ReadLine()!.Split();
-            
-            int tno_documents = int.Parse(tokens[0]);
-            int objective_document_index = int.Parse(tokens[1]);
+            int number = int.Parse(Console.ReadLine()!);
 
-            tokens = Console.ReadLine()!.Split();
-            LinkedList<document> documents = new();
-            LinkedListNode<document>? objective_document = null;
-            for (int j = 0; j < tno_documents; ++j)
+            sum += number;
+
+            if (min == null || number < min)
             {
-                int data = int.Parse(tokens[j]);
-                int id = j;
-                var document = documents.AddLast(new document(data, id));
-                if (j == objective_document_index)
+                min = number;
+            }
+
+            if (max == null || number > max)
+            {
+                max = number;
+            }
+
+            ++counts[number + abs_number_limit];
+        }
+
+        int modes_count = 0;
+        LinkedList<int> modes = new();
+        LinkedListNode<int>? min_mode_node = null;
+        int? median = null;
+        int median_count = n / 2 + 1;
+        int counted = 0;
+        for (int number = -abs_number_limit; number <= abs_number_limit; ++number)
+        {
+            int count = counts[number + abs_number_limit];
+            if (count < 1)
+                continue;
+
+            if (median == null)
+            {
+                counted += count;
+                if (counted >= median_count)
                 {
-                    objective_document = document;
+                    median = number;
                 }
             }
-            
-            int count = 0;
-            while (documents.Count > 0)
+
+            if (count > modes_count)
             {
-                var document = documents.First;
-
-                bool swap = false;
-                for (var other_document = document!.Next; other_document != null; other_document = other_document.Next)
+                modes_count = count;
+                modes.Clear();
+                min_mode_node = modes.AddLast(number);
+            }
+            else if (count == modes_count)
+            {
+                var new_node = modes.AddLast(number);
+                if (number < min_mode_node!.Value)
                 {
-                    if (other_document.Value.Item1 > document.Value.Item1)
-                    {
-                        swap = true;
-                        break;
-                    }
-                }
-
-                if (swap)
-                {
-                    // TODO: 헤드 재설정 방식으로 개선
-                    documents.AddLast(document.Value);
-                    documents.RemoveFirst();
-                }
-                else
-                {
-                    ++count;
-                    // 어째선지 객체 비교가 기대대로 동작하지 않아 별도의 식별자를 추가했다.
-                    if (document.Value.Item2 == objective_document!.Value.Item2)
-                    {
-                        output.AppendLine(count.ToString());
-                        break;
-                    }
-                    documents.Remove(document);
+                    min_mode_node = new_node;
                 }
             }
         }
+
+        if (modes.Count > 1)
+        {
+            modes.Remove(min_mode_node!);
+            min_mode_node = null;
+            for (var node = modes.First; node != null; node = node.Next)
+            {
+                if (min_mode_node == null ||
+                    node.Value < min_mode_node.Value)
+                {
+                    min_mode_node = node;
+                }
+            }
+        }
+
+        StringBuilder output = new();
+        output.AppendLine($"{Convert.ToInt32(Math.Round(sum / (float)n, MidpointRounding.AwayFromZero))}");
+        output.AppendLine($"{median}");
+        output.AppendLine($"{min_mode_node!.Value}");
+        output.AppendLine($"{max - min}");
         Console.Write(output);
     }
 }
