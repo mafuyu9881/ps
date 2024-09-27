@@ -8,7 +8,7 @@ internal class Program
     private static void Main(string[] args)
     {
         int set_length = 20;
-        bool[] set = new bool[set_length];
+        int set = 0;
 
         int m = int.Parse(Console.ReadLine()!);
 
@@ -21,15 +21,16 @@ internal class Program
 
             if (command == "add")
             {
-                set[data_to_index(int.Parse(tokens[1]))] = true;
+                set |= 1 << data_to_index(int.Parse(tokens[1]));
             }
             else if (command == "remove")
             {
-                set[data_to_index(int.Parse(tokens[1]))] = false;
+                set &= ~(1 << data_to_index(int.Parse(tokens[1])));
             }
             else if (command == "check")
             {
-                if (set[data_to_index(int.Parse(tokens[1]))])
+                int check = 1 << data_to_index(int.Parse(tokens[1]));
+                if ((set & check) != 0)
                 {
                     output.AppendLine("1");
                 }
@@ -40,28 +41,21 @@ internal class Program
             }
             else if (command == "toggle")
             {
-                int index = data_to_index(int.Parse(tokens[1]));
-                bool data = set[index];
-                set[index] = !data;
+                int toggle = 1 << data_to_index(int.Parse(tokens[1]));
+                set ^= toggle;
             }
             else if (command == "all")
             {
-                for (int j = 0; j < set_length; ++j)
-                {
-                    set[j] = true;
-                }
+                set = (1 << (set_length + 1)) - 1;
             }
             else if (command == "empty")
             {
-                for (int j = 0; j < set_length; ++j)
-                {
-                    set[j] = false;
-                }
+                set = 0;
             }
         }
         Console.Write(output);
     }
-
+    
     private static int data_to_index(int data)
     {
         return data - 1;
