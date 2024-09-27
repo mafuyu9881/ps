@@ -1,31 +1,69 @@
-﻿internal class Program
+﻿// 시간 제한: 1.5초
+// 메모리 제한: 4MB
+
+using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        
+        int set_length = 20;
+        bool[] set = new bool[set_length];
+
+        int m = int.Parse(Console.ReadLine()!);
+
+        StringBuilder output = new();
+        for (int i = 0; i < m; ++i)
+        {
+            string[] tokens = Console.ReadLine()!.Split();
+            
+            string command = tokens[0];
+
+            if (command == "add")
+            {
+                set[data_to_index(int.Parse(tokens[1]))] = true;
+            }
+            else if (command == "remove")
+            {
+                set[data_to_index(int.Parse(tokens[1]))] = false;
+            }
+            else if (command == "check")
+            {
+                if (set[data_to_index(int.Parse(tokens[1]))])
+                {
+                    output.AppendLine("1");
+                }
+                else
+                {
+                    output.AppendLine("0");
+                }
+            }
+            else if (command == "toggle")
+            {
+                int index = data_to_index(int.Parse(tokens[1]));
+                bool data = set[index];
+                set[index] = !data;
+            }
+            else if (command == "all")
+            {
+                for (int j = 0; j < set_length; ++j)
+                {
+                    set[j] = true;
+                }
+            }
+            else if (command == "empty")
+            {
+                for (int j = 0; j < set_length; ++j)
+                {
+                    set[j] = false;
+                }
+            }
+        }
+        Console.Write(output);
+    }
+
+    private static int data_to_index(int data)
+    {
+        return data - 1;
     }
 }
-
-/*
-        부호 크기 체계 (sign magnitude)        1의 보수 (ones' complement)        2의 보수 (two's complement)
-    +7               0111                                0111                              0111
-    +6               0110                                0110                              0110
-    +5               0101                                0101                              0101
-    +4               0100                                0100                              0100
-    +3               0011                                0011                              0011
-    +2               0010                                0010                              0010
-    +1               0001                                0001                              0001
-    +0               0000                                0000                              0000
-    -0               1000                                1111                              0000
-    -1               1001                                1110                              1111
-    -2               1010                                1101                              1110
-    -3               1011                                1100                              1101
-    -4               1100                                1011                              1100
-    -5               1101                                1010                              1011
-    -6               1110                                1001                              1010
-    -7               1111                                1000                              1001
-    -8                                                                                     1000
-   
-    1. 양수는 보수를 취하지 않는다.
-    2. 2의 보수는 1의 보수에 0001을 더한 것으로, -0이 0000으로 표현되는 것도 같은 원리이다. (1111 + 0001 = 0000)
-*/
