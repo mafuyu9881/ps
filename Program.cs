@@ -1,83 +1,80 @@
-﻿// 시간 제한: 2초
+﻿// 시간 제한: 1초
 // 메모리 제한: 256MB
-// (이름의 길이) <= 20
-// 0 < N, M <= 500,000
-
-using System.Collections;
-using System.Text;
-using Person = System.ValueTuple<string, int>;
 
 internal class Program
 {
-    private static int buckets_length = 500009;
-
     private static void Main(string[] args)
     {
-        LinkedList<Person>[] buckets = new LinkedList<Person>[buckets_length];
+        int n = int.Parse(Console.ReadLine()!);
 
         string[] tokens = Console.ReadLine()!.Split();
 
-        int n = int.Parse(tokens[0]);
-        int m = int.Parse(tokens[1]);
-
-        List<string> unknown_people = new();
-        for (int i = 0; i < n + m; ++i)
+        int[] withdrawing_times = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            string name = Console.ReadLine()!;
-
-            int hash = hashing(name);
-
-            var persons = buckets[hash];
-            if (persons == null)
-            {
-                persons = new();
-                buckets[hash] = persons;
-            }
-
-            LinkedListNode<Person>? person = null;
-            for (person = persons.First; person != null; person = person.Next)
-            {
-                Person person_ref = person.ValueRef;
-
-                if (person_ref.Item1 != name)
-                    continue;
-
-                ++person_ref.Item2;
-
-                if (person_ref.Item2 > 1)
-                    unknown_people.Add(name);
-                
-                break;
-            }
-
-            if (person == null)
-            {
-                persons.AddLast(new LinkedListNode<Person>(new(name, 1)));
-            }
+            withdrawing_times[i] = int.Parse(tokens[i]);
         }
-        
-        unknown_people.Sort();
-        int unknown_people_count = unknown_people.Count;
+        merge_sort(withdrawing_times);
 
-        StringBuilder output = new();
-        output.AppendLine($"{unknown_people_count}");
-        for (int i = 0; i < unknown_people_count; ++i)
+        int sum = 0;
+        for (int i = 0; i < n; ++i)
         {
-            output.AppendLine(unknown_people[i]);
+            sum += withdrawing_times[i] * (n - i);
         }
-        Console.Write(output);
+        Console.Write(sum);
+    }
+    
+    private static void merge_sort(Span<int> arr)
+    {
+        int arr_length = arr.Length;
+
+        if (arr_length < 2)
+            return;
+
+        int mid_index = arr_length / 2;
+
+        merge_sort(arr.Slice(0, mid_index));
+        merge_sort(arr.Slice(mid_index));
+        merge(arr, mid_index);
     }
 
-    private static int hashing(string input)
+    private static void merge(Span<int> arr, int mid_index)
     {
-        int output = 0;
-        int r = 1;
-        for (int i = 0; i < input.Length; ++i)
+        int arr_length = arr.Length;
+
+        int[] backedup = arr.ToArray();
+
+        int left_read_index = 0;
+        int right_read_index = mid_index;
+        int written_index = 0;
+        
+        while (left_read_index < mid_index && right_read_index < arr_length)
         {
-            output += Convert.ToInt32(input[i] - 'a' + 1) * r;
-            output %= buckets_length;
-            r = r * 13 % buckets_length;
+            if (backedup[left_read_index] < backedup[right_read_index])
+            {
+                arr[written_index] = backedup[left_read_index];
+                ++left_read_index;
+            }
+            else
+            {
+                arr[written_index] = backedup[right_read_index];
+                ++right_read_index;
+            }
+            ++written_index;
         }
-        return output;
+
+        while (left_read_index < mid_index)
+        {
+            arr[written_index] = backedup[left_read_index];
+            ++left_read_index;
+            ++written_index;
+        }
+
+        while (right_read_index < arr_length)
+        {
+            arr[written_index] = backedup[right_read_index];
+            ++right_read_index;
+            ++written_index;
+        }
     }
 }
