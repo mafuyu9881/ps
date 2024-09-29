@@ -1,43 +1,54 @@
-﻿// 시간 제한: 0.25초
+﻿// 시간 제한: 0.15초
 // 메모리 제한: 128MB
-
-using System.Text;
-using CallCount = System.Tuple<int, int>;
+// 1 <= N <= 10^6
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        int max_n = 40;
-        int callcounts_length = max_n + 1;
+        int n = int.Parse(Console.ReadLine()!);
 
-        CallCount[] callcounts = new CallCount[callcounts_length];
-        callcounts[0] = new(1, 0);
-        callcounts[1] = new(0, 1);
-
-        int callcounts_written_index = 1;
-
-        int t = int.Parse(Console.ReadLine()!);
-
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
+        int[] dp = new int[n + 1];
+        dp[1] = 0;
+        for (int i = 2; i <= n; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!);
-            
-            while (callcounts_written_index < n)
+            dp[i] = dp[i - 1] + 1;
+            if (i % 2 == 0)
             {
-                ++callcounts_written_index;
-
-                // p == previous
-                CallCount pp_callcount = callcounts[callcounts_written_index - 2];
-                CallCount p_callcount = callcounts[callcounts_written_index - 1];
-
-                callcounts[callcounts_written_index] = new(pp_callcount.Item1 + p_callcount.Item1, pp_callcount.Item2 + p_callcount.Item2);
+                dp[i] = Math.Min(dp[i], dp[i / 2] + 1);
             }
-
-            CallCount n_callcount = callcounts[n];
-            output.AppendLine($"{n_callcount.Item1} {n_callcount.Item2}");
+            if (i % 3 == 0)
+            {
+                dp[i] = Math.Min(dp[i], dp[i / 3] + 1);
+            }
         }
-        Console.Write(output);
+        Console.Write(dp[n]);
     }
 }
+
+// 실패 코드
+// 1. k에서 k * 3, k * 2, k + 1로의 분기는
+// 2. min(..) 함수를 이용하는 편이 가독성이 좋았을 듯
+//int k = 1;
+//while ()
+//{
+//    int new_computing_count = dp[k]!.Value + 1;
+//    ref int? dp_k_mul_3 = ref dp[k * 3];
+//    if (dp_k_mul_3 == null ||
+//        dp_k_mul_3 > new_computing_count)
+//    {
+//        dp_k_mul_3 = new_computing_count;
+//    }
+//    ref int? dp_k_mul_2 = ref dp[k * 2];
+//    if (dp_k_mul_2 == null ||
+//        dp_k_mul_2 > new_computing_count)
+//    {
+//        dp_k_mul_2 = new_computing_count;
+//    }
+//    ref int? dp_k_add_1 = ref dp[k + 1];
+//    if (dp_k_add_1 == null ||
+//        dp_k_add_1 > new_computing_count)
+//    {
+//        dp_k_add_1 = new_computing_count;
+//    }
+//}
