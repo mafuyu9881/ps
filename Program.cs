@@ -1,21 +1,40 @@
-﻿// 시간 제한: 1초
-// 메모리 제한: 1024MB
-// 20 <= (취침 시각) <= 23, 0 <= (취침 시각) <= 3
-// 5 <= (기상 시각) <= 10
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int begin_sleep = int.Parse(Console.ReadLine()!);
-        int end_sleep = int.Parse(Console.ReadLine()!);
-
-        // 전 날에 잠들었을 경우
-        if (begin_sleep > end_sleep)
+        string[] tokens = Console.ReadLine()!.Split();
+        
+        LinkedList<int> numbers = new();
+        for (int i = 0; i < tokens.Length; ++i)
         {
-            begin_sleep -= 24;
+            int number = int.Parse(tokens[i]);
+            
+            if (numbers.Count > 0)
+            {
+                LinkedListNode<int>? objective_node;
+                for (objective_node = numbers.First; objective_node != null; objective_node = objective_node.Next)
+                {
+                    if (number < objective_node.Value)
+                    {
+                        break;
+                    }
+                }
+                
+                if (objective_node != null)
+                {
+                    numbers.AddBefore(objective_node, number);
+                }
+                else
+                {
+                    numbers.AddLast(number);
+                }
+            }
+            else
+            {
+                numbers.AddLast(number);
+            }
         }
 
-        Console.Write(end_sleep - begin_sleep);
+        Console.Write(numbers.First!.Next!.Value);
     }
 }
