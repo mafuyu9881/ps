@@ -1,6 +1,7 @@
 ﻿// 시간 제한: 1초
-// 메모리 제한: 512MB
-// 0 < n < 11
+// 메모리 제한: 256MB
+// 1 ≤ N ≤ 100,000
+// 1 ≤ M ≤ 100,000
 
 using System.Text;
 
@@ -8,29 +9,40 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int max_n = 10;
-        int n_variations_length = max_n + 1;
-        int[] n_variations = new int[n_variations_length];
-        n_variations[1] = 1;
-        n_variations[2] = 2;
-        n_variations[3] = 4;
-        int memoized_index = 3;
+        string[] tokens = Console.ReadLine()!.Split();
 
-        int t = int.Parse(Console.ReadLine()!);
-        
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
+        int n = int.Parse(tokens[0]);
+        int m = int.Parse(tokens[1]);
+
+        tokens = Console.ReadLine()!.Split();
+
+        int[] accumulations = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!);
+            int number = int.Parse(tokens[i]);
 
-            while (memoized_index < n)
+            int prev_accumulation = 0;
+            if (i > 0)
+                prev_accumulation = accumulations[i - 1];
+
+            accumulations[i] = prev_accumulation + number;
+        }
+
+        StringBuilder output = new();
+        for (int k = 0; k < m; ++k)
+        {
+            tokens = Console.ReadLine()!.Split();
+
+            int i = int.Parse(tokens[0]) - 1;
+            int j = int.Parse(tokens[1]) - 1;
+            int prefix_sum = accumulations[j];
+            if (i > 0)
             {
-                ++memoized_index;
-
-                n_variations[memoized_index] = n_variations[memoized_index - 1] + n_variations[memoized_index - 2] + n_variations[memoized_index - 3];
+                // i번째 까지는 살려야 합니다.
+                prefix_sum -= accumulations[i - 1];
             }
 
-            output.AppendLine($"{n_variations[n]}");
+            output.AppendLine($"{prefix_sum}");
         }
         Console.Write(output);
     }
