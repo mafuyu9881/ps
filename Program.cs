@@ -38,7 +38,7 @@ internal class Program
             int prefix_sum = accumulations[j];
             if (i > 0)
             {
-                // i번째 까지는 살려야 합니다.
+                // 'j'까지의 누적합에서 'i - 1'까지의 누적합을 빼면 'i' ~ 'j'의 구간합과 같습니다.
                 prefix_sum -= accumulations[i - 1];
             }
 
