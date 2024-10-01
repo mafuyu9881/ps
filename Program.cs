@@ -1,7 +1,6 @@
 ﻿// 시간 제한: 1초
-// 메모리 제한: 512MB
-// 1 ≤ width, height ≤ 50
-// 1 ≤ tno_cabbages ≤ 2500
+// 메모리 제한: 128MB
+// 1 ≤ N ≤ 100,000
 
 using System.Text;
 
@@ -9,129 +8,94 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
-
+        int max_n = 100000;
+        int n = int.Parse(Console.ReadLine()!);
+        
+        int[] min_heap = new int[max_n];
+        int written_index = -1;
         StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            string[] tokens = Console.ReadLine()!.Split();
+            int x = int.Parse(Console.ReadLine()!);
 
-            int width = int.Parse(tokens[0]);
-            int height = int.Parse(tokens[1]);
-            int tno_cabbages = int.Parse(tokens[2]);
-            
-            bool[] farmland = new bool[width * height];
-
-            HashSet<int> planted_indices = new();
-
-            for (int j = 0; j < tno_cabbages; ++j)
+            if (x != 0)
             {
-                tokens = Console.ReadLine()!.Split();
+                int writing_index = written_index + 1;
+                min_heap[writing_index] = x;
 
-                int col = int.Parse(tokens[0]);
-                int row = int.Parse(tokens[1]);
-                int index = convert_index_to_1d(width, new(row, col));
-
-                farmland[index] = true;
-
-                planted_indices.Add(index);
-            }
-
-            LinkedList<HashSet<int>> connected_cabbages_list = new();
-            while (planted_indices.Count > 0)
-            {
-                int initial_index = planted_indices.First();
-                planted_indices.Remove(initial_index);
-
-                Queue<int> traversal_queue = new();
-                traversal_queue.Enqueue(initial_index);
-
-                HashSet<int> visited_indices = new();
-                visited_indices.Add(initial_index);
-
-                HashSet<int> connected_cabbages = new();
-                connected_cabbages_list.AddLast(connected_cabbages);
-
-                while (traversal_queue.Count > 0)
+                while (true)
                 {
-                    int origin_index = traversal_queue.Dequeue();
-                    Index2D origin_index_2d = convert_index_to_2d(width, origin_index);
-                    connected_cabbages.Add(origin_index);
+                    int parent_index = writing_index / 2;
+                    if (writing_index % 2 == 0)
+                        parent_index -= 1;
 
-                    Index2D[] adjacent_indices = new Index2D[]
+                    if (parent_index < 0)
+                        break;
+
+                    int parent_data = min_heap[parent_index];
+                    int writing_data = min_heap[writing_index];
+                    if (parent_data <= writing_data)
+                        break;
+
+                    min_heap[parent_index] = writing_data;
+                    min_heap[writing_index] = parent_data;
+                    writing_index = parent_index;
+                }
+
+                ++written_index;
+            }
+            else
+            {
+                if (written_index < 0)
+                {
+                    output.AppendLine("0");
+                }
+                else
+                {
+                    output.AppendLine($"{min_heap[0]}");
+
+                    int writing_index = 0;
+                    min_heap[writing_index] = min_heap[written_index];
+
+                    while (true)
                     {
-                        new Index2D(origin_index_2d.row - 1, origin_index_2d.col),
-                        new Index2D(origin_index_2d.row, origin_index_2d.col - 1),
-                        new Index2D(origin_index_2d.row + 1, origin_index_2d.col),
-                        new Index2D(origin_index_2d.row, origin_index_2d.col + 1),
-                    };
+                        int? left_index = writing_index * 2 + 1;
+                        int? right_index = writing_index * 2 + 2;
+                        
+                        if (left_index > written_index)
+                            left_index = null;
 
-                    for (int j = 0; j < adjacent_indices.Length; ++j)
-                    {
-                        Index2D adjacent_index_2d = adjacent_indices[j];
-                        if (is_valid_index(width, height, adjacent_index_2d) == false)
-                            continue;
+                        if (right_index > written_index)
+                            right_index = null;
 
-                        int adjacent_index = convert_index_to_1d(width, adjacent_index_2d);
-                        if (traversal_queue.Contains(adjacent_index))
-                            continue;
+                        int next_writing_index = writing_index;
 
-                        if (visited_indices.Contains(adjacent_index))
-                            continue;
+                        if (left_index != null &&
+                            min_heap[left_index.Value] < min_heap[next_writing_index])
+                        {
+                            next_writing_index = left_index.Value;
+                        }
 
-                        if (farmland[adjacent_index] == false)
-                            continue;
+                        if (right_index != null &&
+                            min_heap[right_index.Value] < min_heap[next_writing_index])
+                        {
+                            next_writing_index = right_index.Value;
+                        }
 
-                        traversal_queue.Enqueue(adjacent_index);
-                        visited_indices.Add(adjacent_index);
-                        planted_indices.Remove(adjacent_index);
+                        if (next_writing_index == writing_index)
+                            break;
+                        
+                        int temp = min_heap[writing_index];
+                        min_heap[writing_index] = min_heap[next_writing_index];
+                        min_heap[next_writing_index] = temp;
+
+                        writing_index = next_writing_index;
                     }
+
+                    --written_index;
                 }
             }
-
-            output.AppendLine($"{connected_cabbages_list.Count}");
         }
         Console.Write(output);
-    }
-
-    private static int convert_index_to_1d(int width, Index2D index)
-    {
-        return width * index.row + index.col;
-    }
-
-    private static Index2D convert_index_to_2d(int width, int index)
-    {
-        return new(index / width, index % width);
-    }
-
-    private static bool is_valid_index(int width, int height, int index)
-    {
-        return is_valid_index(
-            width,
-            height,
-            convert_index_to_2d(width, index));
-    }
-
-    private static bool is_valid_index(int width, int height, Index2D index)
-    {
-        if (index.col < 0 || index.col > width - 1)
-            return false;
-
-        if (index.row < 0 || index.row > height - 1)
-            return false;
-
-        return true;
-    }
-}
-
-public struct Index2D
-{
-    public int row;
-    public int col;
-
-    public Index2D(int row, int col)
-    {
-        this.row = row;
-        this.col = col;
     }
 }
