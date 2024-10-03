@@ -1,124 +1,69 @@
 ﻿// 시간 제한: 2초
-// 메모리 제한: 512MB
-// 1 ≤ N ≤ 1,000,000
-// -10^9 ≤ X[i] ≤ 10^9
-
-using System.Text;
+// 메모리 제한: 128MB
+// 1,000,000 * 1B = 1,000KB = 1MB
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-
         string[] tokens = Console.ReadLine()!.Split();
 
-        // 최대 시복 = 1,000,000
-        int[] inputNumbers = new int[n];
-        int[] sortedInputNumbers = new int[n];
-        int[] uniqueSortedInputNumbers = new int[n];
-        for (int i = 0; i < tokens.Length; ++i)
+        int n = int.Parse(tokens[0]);
+        int k = int.Parse(tokens[1]);
+
+        int visitedIndicesLength = 200000 * 2 + 1;
+        bool[] visitedIndices = new bool[visitedIndicesLength];
+        visitedIndices[n] = true;
+
+        LinkedList<int> levelNumbers = new();
+        levelNumbers.AddLast(n);
+
+        int seconds = 0;
+        while (true)
         {
-            int inputNumber = int.Parse(tokens[i]);
-            inputNumbers[i] = inputNumber;
-            sortedInputNumbers[i] = inputNumber;
-        }
-        // 최대 시복 = Nlog
-        MergeSort(sortedInputNumbers);
+            LinkedList<int> nextLevelNumbers = new();
 
-        // 최대 시복 = (1,000,000)log(1,000,000) ≈ 18,000,000 ~ 19,000,000
-        int uniqueSortedInputNumbersCount = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            int sortedInputNumber = sortedInputNumbers[i];
-
-            if (i > 0 && sortedInputNumbers[i - 1] == sortedInputNumber)
-                continue;
-
-            uniqueSortedInputNumbers[uniqueSortedInputNumbersCount] = sortedInputNumber;
-            ++uniqueSortedInputNumbersCount;
-        }
-
-        StringBuilder output = new();
-        for (int i = 0; i < inputNumbers.Length; ++i)
-        {
-            int inputNumber = inputNumbers[i];
-
-            int left = 0;
-            int right = uniqueSortedInputNumbersCount;
-            while (left <= right)
+            for (var node = levelNumbers.First; node != null; node = node.Next)
             {
-                int mid = (left + right) / 2;
+                int levelNumber = node.Value;
+                if (levelNumber == k)
+                    goto Break;
 
-                if (inputNumber < uniqueSortedInputNumbers[mid])
+                int prevLevelNumber = levelNumber - 1;
+                int nextLevelNumber = levelNumber + 1;
+                int twiceLevelNumber = levelNumber * 2;
+
+                if (prevLevelNumber > 0 &&
+                    prevLevelNumber < visitedIndicesLength &&
+                    visitedIndices[prevLevelNumber] == false)
                 {
-                    right = mid - 1;
+                    nextLevelNumbers.AddLast(prevLevelNumber);
+                    visitedIndices[prevLevelNumber] = true;
                 }
-                else if (inputNumber > uniqueSortedInputNumbers[mid])
+
+                if (nextLevelNumber > 0 &&
+                    nextLevelNumber < visitedIndicesLength &&
+                    visitedIndices[nextLevelNumber] == false)
                 {
-                    left = mid + 1;
+                    nextLevelNumbers.AddLast(nextLevelNumber);
+                    visitedIndices[nextLevelNumber] = true;
                 }
-                else
+
+                if (twiceLevelNumber > 0 &&
+                    twiceLevelNumber < visitedIndicesLength && 
+                    visitedIndices[twiceLevelNumber] == false)
                 {
-                    output.Append($"{mid} ");
-                    break;
+                    nextLevelNumbers.AddLast(twiceLevelNumber);
+                    visitedIndices[twiceLevelNumber] = true;
                 }
             }
+
+            levelNumbers = nextLevelNumbers;
+            ++seconds;
         }
-        Console.Write(output);
-    }
-
-    private static void MergeSort(Span<int> span)
-    {
-        int spanLength = span.Length;
-
-        if (spanLength < 2)
-            return;
-
-        int midIndex = spanLength / 2;
-
-        MergeSort(span.Slice(0, midIndex));
-        MergeSort(span.Slice(midIndex));
-        Merge(span, midIndex);
-    }
-
-    private static void Merge(Span<int> span, int midIndex)
-    {
-        int spanLength = span.Length;
-
-        int[] backedup = span.ToArray();
-
-        int leftReadIndex = 0;
-        int rightReadIndex = midIndex;
-        int writtenIndex = 0;
-
-        while (leftReadIndex < midIndex && rightReadIndex < spanLength)
-        {
-            if (backedup[leftReadIndex] < backedup[rightReadIndex])
-            {
-                span[writtenIndex] = backedup[leftReadIndex];
-                ++leftReadIndex;
-            }
-            else
-            {
-                span[writtenIndex] = backedup[rightReadIndex];
-                ++rightReadIndex;
-            }
-            ++writtenIndex;
-        }
-
-        while (leftReadIndex < midIndex)
-        {
-            span[writtenIndex] = backedup[leftReadIndex];
-            ++leftReadIndex;
-            ++writtenIndex;
-        }
-
-        while (rightReadIndex < spanLength)
-        {
-            span[writtenIndex] = backedup[rightReadIndex];
-            ++rightReadIndex;
-            ++writtenIndex;
-        }
+        Break:
+        Console.Write(seconds);
     }
 }
+
+// 진행 방향이 하나가 아니면 dp를 사용할 수 없다?
