@@ -1,6 +1,7 @@
-﻿// 시간 제한: 1초
-// 메모리 제한: 256MB
-// 1 ≤ N ≤ 1,000,000, 1 ≤ M ≤ 2,000,000,000
+﻿// 시간 제한: 3초
+// 메모리 제한: 512MB
+// 1 ≤ N ≤ 1,000
+// 0 ≤ M ≤ N(N-1)/2
 
 internal class Program
 {
@@ -11,39 +12,117 @@ internal class Program
         int n = int.Parse(tokens[0]);
         int m = int.Parse(tokens[1]);
 
-        tokens = Console.ReadLine()!.Split();
-        int max_tree_height = 0;
-        int[] tree_heights = new int[n];
-        for (int i = 0; i < n; ++i)
+        Graph graph = new(n);
+        for (int i = 0; i < m; ++i)
         {
-            int height = int.Parse(tokens[i]);
-            max_tree_height = Math.Max(height, max_tree_height);
-            tree_heights[i] = height;
+            tokens = Console.ReadLine()!.Split();
+            graph.Connect(int.Parse(tokens[0]), int.Parse(tokens[1]));
+        }
+        Console.Write(graph.ComputeConnectedComponentCount());
+    }
+}
+
+public class Graph
+{
+    private LinkedList<int>[]? adjacencyList = null;
+
+    public Graph(int nodeCount)
+    {
+        int adjacencyListLength = nodeCount + 1;
+
+        adjacencyList = new LinkedList<int>[adjacencyListLength];
+        for (int i = 0; i < adjacencyListLength; ++i)
+        {
+            adjacencyList[i] = new();
+        }
+    }
+
+    public void Connect(int node0, int node1)
+    {
+        if (adjacencyList == null)
+            return;
+
+        int writableLength = adjacencyList.Length;
+        if (node0 > writableLength || node1 > writableLength)
+            return;
+        
+        // 중복된 간선에 대한 검사는 생략합니다.
+        // 설령 중복된 간선이 들어오더라도, 그래프 순회에서 순회 횟수가 1회 늘어나는 것 말고는 문제될 일은 없습니다.
+        adjacencyList[node0].AddLast(node1);
+        adjacencyList[node1].AddLast(node0);
+    }
+
+    public int ComputeConnectedComponentCount()
+    {
+        LinkedList<LinkedList<int>> connectedComponents = new();
+
+        if (adjacencyList == null)
+            return connectedComponents.Count;
+
+        // 적어도 0과 1은 노드로 들어와있어야 합니다.
+        int adjacencyListLength = adjacencyList.Length;
+        if (adjacencyListLength < 2)
+            return connectedComponents.Count;
+
+        bool[] visitedLookup = new bool[adjacencyListLength];
+        Stack<int> visitingStack = new();
+        
+        LinkedList<int> objectiveList = new();
+        for (int i = 1; i < adjacencyListLength; ++i)
+        {
+            objectiveList.AddLast(i);
         }
 
-        int left_index = 0;
-        int right_index = max_tree_height;
-        int cutting_height = 0;
-        while (left_index <= right_index)
+        while (objectiveList.Count > 0)
         {
-            int mid_index = (left_index + right_index) / 2;
-
-            long cut_sum = 0;
-            for (int i = 0; i < tree_heights.Length; ++i)
+            if (visitingStack.Count < 1)
             {
-                cut_sum += Math.Max(tree_heights[i] - mid_index, 0);
+                var objectiveNode = objectiveList.First;
+                if (objectiveNode == null)
+                    break;
+
+                visitingStack.Push(objectiveNode.Value);
+                objectiveList.Remove(objectiveNode);
             }
 
-            if (cut_sum < m)
+            int visitingNode = visitingStack.Pop();
+
+            LinkedList<int>? visitingConnectedComponent = null;
+            if (visitedLookup[visitingNode] == false)
             {
-                right_index = mid_index - 1;
+                visitingConnectedComponent = new();
+                visitingConnectedComponent.AddLast(visitingNode);
+                connectedComponents.AddLast(visitingConnectedComponent);
             }
             else
             {
-                cutting_height = mid_index;
-                left_index = mid_index + 1;
+                for (var outerNode = connectedComponents.First; outerNode != null; outerNode = outerNode.Next)
+                {
+                    var connectedComponent = outerNode.Value;
+                    if (connectedComponent.Contains(visitingNode))
+                    {
+                        visitingConnectedComponent = connectedComponent;
+                        break;
+                    }
+                }
+            }
+
+            visitedLookup[visitingNode] = true;
+            
+            var adjacencies = adjacencyList[visitingNode];
+            for (var node = adjacencies.First; node != null; node = node.Next)
+            {
+                int adjacentNode = node.Value;
+                if (visitedLookup[adjacentNode])
+                    continue;
+
+                visitingConnectedComponent!.AddLast(adjacentNode);
+                
+                visitedLookup[adjacentNode] = true;
+                visitingStack.Push(adjacentNode);
             }
         }
-        Console.Write(cutting_height);
+
+        return connectedComponents.Count;
     }
 }
