@@ -11,7 +11,7 @@ internal class Program
         int n = int.Parse(tokens[0]);
         int k = int.Parse(tokens[1]);
 
-        int visitedIndicesLength = 200000 * 2 + 1;
+        int visitedIndicesLength = 100000 + 1;
         bool[] visitedIndices = new bool[visitedIndicesLength];
         visitedIndices[n] = true;
 
@@ -33,24 +33,21 @@ internal class Program
                 int nextLevelNumber = levelNumber + 1;
                 int twiceLevelNumber = levelNumber * 2;
 
-                if (prevLevelNumber > 0 &&
-                    prevLevelNumber < visitedIndicesLength &&
+                if (prevLevelNumber >= 0 &&
                     visitedIndices[prevLevelNumber] == false)
                 {
                     nextLevelNumbers.AddLast(prevLevelNumber);
                     visitedIndices[prevLevelNumber] = true;
                 }
 
-                if (nextLevelNumber > 0 &&
-                    nextLevelNumber < visitedIndicesLength &&
+                if (nextLevelNumber < visitedIndicesLength &&
                     visitedIndices[nextLevelNumber] == false)
                 {
                     nextLevelNumbers.AddLast(nextLevelNumber);
                     visitedIndices[nextLevelNumber] = true;
                 }
 
-                if (twiceLevelNumber > 0 &&
-                    twiceLevelNumber < visitedIndicesLength && 
+                if (twiceLevelNumber < visitedIndicesLength && 
                     visitedIndices[twiceLevelNumber] == false)
                 {
                     nextLevelNumbers.AddLast(twiceLevelNumber);
@@ -61,7 +58,7 @@ internal class Program
             levelNumbers = nextLevelNumbers;
             ++seconds;
         }
-        Break:
+Break:
         Console.Write(seconds);
     }
 }
