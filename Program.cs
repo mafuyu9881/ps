@@ -1,14 +1,27 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
         string[] tokens = Console.ReadLine()!.Split();
 
-        int n1 = int.Parse(tokens[0]);
-        int k1 = int.Parse(tokens[1]);
-        int n2 = int.Parse(tokens[2]);
-        int k2 = int.Parse(tokens[3]);
-        
-        Console.Write(n1 * k1 + n2 * k2);
+        int n = int.Parse(tokens[0]);
+        int m = int.Parse(tokens[1]);
+
+        Dictionary<string, string> dictionary = new();
+        for (int i = 0; i < n; ++i)
+        {
+            tokens = Console.ReadLine()!.Split();
+
+            dictionary.Add(tokens[0], tokens[1]);
+        }
+
+        StringBuilder output = new();
+        for (int i = 0; i < m; ++i)
+        {
+            output.AppendLine(dictionary[Console.ReadLine()!]);
+        }
+        Console.Write(output);
     }
 }
