@@ -5,6 +5,9 @@
 
 internal class Program
 {
+    private static int[]? memoizedSqrtOfTwo = null;
+    private static int memoizedIndex = -1;
+
     private static void Main(string[] args)
     {
         string[] tokens = Console.ReadLine()!.Split();
@@ -12,29 +15,71 @@ internal class Program
         int n = int.Parse(tokens[0]);
         int r = int.Parse(tokens[1]);
         int c = int.Parse(tokens[2]);
-
-        int[] sqrtOfTwo = new int[n * 2 + 1];
-        sqrtOfTwo[0] = 1;
-        for (int i = 1; i < sqrtOfTwo.Length; ++i)
-        {
-            sqrtOfTwo[i] = sqrtOfTwo[i - 1] * 2;
-        }
+        
+        memoizedSqrtOfTwo = new int[n + 1];
 
         Index2D objectiveIndex2D = new(r, c);
-        int objectiveIndex1D = ConvertIndexTo1D(sqrtOfTwo[n], objectiveIndex2D);
 
-        // 2^2n / 4 == 2^(2n-2)
-        int temp = objectiveIndex1D / sqrtOfTwo[2 * n - 2];
+        Console.Write(ComputeVisitingTurn(SqrtOfTwo(n), objectiveIndex2D));
     }
 
-    private static int ConvertIndexTo1D(int width, Index2D index2D)
+    private static int ComputeVisitingTurn(int side, Index2D objectiveIndex2D)
     {
-        return index2D.row * width + index2D.col;
+        int halfSide = side / 2;
+
+        int objectiveRow = objectiveIndex2D.row;
+        int objectiveCol = objectiveIndex2D.col;
+
+        int sum = 0;
+        int skipped = 0;
+
+        Index2D adjustedObjectiveIndex2D = objectiveIndex2D;
+        
+        // 우상
+        if (objectiveRow < halfSide && objectiveCol >= halfSide)
+        {
+            skipped = 1;
+            adjustedObjectiveIndex2D = new(objectiveRow, objectiveCol - halfSide);
+        }
+        // 좌하
+        else if (objectiveRow >= halfSide && objectiveCol < halfSide)
+        {
+            skipped = 2;
+            adjustedObjectiveIndex2D = new(objectiveRow - halfSide, objectiveCol);
+        }
+        // 우하
+        else if (objectiveRow >= halfSide && objectiveCol >= halfSide)
+        {
+            skipped = 3;
+            adjustedObjectiveIndex2D = new(objectiveRow - halfSide, objectiveCol - halfSide);
+        }
+
+        if (side > 2)
+        {
+            sum += ComputeVisitingTurn(halfSide, adjustedObjectiveIndex2D);
+        }
+
+        return sum + (skipped * halfSide * halfSide);
     }
 
-    private static Index2D ConvertIndexTo2D(int width, int index1D)
+    // 배열의 범위를 벗어나는 값이 입력되지 않음이 전제됩니다.
+    private static int SqrtOfTwo(int exponent)
     {
-        return new(index1D / width, index1D % width);
+        while (memoizedIndex < exponent)
+        {
+            ++memoizedIndex;
+
+            if (memoizedIndex < 1)
+            {
+                memoizedSqrtOfTwo![memoizedIndex] = 1;
+            }
+            else
+            {
+                memoizedSqrtOfTwo![memoizedIndex] = memoizedSqrtOfTwo[memoizedIndex - 1] * 2;
+            }
+        }
+
+        return memoizedSqrtOfTwo![exponent];
     }
 }
 
