@@ -2,8 +2,6 @@
 {
     private static void Main(string[] args)
     {
-        int a = int.Parse(Console.ReadLine()!);
-        int b = int.Parse(Console.ReadLine()!);
-        Console.Write(a + b);
+        Console.Write("고려대학교");
     }
 }
