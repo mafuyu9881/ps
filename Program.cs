@@ -1,40 +1,29 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
         string[] tokens = Console.ReadLine()!.Split();
 
         int n = int.Parse(tokens[0]);
-        int m = int.Parse(tokens[1]);
+        int k = int.Parse(tokens[1]);
 
-        Dictionary<int, string> indexNameDictionary = new();
-        Dictionary<string, int> nameIndexDictionary = new();
-        for (int i = 1; i < n + 1; ++i)
+        int[] coins = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            string name = Console.ReadLine()!;
-
-            indexNameDictionary.Add(i, name);
-            nameIndexDictionary.Add(name, i);
+            coins[i] = int.Parse(Console.ReadLine()!);
         }
 
-        StringBuilder output = new();
-        for (int i = 0; i < m; ++i)
+        int entireCount = 0;
+        for (int i = n - 1; (k > 0) && (i > -1); --i)
         {
-            string input = Console.ReadLine()!;
-            
-            string append;
-            if (input[0] < 'A')
-            {
-                append = indexNameDictionary[int.Parse(input)];
-            }
-            else
-            {
-                append = $"{nameIndexDictionary[input]}";
-            }
-            output.AppendLine(append);
+            int coin = coins[i];
+
+            int count = k / coin;
+
+            k -= coin * count;
+
+            entireCount += count;
         }
-        Console.Write(output);
+        Console.Write(entireCount);
     }
 }
