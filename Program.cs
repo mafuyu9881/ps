@@ -30,36 +30,32 @@ internal class Program
         int objectiveRow = objectiveIndex2D.row;
         int objectiveCol = objectiveIndex2D.col;
 
-        int sum = 0;
-        int skipped = 0;
+        int quadrant = 0;
 
         Index2D adjustedObjectiveIndex2D = objectiveIndex2D;
         
         // 우상
         if (objectiveRow < halfSide && objectiveCol >= halfSide)
         {
-            skipped = 1;
+            quadrant = 1;
             adjustedObjectiveIndex2D = new(objectiveRow, objectiveCol - halfSide);
         }
         // 좌하
         else if (objectiveRow >= halfSide && objectiveCol < halfSide)
         {
-            skipped = 2;
+            quadrant = 2;
             adjustedObjectiveIndex2D = new(objectiveRow - halfSide, objectiveCol);
         }
         // 우하
         else if (objectiveRow >= halfSide && objectiveCol >= halfSide)
         {
-            skipped = 3;
+            quadrant = 3;
             adjustedObjectiveIndex2D = new(objectiveRow - halfSide, objectiveCol - halfSide);
         }
 
-        if (side > 2)
-        {
-            sum += ComputeVisitingTurn(halfSide, adjustedObjectiveIndex2D);
-        }
+        int sum = (side > 2) ? ComputeVisitingTurn(halfSide, adjustedObjectiveIndex2D) : 0;
 
-        return sum + (skipped * halfSide * halfSide);
+        return sum + (quadrant * halfSide * halfSide);
     }
 
     // 배열의 범위를 벗어나는 값이 입력되지 않음이 전제됩니다.
