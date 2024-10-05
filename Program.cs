@@ -1,7 +1,4 @@
-﻿// 시간 제한: 1초
-// 메모리 제한: 256MB
-// 1 ≤ N ≤ 1,000
-// 1 ≤ (집합의 원소) ≤ 1,000
+﻿using System.Text;
 
 internal class Program
 {
@@ -9,31 +6,79 @@ internal class Program
     {
         int n = int.Parse(Console.ReadLine()!);
         
-        string[] tokens = Console.ReadLine()!.Split();
-
-        int[] sequence = new int[n];
-        int[] lisLengths = new int[n];
-        for (int i = 0; i < n; ++i)
+        Graph graph = new(new LinkedList<int>[n + 1]);
+        for (int i = 0; i < n - 1; ++i)
         {
-            sequence[i] = int.Parse(tokens[i]);
-            lisLengths[i] = 1;
+            string[] tokens = Console.ReadLine()!.Split();
+            
+            int node0 = int.Parse(tokens[0]);
+            int node1 = int.Parse(tokens[1]);
+
+            graph.Connect(node0, node1);
         }
-        
-        int maxLISLength = 1;
-        for (int i = 1; i < n; ++i)
+
+        var parentNodes = graph.ComputeParentNodes(1);
+
+        StringBuilder output = new();
+        for (int i = 2; i <= n; ++i)
         {
-            for (int j = 0; j < i; ++j)
+            output.AppendLine($"{parentNodes[i]} ");
+        }
+        Console.Write(output);
+    }
+
+    private class Graph
+    {
+        private LinkedList<int>[] _adjacencyList;
+
+        public Graph(LinkedList<int>[] adjacencyList)
+        {
+            _adjacencyList = adjacencyList;
+            for (int i = 0; i < _adjacencyList.Length; ++i)
             {
-                if (sequence[j] < sequence[i])
-                {
-                    int lisLength = Math.Max(lisLengths[i], lisLengths[j] + 1);
-
-                    lisLengths[i] = lisLength;
-
-                    maxLISLength = Math.Max(maxLISLength, lisLength);
-                }
+                _adjacencyList[i] = new();
             }
         }
-        Console.Write(maxLISLength);
+
+        // _adjacentcyList의 유효성, 중복 간선이 입력되지 않음이 전제됩니다.
+        public void Connect(int node0, int node1)
+        {
+            _adjacencyList[node0].AddLast(node1);
+            _adjacencyList[node1].AddLast(node0);
+        }
+
+        public int[] ComputeParentNodes(int superParentNode)
+        {
+            int adjacencyListLength = _adjacencyList.Length;
+
+            int[] parentNodes = new int[adjacencyListLength];
+
+            bool[] visitiedNodes = new bool[adjacencyListLength];
+            Queue<int> visitingQueue = new();
+
+            visitiedNodes[superParentNode] = true;
+            visitingQueue.Enqueue(superParentNode);
+
+            while (visitingQueue.Count > 0)
+            {
+                int parentNode = visitingQueue.Dequeue();
+
+                var adjacencies = _adjacencyList[parentNode];
+                for (var listNode = adjacencies.First; listNode != null; listNode = listNode.Next)
+                {
+                    int adjacentNode = listNode.Value;
+
+                    if (visitiedNodes[adjacentNode])
+                        continue;
+
+                    parentNodes[adjacentNode] = parentNode;
+
+                    visitiedNodes[adjacentNode] = true;
+                    visitingQueue.Enqueue(adjacentNode);
+                }
+            }
+            
+            return parentNodes;
+        }
     }
 }
