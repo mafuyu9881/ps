@@ -12,47 +12,28 @@ internal class Program
         string[] tokens = Console.ReadLine()!.Split();
 
         int[] sequence = new int[n];
+        int[] lisLengths = new int[n];
         for (int i = 0; i < n; ++i)
         {
             sequence[i] = int.Parse(tokens[i]);
+            lisLengths[i] = 1;
         }
         
-        int maxCombo = 1;
-        ComputeMaxCombo(ref maxCombo,
-                        0,
-                        null,
-                        sequence);
-        Console.Write(maxCombo);
-    }
-
-    private static void ComputeMaxCombo(ref int maxCombo,
-                                        int prevCombo,
-                                        int? prevNumber,
-                                        Span<int> sequence)
-    {
-        int sequenceLength = sequence.Length;
-
-        for (int i = 0; i < sequenceLength; ++i)
+        int maxLISLength = 1;
+        for (int i = 1; i < n; ++i)
         {
-            int currNumber = sequence[i];
-            if (prevNumber == null || currNumber > prevNumber)
+            for (int j = 0; j < i; ++j)
             {
-                int currCombo = prevCombo + 1;
-
-                if (currCombo > maxCombo)
+                if (sequence[j] < sequence[i])
                 {
-                    maxCombo = currCombo;
-                }
+                    int lisLength = Math.Max(lisLengths[i], lisLengths[j] + 1);
 
-                int nextBeginIndex = i + 1;
-                if (nextBeginIndex < sequenceLength)
-                {
-                    ComputeMaxCombo(ref maxCombo,
-                                    currCombo,
-                                    currNumber,
-                                    sequence.Slice(nextBeginIndex));
+                    lisLengths[i] = lisLength;
+
+                    maxLISLength = Math.Max(maxLISLength, lisLength);
                 }
             }
         }
+        Console.Write(maxLISLength);
     }
 }
