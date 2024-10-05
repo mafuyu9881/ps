@@ -10,39 +10,36 @@ internal class Program
         int m = int.Parse(tokens[1]);
 
         StringBuilder output = new();
-        PrintNonduplicatedSequences(ref output, n, m, null, -1, 0);
+        int[] entireSequence = new int[m];
+        PrintNonduplicatedSequences(ref output, n, entireSequence, entireSequence, 0);
         Console.Write(output);
     }
 
     private static void PrintNonduplicatedSequences(ref StringBuilder output,
                                                       int maxNaturalNumber,
-                                                      int sequenceLength,
-                                                      int[]? sequence,
-                                                      int lastWrittenIndex,
+                                                      Span<int> entireSequence,
+                                                      Span<int> subSequence,
                                                       int lastUsedNaturalNumber)
     {
-        int writingIndex = lastWrittenIndex + 1;
-
         for (int i = lastUsedNaturalNumber + 1; i <= maxNaturalNumber; ++i)
         {
-            //if (lastWrittenIndex == -1)
-            if (sequence == null)
-                sequence = new int[sequenceLength];
+            subSequence[0] = i;
 
-            sequence[writingIndex] = i;
-
-            //if (writingIndex >= sequence.GetUpperBound(0))
-            if (writingIndex >= sequenceLength - 1)
+            if (subSequence.Length < 2)
             {
-                for (int j = 0; j < sequenceLength; ++j)
+                for (int j = 0; j < entireSequence.Length; ++j)
                 {
-                    output.Append($"{sequence[j]} ");
+                    output.Append($"{entireSequence[j]} ");
                 }
                 output.AppendLine();
             }
             else
             {
-                PrintNonduplicatedSequences(ref output, maxNaturalNumber, sequenceLength, sequence, writingIndex, i);
+                PrintNonduplicatedSequences(ref output,
+                                            maxNaturalNumber,
+                                            entireSequence,
+                                            subSequence.Slice(1),
+                                            i);
             }
         }
     }
