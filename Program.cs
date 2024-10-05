@@ -19,23 +19,29 @@ internal class Program
         Array.Sort(numbers);
 
         StringBuilder output = new();
+        bool[] occupiedIndices = new bool[n];
         int[] sequence = new int[m];
         PrintNonduplicatedSequences(ref output,
+                                    ref occupiedIndices,
                                     numbers,
                                     sequence,
-                                    sequence,
-                                    -1);
+                                    sequence);
         Console.Write(output);
     }
 
     private static void PrintNonduplicatedSequences(ref StringBuilder output,
+                                                    ref bool[] occupiedIndices,
                                                     Span<int> numbers,
                                                     Span<int> sequence,
-                                                    Span<int> subsequence,
-                                                    int lastReadNumberIndex)
+                                                    Span<int> subsequence)
     {
-        for (int i = lastReadNumberIndex + 1; i < numbers.Length; ++i)
+        for (int i = 0; i < numbers.Length; ++i)
         {
+            if (occupiedIndices[i])
+                continue;
+            
+            occupiedIndices[i] = true;
+
             subsequence[0] = numbers[i];
 
             if (subsequence.Length < 2)
@@ -48,8 +54,14 @@ internal class Program
             }
             else
             {
-                PrintNonduplicatedSequences(ref output, numbers, sequence, subsequence.Slice(1), i);
+                PrintNonduplicatedSequences(ref output,
+                                            ref occupiedIndices,
+                                            numbers,
+                                            sequence,
+                                            subsequence.Slice(1));
             }
+
+            occupiedIndices[i] = false;
         }
     }
 }
