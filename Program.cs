@@ -4,81 +4,134 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        
-        Graph graph = new(new LinkedList<int>[n + 1]);
-        for (int i = 0; i < n - 1; ++i)
+        string[] tokens = Console.ReadLine()!.Split();
+
+        int n = int.Parse(tokens[0]);
+        int m = int.Parse(tokens[1]);
+
+        tokens = Console.ReadLine()!.Split();
+
+        int[] numbers = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            string[] tokens = Console.ReadLine()!.Split();
-            
-            int node0 = int.Parse(tokens[0]);
-            int node1 = int.Parse(tokens[1]);
-
-            graph.Connect(node0, node1);
+            numbers[i] = int.Parse(tokens[i]);
         }
-
-        var parentNodes = graph.ComputeParentNodes(1);
+        MergeSort(numbers);
 
         StringBuilder output = new();
-        for (int i = 2; i <= n; ++i)
-        {
-            output.AppendLine($"{parentNodes[i]} ");
-        }
+        bool[] occupiedIndices = new bool[numbers.Length];
+        int[] sequence = new int[m];
+        PrintNonduplicatedSequences(ref output,
+                                    ref occupiedIndices,
+                                    numbers,
+                                    sequence,
+                                    sequence);
         Console.Write(output);
     }
+    /*
+    반례
 
-    private class Graph
+    4 4
+    1 1 2 2
+
+    4 4
+    1 1 1 2
+    */
+    private static void PrintNonduplicatedSequences(ref StringBuilder output,
+                                                    ref bool[] occupiedIndices,
+                                                    Span<int> numbers,
+                                                    Span<int> sequence,
+                                                    Span<int> subsequence)
     {
-        private LinkedList<int>[] _adjacencyList;
-
-        public Graph(LinkedList<int>[] adjacencyList)
+        for (int i = 0; i < numbers.Length; ++i)
         {
-            _adjacencyList = adjacencyList;
-            for (int i = 0; i < _adjacencyList.Length; ++i)
+            if (occupiedIndices[i])
+                continue;
+
+            // 중복 제거
+            int iNumber = numbers[i];
+            if (subsequence[0] == iNumber)
+                continue;
+
+            occupiedIndices[i] = true;
+
+            subsequence[0] = iNumber;
+
+            if (subsequence.Length < 2)
             {
-                _adjacencyList[i] = new();
-            }
-        }
-
-        // _adjacentcyList의 유효성, 중복 간선이 입력되지 않음이 전제됩니다.
-        public void Connect(int node0, int node1)
-        {
-            _adjacencyList[node0].AddLast(node1);
-            _adjacencyList[node1].AddLast(node0);
-        }
-
-        public int[] ComputeParentNodes(int superParentNode)
-        {
-            int adjacencyListLength = _adjacencyList.Length;
-
-            int[] parentNodes = new int[adjacencyListLength];
-
-            bool[] visitiedNodes = new bool[adjacencyListLength];
-            Queue<int> visitingQueue = new();
-
-            visitiedNodes[superParentNode] = true;
-            visitingQueue.Enqueue(superParentNode);
-
-            while (visitingQueue.Count > 0)
-            {
-                int parentNode = visitingQueue.Dequeue();
-
-                var adjacencies = _adjacencyList[parentNode];
-                for (var listNode = adjacencies.First; listNode != null; listNode = listNode.Next)
+                for (int j = 0; j < sequence.Length; ++j)
                 {
-                    int adjacentNode = listNode.Value;
-
-                    if (visitiedNodes[adjacentNode])
-                        continue;
-
-                    parentNodes[adjacentNode] = parentNode;
-
-                    visitiedNodes[adjacentNode] = true;
-                    visitingQueue.Enqueue(adjacentNode);
+                    output.Append($"{sequence[j]} ");
                 }
+                output.AppendLine();
             }
-            
-            return parentNodes;
+            else
+            {
+                PrintNonduplicatedSequences(ref output,
+                                            ref occupiedIndices,
+                                            numbers,
+                                            sequence,
+                                            subsequence.Slice(1));
+            }
+
+            occupiedIndices[i] = false;
+        }
+    }
+    
+
+    private static void MergeSort(Span<int> arr)
+    {
+        int arrLength = arr.Length;
+        if (arrLength < 2)
+            return;
+
+        int midIndex = arrLength / 2;
+
+        MergeSort(arr.Slice(0, midIndex));
+        MergeSort(arr.Slice(midIndex));
+        Merge(arr, midIndex);
+    }
+
+    private static void Merge(Span<int> arr, int midIndex)
+    {
+        int arrLength = arr.Length;
+        
+        int[] backedup = arr.ToArray();
+
+        int leftReadIndex = 0;
+        int rightReadIndex = midIndex;
+        int writtenIndex = 0;
+        
+        while (leftReadIndex < midIndex && rightReadIndex < arrLength)
+        {
+            int leftReadElement = backedup[leftReadIndex];
+            int rightReadElement = backedup[rightReadIndex];
+
+            if (leftReadElement < rightReadElement)
+            {
+                arr[writtenIndex] = leftReadElement;
+                ++leftReadIndex;
+            }
+            else
+            {
+                arr[writtenIndex] = rightReadElement;
+                ++rightReadIndex;
+            }
+            ++writtenIndex;
+        }
+
+        while (leftReadIndex < midIndex)
+        {
+            arr[writtenIndex] = backedup[leftReadIndex];
+            ++leftReadIndex;
+            ++writtenIndex;
+        }
+
+        while (rightReadIndex < arrLength)
+        {
+            arr[writtenIndex] = backedup[rightReadIndex];
+            ++rightReadIndex;
+            ++writtenIndex;
         }
     }
 }
