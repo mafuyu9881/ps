@@ -1,29 +1,58 @@
 ﻿// 시간 제한: 1초
-// 메모리 제한: 128MB
-// 1 <= (계단 수) <= 300
+// 메모리 제한: 256MB
+// 1 ≤ N ≤ 1,000
+// 1 ≤ (집합의 원소) ≤ 1,000
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        const int MaxTNOStairs = 301;
-
         int n = int.Parse(Console.ReadLine()!);
-        int[] scores = new int[MaxTNOStairs];
-        for (int i = 1; i <= n; ++i)
-        {
-            scores[i] = int.Parse(Console.ReadLine()!);
-        }
+        
+        string[] tokens = Console.ReadLine()!.Split();
 
-        int[] accumulatedScores = new int[MaxTNOStairs];
-        accumulatedScores[0] = 0;
-        accumulatedScores[1] = scores[1];
-        accumulatedScores[2] = scores[1] + scores[2];
-        for (int i = 3; i <= n; ++i)
+        int[] sequence = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            accumulatedScores[i] = Math.Max(accumulatedScores[i - 2] + scores[i],
-                                            accumulatedScores[i - 3] + scores[i - 1] + scores[i]);
+            sequence[i] = int.Parse(tokens[i]);
         }
-        Console.Write(accumulatedScores[n]);
+        
+        int maxCombo = 1;
+        ComputeMaxCombo(ref maxCombo,
+                        0,
+                        null,
+                        sequence);
+        Console.Write(maxCombo);
+    }
+
+    private static void ComputeMaxCombo(ref int maxCombo,
+                                        int prevCombo,
+                                        int? prevNumber,
+                                        Span<int> sequence)
+    {
+        int sequenceLength = sequence.Length;
+
+        for (int i = 0; i < sequenceLength; ++i)
+        {
+            int currNumber = sequence[i];
+            if (prevNumber == null || currNumber > prevNumber)
+            {
+                int currCombo = prevCombo + 1;
+
+                if (currCombo > maxCombo)
+                {
+                    maxCombo = currCombo;
+                }
+
+                int nextBeginIndex = i + 1;
+                if (nextBeginIndex < sequenceLength)
+                {
+                    ComputeMaxCombo(ref maxCombo,
+                                    currCombo,
+                                    currNumber,
+                                    sequence.Slice(nextBeginIndex));
+                }
+            }
+        }
     }
 }
