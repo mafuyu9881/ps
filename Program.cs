@@ -1,67 +1,29 @@
-﻿using System.Text;
+﻿// 시간 제한: 1초
+// 메모리 제한: 128MB
+// 1 <= (계단 수) <= 300
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        string[] tokens = Console.ReadLine()!.Split();
+        const int MaxTNOStairs = 301;
 
-        int n = int.Parse(tokens[0]);
-        int m = int.Parse(tokens[1]);
-
-        tokens = Console.ReadLine()!.Split();
-        
-        int[] numbers = new int[n];
-        for (int i = 0; i < n; ++i)
+        int n = int.Parse(Console.ReadLine()!);
+        int[] scores = new int[MaxTNOStairs];
+        for (int i = 1; i <= n; ++i)
         {
-            numbers[i] = int.Parse(tokens[i]);
+            scores[i] = int.Parse(Console.ReadLine()!);
         }
-        Array.Sort(numbers);
 
-        StringBuilder output = new();
-        bool[] occupiedIndices = new bool[n];
-        int[] sequence = new int[m];
-        PrintNonduplicatedSequences(ref output,
-                                    ref occupiedIndices,
-                                    numbers,
-                                    sequence,
-                                    sequence);
-        Console.Write(output);
-    }
-
-    private static void PrintNonduplicatedSequences(ref StringBuilder output,
-                                                    ref bool[] occupiedIndices,
-                                                    Span<int> numbers,
-                                                    Span<int> sequence,
-                                                    Span<int> subsequence)
-    {
-        for (int i = 0; i < numbers.Length; ++i)
+        int[] accumulatedScores = new int[MaxTNOStairs];
+        accumulatedScores[0] = 0;
+        accumulatedScores[1] = scores[1];
+        accumulatedScores[2] = scores[1] + scores[2];
+        for (int i = 3; i <= n; ++i)
         {
-            if (occupiedIndices[i])
-                continue;
-            
-            occupiedIndices[i] = true;
-
-            subsequence[0] = numbers[i];
-
-            if (subsequence.Length < 2)
-            {
-                for (int j = 0; j < sequence.Length; ++j)
-                {
-                    output.Append($"{sequence[j]} ");
-                }
-                output.AppendLine();
-            }
-            else
-            {
-                PrintNonduplicatedSequences(ref output,
-                                            ref occupiedIndices,
-                                            numbers,
-                                            sequence,
-                                            subsequence.Slice(1));
-            }
-
-            occupiedIndices[i] = false;
+            accumulatedScores[i] = Math.Max(accumulatedScores[i - 2] + scores[i],
+                                            accumulatedScores[i - 3] + scores[i - 1] + scores[i]);
         }
+        Console.Write(accumulatedScores[n]);
     }
 }
