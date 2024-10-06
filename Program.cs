@@ -1,41 +1,60 @@
-﻿internal class Program
+﻿// 시간 제한: 2초
+// 메모리 제한: 128MB
+// 1 ≤ n ≤ 500
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int temp = ExponentiationBySquaringIteratively(3, 4);
-    }
-    
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
-    {
-        int output = 1;
-        while (exponent > 0)
+        int n = int.Parse(Console.ReadLine()!);
+
+        const int NumberMin = 0;
+        
+        Func<int, bool> IsValidIndex = (index) =>
         {
-            if ((exponent & 1) == 1)
+            return index > -1 && index < n;
+        };
+
+        int[,] triangle = new int[n, n];
+        for (int i = 0; i < n; ++i)
+        {
+            int[] numbers = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int j = 0; j < numbers.Length; ++j)
             {
-                output *= basis;
+                triangle[i, j] = numbers[j];
             }
-
-            basis *= basis;
-
-            exponent >>= 1;
         }
-        return output;
-    }
-    
-    private static int ExponentiationBySquaringRecursively(int basis, int exponent)
-    {
-        if (exponent < 1)
-            return 1;
 
-        int halfBasis = ExponentiationBySquaringRecursively(basis, exponent / 2);
-
-        if ((exponent & 1) == 1)
+        int[,] dp = new int[n, n];
+        dp[0, 0] = triangle[0, 0];
+        int maxSum = dp[0, 0];
+        for (int row = 1; row < n; ++row)
         {
-            return basis * halfBasis * halfBasis;
+            int prevRow = row - 1;
+            for (int col = 0; col < n; ++col)
+            {
+                int leftCol = col - 1;
+                int leftNumber = NumberMin;
+                if (IsValidIndex(leftCol))
+                {
+                    leftNumber = dp[prevRow, leftCol];
+                }
+
+                int rightCol = col;
+                int rightNumber = NumberMin;
+                if (IsValidIndex(rightCol))
+                {
+                    rightNumber = dp[prevRow, rightCol];
+                }
+
+                int sum = Math.Max(leftNumber, rightNumber) + triangle[row, col];
+
+                if ((row == n - 1) && (sum > maxSum))
+                    maxSum = sum;
+
+                dp[row, col] = sum;
+            }
         }
-        else
-        {
-            return halfBasis * halfBasis;
-        }
+        Console.Write(maxSum);
     }
 }
