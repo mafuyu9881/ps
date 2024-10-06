@@ -1,60 +1,124 @@
-﻿// 시간 제한: 2초
-// 메모리 제한: 128MB
-// 1 ≤ n ≤ 500
+﻿using System.Text;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
+        const int InvalidData = -1;
+        
         int n = int.Parse(Console.ReadLine()!);
 
-        const int NumberMin = 0;
-        
-        Func<int, bool> IsValidIndex = (index) =>
-        {
-            return index > -1 && index < n;
-        };
-
-        int[,] triangle = new int[n, n];
+        Graph graph = new();
         for (int i = 0; i < n; ++i)
         {
-            int[] numbers = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int j = 0; j < numbers.Length; ++j)
+            char[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), char.Parse);
+            
+            int parent = tokens[0] - 'A';
+            int leftChild = tokens[1] - 'A';
+            int rightChild = tokens[2] - 'A';
+
+            if (parent > InvalidData)
             {
-                triangle[i, j] = numbers[j];
+                if (leftChild > InvalidData)
+                {
+                    graph.AddLeft(parent, leftChild);
+                }
+
+                if (rightChild > InvalidData)
+                {
+                    graph.AddRight(parent, rightChild);
+                }
             }
         }
 
-        int[,] dp = new int[n, n];
-        dp[0, 0] = triangle[0, 0];
-        int maxSum = dp[0, 0];
-        for (int row = 1; row < n; ++row)
+        StringBuilder output = new();
+        output.AppendLine($"{graph.Order(Graph.TraversalMethod.Preorder)}");
+        output.AppendLine($"{graph.Order(Graph.TraversalMethod.Inorder)}");
+        output.AppendLine($"{graph.Order(Graph.TraversalMethod.Postorder)}");
+        Console.Write(output);
+    }
+
+    private class Graph
+    {
+        public enum TraversalMethod
         {
-            int prevRow = row - 1;
-            for (int col = 0; col < n; ++col)
+            Preorder,
+            Inorder,
+            Postorder,
+        }
+
+        private struct Node
+        {
+            private int? _leftChild = null;
+            public int? LeftChild
             {
-                int leftCol = col - 1;
-                int leftNumber = NumberMin;
-                if (IsValidIndex(leftCol))
-                {
-                    leftNumber = dp[prevRow, leftCol];
-                }
+                get { return _leftChild; }
+                set { _leftChild = value; }
+            }
+            private int? _rightChild = null;
+            public int? RightChild
+            {
+                get { return _rightChild; }
+                set { _rightChild = value; }
+            }
 
-                int rightCol = col;
-                int rightNumber = NumberMin;
-                if (IsValidIndex(rightCol))
-                {
-                    rightNumber = dp[prevRow, rightCol];
-                }
+            public Node()
+            {
 
-                int sum = Math.Max(leftNumber, rightNumber) + triangle[row, col];
-
-                if ((row == n - 1) && (sum > maxSum))
-                    maxSum = sum;
-
-                dp[row, col] = sum;
             }
         }
-        Console.Write(maxSum);
+
+        Node[] nodes;
+
+        public Graph()
+        {
+            nodes = new Node['Z' - 'A' + 1];
+        }
+
+        public void AddLeft(int parent, int child)
+        {
+            nodes[parent].LeftChild = child;
+        }
+
+        public void AddRight(int parent, int child)
+        {
+            nodes[parent].RightChild = child;
+        }
+
+        public StringBuilder Order(TraversalMethod traversalMethod)
+        {
+            StringBuilder output = new();
+            OrderImplementation(output, 0, traversalMethod);
+            return output;
+        }
+
+        private void OrderImplementation(StringBuilder output,
+                                         int parent,
+                                         TraversalMethod traversalMethod)
+        {
+            var parentNode = nodes[parent];
+            var leftChildNode = parentNode.LeftChild;
+            var rightChildNode = parentNode.RightChild;
+
+            Action print = () =>
+            {
+                output.Append((char)(parent + 'A'));
+            };
+
+            if (traversalMethod == TraversalMethod.Preorder)
+                print();
+
+            if (leftChildNode.HasValue)
+                OrderImplementation(output, leftChildNode.Value, traversalMethod);
+
+            if (traversalMethod == TraversalMethod.Inorder)
+                print();
+
+            if (rightChildNode.HasValue)
+                OrderImplementation(output, rightChildNode.Value, traversalMethod);
+
+            if (traversalMethod == TraversalMethod.Postorder)
+                print();
+        }
     }
 }
