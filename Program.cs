@@ -1,35 +1,41 @@
-﻿using System.Numerics;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        string[] tokens = Console.ReadLine()!.Split();
-
-        BigInteger a = BigInteger.Parse(tokens[0]);
-        int b = int.Parse(tokens[1]);
-        int c = int.Parse(tokens[2]);
-
-        // exponentiation by squaring
-        BigInteger output = 1;
-        while (b > 0)
+        int temp = ExponentationBySquareIteratively(3, 4);
+    }
+    
+    private static int ExponentationBySquareIteratively(int basis, int exponent)
+    {
+        int output = 1;
+        while (exponent > 0)
         {
-            // 짝수의 경우, 마지막 비트는 항상 0이다.
-            // 홀수의 경우, 마지막 비트는 항상 1이다.
-            if ((b & 1) == 1)
+            if ((exponent & 1) == 1)
             {
-                // 지수가 홀수일 때 남은 1을 처리하기 위한 것이다.
-                output *= a;
-                output %= c;
+                output *= basis;
             }
 
-            // 밑을 제곱, 지수를 반으로 줄이기 위한 과정이다.
-            a *= a;
-            a %= c;
+            basis *= basis;
 
-            // 위의 계산에 의거하여 지수를 반으로 줄인다.
-            b >>= 1;
+            exponent >>= 1;
         }
-        Console.Write(output);
+        return output;
+    }
+    
+    private static int ExponentationBySquareRecursively(int basis, int exponent)
+    {
+        if (exponent < 1)
+            return 1;
+
+        int halfBasis = ExponentationBySquareRecursively(basis, exponent / 2);
+
+        if ((exponent & 1) == 1)
+        {
+            return basis * halfBasis * halfBasis;
+        }
+        else
+        {
+            return halfBasis * halfBasis;
+        }
     }
 }
