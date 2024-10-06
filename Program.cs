@@ -28,22 +28,17 @@ internal class Program
                                     sequence);
         Console.Write(output);
     }
-    /*
-    반례
-
-    4 4
-    1 1 2 2
-
-    4 4
-    1 1 1 2
-    */
+    
     private static void PrintNonduplicatedSequences(ref StringBuilder output,
                                                     ref bool[] occupiedIndices,
                                                     Span<int> numbers,
                                                     Span<int> sequence,
                                                     Span<int> subsequence)
     {
-        for (int i = 0; i < numbers.Length; ++i)
+        int numbersLength = numbers.Length;
+        int subsequenceLength = subsequence.Length;
+
+        for (int i = 0; i < numbersLength; ++i)
         {
             if (occupiedIndices[i])
                 continue;
@@ -53,11 +48,13 @@ internal class Program
             if (subsequence[0] == iNumber)
                 continue;
 
+            subsequence.Clear();
+
             occupiedIndices[i] = true;
 
             subsequence[0] = iNumber;
 
-            if (subsequence.Length < 2)
+            if (subsequenceLength < 2)
             {
                 for (int j = 0; j < sequence.Length; ++j)
                 {
