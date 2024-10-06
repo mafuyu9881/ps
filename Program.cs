@@ -2,10 +2,10 @@
 {
     private static void Main(string[] args)
     {
-        int temp = ExponentiationBySquareIteratively(3, 4);
+        int temp = ExponentiationBySquaringIteratively(3, 4);
     }
     
-    private static int ExponentiationBySquareIteratively(int basis, int exponent)
+    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
     {
         int output = 1;
         while (exponent > 0)
@@ -22,12 +22,12 @@
         return output;
     }
     
-    private static int ExponentiationBySquareRecursively(int basis, int exponent)
+    private static int ExponentiationBySquaringRecursively(int basis, int exponent)
     {
         if (exponent < 1)
             return 1;
 
-        int halfBasis = ExponentiationBySquareRecursively(basis, exponent / 2);
+        int halfBasis = ExponentiationBySquaringRecursively(basis, exponent / 2);
 
         if ((exponent & 1) == 1)
         {
