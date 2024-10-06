@@ -1,148 +1,64 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        //int[] arr = [ 4, 1, 3, 5, 2 ];
-        int[] arr = [ 2, 3, 5, 8, 1, 4, 7, 6 ];
+        int n = int.Parse(Console.ReadLine()!);
 
-        MergeSort(arr);
+        int[,] housePaintingCosts = new int[n, 3];
+        for (int i = 0; i < n; ++i)
+        {
+            string[] tokens = Console.ReadLine()!.Split();
 
-        StringBuilder output = new();
-        for (int i = 0; i < arr.Length; ++i)
-        {
-            output.Append($"{arr[i]} ");
+            housePaintingCosts[i, 0] = int.Parse(tokens[0]);
+            housePaintingCosts[i, 1] = int.Parse(tokens[1]);
+            housePaintingCosts[i, 2] = int.Parse(tokens[2]);
         }
-        Console.Write(output);
-    }
-    
-    private static void BubbleSort(int[] arr)
-    {
-        for (int i = 0; i < arr.Length - 1; ++i)
-        {
-            for (int j = 0; j < arr.Length - 1 - i; ++j)
-            {
-                if (arr[j] > arr[j + 1])
-                {
-                    int temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                }
-            }
-        }
+
+        int? minPaintingCosts = null;
+        ComputeMinPaintingCosts(ref minPaintingCosts,
+                                housePaintingCosts,
+                                0,
+                                -1,
+                                -1,
+                                n);
+        Console.Write(minPaintingCosts);
     }
 
-    private static void SelectionSort(int[] arr)
+    private static void ComputeMinPaintingCosts(ref int? minPaintingCosts,
+                                               int[,] housePaintingCosts,
+                                               int prevAccPaintingCosts,
+                                               int prevHouseIndex,
+                                               int prevColorIndex,
+                                               int n)
     {
-        for (int i = 0; i < arr.Length - 1; ++i)
+        int currHouseIndex = prevHouseIndex + 1;
+        
+        for (int i = 0; i < 3; ++i)
         {
-            int selectedIndex = i;
-            for (int j = i; j < arr.Length; ++j)
-            {
-                if (arr[j] < arr[selectedIndex])
-                {
-                    selectedIndex = j;
-                }
-            }
-            int temp = arr[i];
-            arr[i] = arr[selectedIndex];
-            arr[selectedIndex] = temp;
-        }
-    }
+            if (i == prevColorIndex)
+                continue;
+            
+            int paintingCost = housePaintingCosts[currHouseIndex, i];
 
-    private static void InsertionSort1(int[] arr)
-    {
-        for (int i = 1; i < arr.Length; ++i)
-        {
-            for (int j = i; j > 0; --j)
+            int currAccPaintingCosts = prevAccPaintingCosts + paintingCost;
+
+            if (minPaintingCosts.HasValue == false ||
+                currAccPaintingCosts < minPaintingCosts)
             {
-                if (arr[j] < arr[j - 1])
+                if (currHouseIndex < (n - 1))
                 {
-                    int temp = arr[j];
-                    arr[j] = arr[j - 1];
-                    arr[j - 1] = temp;
+                    ComputeMinPaintingCosts(ref minPaintingCosts,
+                                            housePaintingCosts,
+                                            currAccPaintingCosts,
+                                            currHouseIndex,
+                                            i,
+                                            n);
                 }
                 else
                 {
-                    break;
+                    minPaintingCosts = currAccPaintingCosts;
                 }
             }
-        }
-    }
-
-    private static void InsertionSort2(int[] arr)
-    {
-        for (int i = 1; i < arr.Length; ++i)
-        {
-            int objectiveElement = arr[i];
-            int objectiveIndex = i;
-            for (int j = i - 1; j >= 0; --j)
-            {
-                if (arr[j] > objectiveElement)
-                {
-                    arr[j + 1] = arr[j];
-                    objectiveIndex = j;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            arr[objectiveIndex] = objectiveElement;
-        }
-    }
-
-    private static void MergeSort(Span<int> arr)
-    {
-        int arrLength = arr.Length;
-        if (arrLength < 2)
-            return;
-
-        int midIndex = arrLength / 2;
-        
-        MergeSort(arr.Slice(0, midIndex));
-        MergeSort(arr.Slice(midIndex));
-        Merge(arr, midIndex);
-    }
-
-    private static void Merge(Span<int> arr, int midIndex)
-    {
-        int arrLength = arr.Length;
-        
-        int[] backedup = arr.ToArray();
-
-        int leftReadIndex = 0;
-        int rightReadIndex = midIndex;
-        int writtenIndex = 0;
-
-        while (leftReadIndex < midIndex && rightReadIndex < arrLength)
-        {
-            if (backedup[leftReadIndex] < backedup[rightReadIndex])
-            {
-                arr[writtenIndex] = backedup[leftReadIndex];
-                ++leftReadIndex;
-            }
-            else
-            {
-                arr[writtenIndex] = backedup[rightReadIndex];
-                ++rightReadIndex;
-            }
-            ++writtenIndex;
-        }
-
-        while (leftReadIndex < midIndex)
-        {
-            arr[writtenIndex] = backedup[leftReadIndex];
-            ++leftReadIndex;
-            ++writtenIndex;
-        }
-
-        while (rightReadIndex < arrLength)
-        {
-            arr[writtenIndex] = backedup[rightReadIndex];
-            ++rightReadIndex;
-            ++writtenIndex;
         }
     }
 }
