@@ -4,61 +4,30 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int[,] housePaintingCosts = new int[n, 3];
-        for (int i = 0; i < n; ++i)
+        PaintingCost[] accPaintingCosts = new PaintingCost[n + 1];
+        accPaintingCosts[0].r = 0;
+        accPaintingCosts[0].g = 0;
+        accPaintingCosts[0].b = 0;
+        for (int i = 1; i <= n; ++i)
         {
             string[] tokens = Console.ReadLine()!.Split();
 
-            housePaintingCosts[i, 0] = int.Parse(tokens[0]);
-            housePaintingCosts[i, 1] = int.Parse(tokens[1]);
-            housePaintingCosts[i, 2] = int.Parse(tokens[2]);
-        }
+            PaintingCost prevAccPaintingCost = accPaintingCosts[i - 1];
+            
+            PaintingCost currPaintingCost;
+            currPaintingCost.r = Math.Min(prevAccPaintingCost.g, prevAccPaintingCost.b) + int.Parse(tokens[0]);
+            currPaintingCost.g = Math.Min(prevAccPaintingCost.r, prevAccPaintingCost.b) + int.Parse(tokens[1]);
+            currPaintingCost.b = Math.Min(prevAccPaintingCost.r, prevAccPaintingCost.g) + int.Parse(tokens[2]);
 
-        int? minPaintingCosts = null;
-        ComputeMinPaintingCosts(ref minPaintingCosts,
-                                housePaintingCosts,
-                                0,
-                                -1,
-                                -1,
-                                n);
-        Console.Write(minPaintingCosts);
+            accPaintingCosts[i] = currPaintingCost;
+        }
+        Console.Write(Math.Min(accPaintingCosts[n].r, Math.Min(accPaintingCosts[n].g, accPaintingCosts[n].b)));
     }
 
-    private static void ComputeMinPaintingCosts(ref int? minPaintingCosts,
-                                               int[,] housePaintingCosts,
-                                               int prevAccPaintingCosts,
-                                               int prevHouseIndex,
-                                               int prevColorIndex,
-                                               int n)
+    private struct PaintingCost
     {
-        int currHouseIndex = prevHouseIndex + 1;
-        
-        for (int i = 0; i < 3; ++i)
-        {
-            if (i == prevColorIndex)
-                continue;
-            
-            int paintingCost = housePaintingCosts[currHouseIndex, i];
-
-            int currAccPaintingCosts = prevAccPaintingCosts + paintingCost;
-
-            if (minPaintingCosts.HasValue == false ||
-                currAccPaintingCosts < minPaintingCosts)
-            {
-                if (currHouseIndex < (n - 1))
-                {
-                    ComputeMinPaintingCosts(ref minPaintingCosts,
-                                            housePaintingCosts,
-                                            currAccPaintingCosts,
-                                            currHouseIndex,
-                                            i,
-                                            n);
-                }
-                else
-                {
-                    minPaintingCosts = currAccPaintingCosts;
-                }
-            }
-        }
+        public int r;
+        public int g;
+        public int b;
     }
 }
