@@ -1,60 +1,44 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Text;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
+        int t = int.Parse(Console.ReadLine()!);
+        
         StringBuilder output = new();
-        output.AppendLine("(3 ^ 1) ^ (5)");
-        output.AppendLine("= (3 ^ 1) ^ (4 + 1)");
-        output.AppendLine("= (3 ^ 1) ^ (4) * (3 ^ 1)");
-        output.AppendLine("= (3 ^ 1) ^ (4 / 2 * 2) * (3 ^ 1)");
-        output.AppendLine("= (3 ^ 2) ^ (2) * (3 ^ 1)");
-        output.AppendLine("= (3 ^ 2) ^ (2 / 2 * 2) * (3 ^ 1)");
-        output.AppendLine("= (3 ^ 4) ^ (1) * (3 ^ 1)");
-        output.AppendLine("= (3 ^ 4) ^ (0 + 1) * (3 ^ 1)");
-        output.AppendLine("= (3 ^ 4) ^ (0) * (3 ^ 4) * (3 ^ 1)");
-        output.AppendLine("= (3 ^ 4) * (3 ^ 1)");
-        output.Replace("0", "000");
-        output.Replace("1", "001");
-        output.Replace("2", "010");
-        output.Replace("3", "011");
-        output.Replace("4", "100");
-        output.Replace("5", "101");
-        Console.Write(output);
-    }
-    
-    private static int ExponentiationBySquaringRecursively(int basis, int exponent)
-    {
-        if (exponent < 1)
-            return 1;
-
-        int sqrtBasis = ExponentiationBySquaringRecursively(basis, exponent / 2);
-
-        if ((exponent & 1) == 1)
+        for (int i = 0; i < t; ++i)
         {
-            return sqrtBasis * sqrtBasis * basis;
-        }
-        else
-        {
-            return sqrtBasis * sqrtBasis;
-        }
-    }
+            int n = int.Parse(Console.ReadLine()!);
 
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
-    {
-        int output = 1;
-        while (exponent > 0)
-        {
-            if ((exponent & 1) == 1)
+            int[,] stickers = new int[4, n + 2];
+            for (int j = 1; j <= 2; ++j)
             {
-                output *= basis;
+                int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+                for (int k = 0; k < n; ++k)
+                {
+                    stickers[j, k + 1] = tokens[k];
+                }
             }
 
-            basis *= basis;
+            int[,] dp = new int[4, n + 2];
+            dp[1, 1] = stickers[1, 1];
+            dp[2, 1] = stickers[2, 1];
+            int maxScore = Math.Max(dp[1, 1], dp[2, 1]);
+            for (int j = 2; j <= n; ++j)
+            {
+                int row1DP = Math.Max(dp[2, j - 1], dp[2, j - 2]) + stickers[1, j];
+                int row2DP = Math.Max(dp[1, j - 1], dp[1, j - 2]) + stickers[2, j];
 
-            exponent >>= 1;
+                maxScore = Math.Max(row1DP, row2DP);
+
+                dp[1, j] = row1DP;
+                dp[2, j] = row2DP;
+            }
+            output.AppendLine($"{maxScore}");
         }
-        return output;
+        Console.Write(output);
     }
 }
