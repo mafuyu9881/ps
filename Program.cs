@@ -1,9 +1,27 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine(ExponentiationBySquaringRecursively(3, 3));
-        Console.WriteLine(ExponentiationBySquaringIteratively(4, 1));
+        StringBuilder output = new();
+        output.AppendLine("(3 ^ 1) ^ (5)");
+        output.AppendLine("= (3 ^ 1) ^ (4 + 1)");
+        output.AppendLine("= (3 ^ 1) ^ (4) * (3 ^ 1)");
+        output.AppendLine("= (3 ^ 1) ^ (4 / 2 * 2) * (3 ^ 1)");
+        output.AppendLine("= (3 ^ 2) ^ (2) * (3 ^ 1)");
+        output.AppendLine("= (3 ^ 2) ^ (2 / 2 * 2) * (3 ^ 1)");
+        output.AppendLine("= (3 ^ 4) ^ (1) * (3 ^ 1)");
+        output.AppendLine("= (3 ^ 4) ^ (0 + 1) * (3 ^ 1)");
+        output.AppendLine("= (3 ^ 4) ^ (0) * (3 ^ 4) * (3 ^ 1)");
+        output.AppendLine("= (3 ^ 4) * (3 ^ 1)");
+        output.Replace("0", "000");
+        output.Replace("1", "001");
+        output.Replace("2", "010");
+        output.Replace("3", "011");
+        output.Replace("4", "100");
+        output.Replace("5", "101");
+        Console.Write(output);
     }
     
     private static int ExponentiationBySquaringRecursively(int basis, int exponent)
