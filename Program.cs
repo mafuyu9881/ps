@@ -1,44 +1,100 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int m = 4;
+        int n = 3;
         
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
+        Index2D[] puddles = [ new(2, 2) ];
+
+        const int GroundAttribute = 0;
+        const int PuddleAttribute = 1;
+        const int SchoolAttribute = 2;
+
+        int[,] map = new int[n, m];
+        for (int i = 0; i < puddles.Length; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!);
+            Index2D puddleIndex2D = puddles[i];
 
-            int[,] stickers = new int[4, n + 2];
-            for (int j = 1; j <= 2; ++j)
-            {
-                int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-                for (int k = 0; k < n; ++k)
-                {
-                    stickers[j, k + 1] = tokens[k];
-                }
-            }
-
-            int[,] dp = new int[4, n + 2];
-            dp[1, 1] = stickers[1, 1];
-            dp[2, 1] = stickers[2, 1];
-            int maxScore = Math.Max(dp[1, 1], dp[2, 1]);
-            for (int j = 2; j <= n; ++j)
-            {
-                int row1DP = Math.Max(dp[2, j - 1], dp[2, j - 2]) + stickers[1, j];
-                int row2DP = Math.Max(dp[1, j - 1], dp[1, j - 2]) + stickers[2, j];
-
-                maxScore = Math.Max(row1DP, row2DP);
-
-                dp[1, j] = row1DP;
-                dp[2, j] = row2DP;
-            }
-            output.AppendLine($"{maxScore}");
+            map[puddleIndex2D.row, puddleIndex2D.col] = PuddleAttribute;
         }
-        Console.Write(output);
+        map[n - 1, m - 1] = SchoolAttribute;
+
+        int pathsCount = 0;
+        bool[,] visited = new bool[n, m];
+        ComputePathsCount(ref pathsCount,
+                          map,
+                          visited,
+                          m,
+                          n,
+                          new Index2D(0, 0),
+                          PuddleAttribute,
+                          SchoolAttribute);
+        Console.Write(pathsCount);
+    }
+
+    private static void ComputePathsCount(ref int pathsCount,
+                                          int[,] map,
+                                          bool[,] visited,
+                                          int width,
+                                          int height,
+                                          Index2D srcIndex2D,
+                                          int puddleAttribute,
+                                          int schoolAttribute)
+    {
+        Index2D[] candidateIndices2D = new Index2D[]
+        {
+            new Index2D(srcIndex2D.row + 1, srcIndex2D.col),
+            new Index2D(srcIndex2D.row, srcIndex2D.col + 1),
+        };
+
+        for (int i = 0; i < candidateIndices2D.Length; ++i)
+        {
+            Index2D candidateIndex2D = candidateIndices2D[i];
+            int candidateRow = candidateIndex2D.row;
+            int candidateCol = candidateIndex2D.col;
+
+            if (candidateRow > height - 1 || candidateCol > width - 1)
+                continue;
+
+            if (visited[candidateRow, candidateCol])
+                continue;
+
+            int candidateAttribute = map[candidateRow, candidateCol];
+            if (candidateAttribute == puddleAttribute)
+                continue;
+
+            visited[candidateRow, candidateCol] = true;
+
+            if (candidateAttribute == schoolAttribute)
+            {
+                ++pathsCount;
+            }
+            else
+            {
+                ComputePathsCount(ref pathsCount,
+                                  map,
+                                  visited,
+                                  width,
+                                  height,
+                                  candidateIndex2D,
+                                  puddleAttribute,
+                                  schoolAttribute);
+            }
+
+            visited[candidateRow, candidateCol] = false;
+        }
+    }
+
+    public struct Index2D
+    {
+        public int row;
+        public int col;
+
+        public Index2D(int row, int col)
+        {
+            this.row = row;
+            this.col = col;
+        }
     }
 }
