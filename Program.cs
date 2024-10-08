@@ -1,100 +1,139 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int m = 4;
-        int n = 3;
-        
-        Index2D[] puddles = [ new(2, 2) ];
+        int[] arr = [3, 2, 5, 1, 4];
 
-        const int GroundAttribute = 0;
-        const int PuddleAttribute = 1;
-        const int SchoolAttribute = 2;
+        MergeSort(arr);
 
-        int[,] map = new int[n, m];
-        for (int i = 0; i < puddles.Length; ++i)
+        StringBuilder output = new();        
+        for (int i = 0; i < arr.Length; ++i)
         {
-            Index2D puddleIndex2D = puddles[i];
-
-            map[puddleIndex2D.row, puddleIndex2D.col] = PuddleAttribute;
+            output.Append($"{arr[i]} ");
         }
-        map[n - 1, m - 1] = SchoolAttribute;
-
-        int pathsCount = 0;
-        bool[,] visited = new bool[n, m];
-        ComputePathsCount(ref pathsCount,
-                          map,
-                          visited,
-                          m,
-                          n,
-                          new Index2D(0, 0),
-                          PuddleAttribute,
-                          SchoolAttribute);
-        Console.Write(pathsCount);
+        Console.Write(output);
     }
 
-    private static void ComputePathsCount(ref int pathsCount,
-                                          int[,] map,
-                                          bool[,] visited,
-                                          int width,
-                                          int height,
-                                          Index2D srcIndex2D,
-                                          int puddleAttribute,
-                                          int schoolAttribute)
+    private static void MergeSort(Span<int> arr)
     {
-        Index2D[] candidateIndices2D = new Index2D[]
+        int arrLength = arr.Length;
+        if (arrLength < 2)
+            return;
+
+        int midIndex = arrLength / 2;
+
+        MergeSort(arr.Slice(0, midIndex));
+        MergeSort(arr.Slice(midIndex));
+        Merge(arr, midIndex);
+    }
+
+    private static void Merge(Span<int> arr, int midIndex)
+    {
+        int arrLength = arr.Length;
+
+        int[] backedup = arr.ToArray();
+
+        int leftReadIndex = 0;
+        int rightReadIndex = midIndex;
+        int writtenIndex = 0;
+
+        while (leftReadIndex < midIndex && rightReadIndex < arrLength)
         {
-            new Index2D(srcIndex2D.row + 1, srcIndex2D.col),
-            new Index2D(srcIndex2D.row, srcIndex2D.col + 1),
-        };
-
-        for (int i = 0; i < candidateIndices2D.Length; ++i)
-        {
-            Index2D candidateIndex2D = candidateIndices2D[i];
-            int candidateRow = candidateIndex2D.row;
-            int candidateCol = candidateIndex2D.col;
-
-            if (candidateRow > height - 1 || candidateCol > width - 1)
-                continue;
-
-            if (visited[candidateRow, candidateCol])
-                continue;
-
-            int candidateAttribute = map[candidateRow, candidateCol];
-            if (candidateAttribute == puddleAttribute)
-                continue;
-
-            visited[candidateRow, candidateCol] = true;
-
-            if (candidateAttribute == schoolAttribute)
+            if (backedup[leftReadIndex] < backedup[rightReadIndex])
             {
-                ++pathsCount;
+                arr[writtenIndex] = backedup[leftReadIndex];
+                ++leftReadIndex;
             }
             else
             {
-                ComputePathsCount(ref pathsCount,
-                                  map,
-                                  visited,
-                                  width,
-                                  height,
-                                  candidateIndex2D,
-                                  puddleAttribute,
-                                  schoolAttribute);
+                arr[writtenIndex] = backedup[rightReadIndex];
+                ++rightReadIndex;
             }
+            ++writtenIndex;
+        }
 
-            visited[candidateRow, candidateCol] = false;
+        while (leftReadIndex < midIndex)
+        {
+            arr[writtenIndex] = backedup[leftReadIndex];
+            ++leftReadIndex;
+            ++writtenIndex;
+        }
+
+        while (rightReadIndex < arrLength)
+        {
+            arr[writtenIndex] = backedup[rightReadIndex];
+            ++rightReadIndex;
+            ++writtenIndex;
         }
     }
 
-    public struct Index2D
+    private static void InsertionSort2(int[] arr)
     {
-        public int row;
-        public int col;
-
-        public Index2D(int row, int col)
+        for (int i = 1; i < arr.Length; ++i)
         {
-            this.row = row;
-            this.col = col;
+            int objectiveIndex = i;
+            int objectiveElement = arr[objectiveIndex];
+            for (int j = i - 1; j >= 0; --j)
+            {
+                if (objectiveElement < arr[j])
+                {
+                    arr[j + 1] = arr[j];
+                    objectiveIndex = j;
+                }
+            }
+            arr[objectiveIndex] = objectiveElement;
+        }
+    }
+
+    private static void InsertionSort1(int[] arr)
+    {
+        for (int i = 1; i < arr.Length; ++i)
+        {
+            for (int j = i; j > 0; --j)
+            {
+                if (arr[j] < arr[j - 1])
+                {
+                    int temp = arr[j];
+                    arr[j] = arr[j - 1];
+                    arr[j - 1] = temp;
+                }
+            }
+        }
+    }
+
+    private static void SelectionSort(int[] arr)
+    {
+        for (int i = 0; i < arr.Length - 1; ++i)
+        {
+            int selectedIndex = i;
+            for (int j = i + 1; j < arr.Length; ++j)
+            {
+                if (arr[j] < arr[selectedIndex])
+                {
+                    selectedIndex = j;
+                }
+            }
+            int temp = arr[i];
+            arr[i] = arr[selectedIndex];
+            arr[selectedIndex] = temp;
+        }
+    }
+
+    private static void BubbleSort(int[] arr)
+    {
+        for (int i = 0; i < arr.Length - 1; ++i)
+        {
+            for (int j = 0; j < arr.Length - 1 - i; ++j)
+            {
+                if (arr[j] > arr[j + 1])
+                {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
         }
     }
 }
