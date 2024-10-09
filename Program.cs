@@ -41,7 +41,7 @@ internal class Program
 
             visited[srcIndex2D.row, srcIndex2D.col] = true;
             visitingQueue.Enqueue(srcIndex2D);
-http://boj.kr/b625c1c19e7b43d5b9cc20f20c0e0b47
+
             while (visitingQueue.Count > 0)
             {
                 Index2D originIndex2D = visitingQueue.Dequeue();
