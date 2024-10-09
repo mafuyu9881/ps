@@ -2,50 +2,52 @@
 {
     private static void Main(string[] args)
     {
-        const long InvalidLength = -1;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        
+        int n = tokens[0];
+        int m = tokens[1];
 
-        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
-
-        long k = tokens[0];
-        long n = tokens[1];
-
-        long maxLength = InvalidLength;
-        long[] lengths = new long[k];
-        for (long i = 0; i < lengths.Length; ++i)
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        
+        int[] arr = new int[n];
+        for (int i = 0; i < arr.Length; ++i)
         {
-            long length = long.Parse(Console.ReadLine()!);
-
-            if (maxLength == InvalidLength || length > maxLength)
-            {
-                maxLength = length;
-            }
-
-            lengths[i] = length;
+            arr[i] = tokens[i];
         }
 
-        long bottom = 1;
-        long top = maxLength;
-        long answerLength = InvalidLength;
-        while (bottom <= top)
+        int left = 0;
+        int right = arr.Max();
+        int answer = 0;
+        while (left <= right)
         {
-            long mid = (bottom + top) / 2;
+            int mid = (left + right) >> 1;
 
-            long counts = 0;
-            for (long i = 0; i < lengths.Length; ++i)
+            int intervalCount = 1;
+            int min = arr[0];
+            int max = arr[0];
+            for (int i = 1; i < arr.Length; ++i)
             {
-                counts += lengths[i] / mid;
+                min = Math.Min(min, arr[i]);
+                max = Math.Max(max, arr[i]);
+
+                if (max - min > mid)
+                {
+                    ++intervalCount;
+                    min = arr[i];
+                    max = arr[i];
+                }
             }
-            
-            if (counts >= n)
+
+            if (intervalCount > m)
             {
-                answerLength = mid;
-                bottom = mid + 1;
+                left = mid + 1;
             }
             else
             {
-                top = mid - 1;
+                answer = mid;
+                right = mid - 1;
             }
         }
-        Console.Write(answerLength);
+        Console.Write(answer);
     }
 }
