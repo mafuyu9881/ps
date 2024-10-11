@@ -104,7 +104,7 @@
         Console.Write(minimumCosts[answerDstCityIndex]);
     }
 
-    // shortestDistances, computedCities 필드에 의존하는 함수입니다.
+    // minimumCosts, computedCities 필드에 의존하는 함수입니다.
     private static int GetNearestComputableCityIndex()
     {
         int nearestIndex = InvalidIndex;
