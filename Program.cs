@@ -78,8 +78,6 @@
 
         ConnectionData answerSrcCitySelfConnectionData = new(answerSrcCityIndex, minimumCosts[answerSrcCityIndex]);
 
-        bool[] computedCities = new bool[cities];
-
         PriorityQueue<ConnectionData, ConnectionData> computingQueue = new(connectionDataComparer);
         computingQueue.Enqueue(answerSrcCitySelfConnectionData, answerSrcCitySelfConnectionData);
         while (computingQueue.Count > 0)
@@ -95,8 +93,6 @@
             if (minimumCosts[dstCityIndex] != Infinity &&
                 minimumCosts[dstCityIndex] < dstCost)
                 continue;
-
-            computedCities[dstCityIndex] = true;
 
             // 최단 경로 계산이 완료된 도시로의 연결은
             // 실제 그래프 상에선 아래와 같이 간접적으로 이루어진 모습이더라도
@@ -117,10 +113,6 @@
                 int dstAdjacentCityIndex = dstAdjacentConnectionData.connectedIndex;
                 // 간선의 비용
                 int dstAdjacentCost = dstAdjacentConnectionData.cost;
-
-                // 최단 거리 계산이 완료된 도시는 건너뜁니다.
-                if (computedCities[dstAdjacentCityIndex])
-                    continue;
 
                 // answerSrcCityIndex에서 dstAdjacentCityIndex로의 간선의 비용
                 int newCost = dstCost + dstAdjacentCost;
