@@ -2,10 +2,8 @@
 {
     private static void Main(string[] args)
     {
-        double[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), double.Parse);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        double area = tokens[0] * tokens[1] * 0.5;
-        
-        Console.Write(area.ToString("0.0"));
+        Console.Write(tokens[0] * tokens[1] - tokens[2] * tokens[3] * tokens[4]);
     }
 }
