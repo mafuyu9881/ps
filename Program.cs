@@ -1,12 +1,11 @@
-﻿internal class Program
+﻿using System.Numerics;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int sum = 0;
-        for (int i = 0; i < 5; ++i)
-        {
-            sum += int.Parse(Console.ReadLine()!);
-        }
-        Console.Write(sum);
+        BigInteger[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), BigInteger.Parse);
+
+        Console.Write(tokens[0] + tokens[1]);
     }
 }
