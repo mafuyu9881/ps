@@ -1,11 +1,9 @@
-﻿using System.Numerics;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        BigInteger[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), BigInteger.Parse);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        Console.Write(tokens[0] + tokens[1]);
+        Console.Write(((tokens[0] * 100) >= tokens[1]) ? "Yes" : "No");
     }
 }
