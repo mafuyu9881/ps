@@ -2,8 +2,25 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        string input = Console.ReadLine()!;
 
-        Console.Write(((tokens[0] * 100) >= tokens[1]) ? "Yes" : "No");
+        string output;
+        if (input == "SONGDO")
+        {
+            output = "HIGHSCHOOL";
+        }
+        else if (input == "CODE")
+        {
+            output = "MASTER";
+        }
+        else if (input == "2023")
+        {
+            output = "0611";
+        }
+        else
+        {
+            output = "CONTEST";
+        }
+        Console.Write(output);
     }
 }
