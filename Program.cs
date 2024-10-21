@@ -2,41 +2,6 @@
 
 internal class Program
 {
-    private class DisjointSet
-    {
-        private int[] parents;
-
-        public DisjointSet(int n)
-        {
-            // MakeSet
-            parents = new int[n + 1];
-            for (int i = 0; i < parents.Length; ++i)
-            {
-                parents[i] = i;
-            }
-        }
-
-        public int Find(int x)
-        {
-            int parent = parents[x];
-
-            if (x != parent)
-            {
-                // 경로 압축
-                return parents[x] = Find(parent);
-            }
-            else
-            {
-                return x;
-            }
-        }
-
-        public void Union(int a, int b)
-        {
-            parents[Find(a)] = Find(b);
-        }
-    }
-
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -65,5 +30,73 @@ internal class Program
             }
         }
         Console.Write(output);
+    }
+
+    private class DisjointSet
+    {
+        private int[] parents;
+        private int[] ranks;
+
+        public DisjointSet(int n)
+        {
+            // MakeSet
+            int length = n + 1;
+
+            parents = new int[length];
+            for (int i = 0; i < parents.Length; ++i)
+            {
+                parents[i] = i;
+            }
+
+            ranks = new int[length];
+            for (int i = 0; i < ranks.Length; ++i)
+            {
+                ranks[i] = 1;
+            }
+        }
+
+        public int Find(int x)
+        {
+            int parent = parents[x];
+
+            if (x != parent)
+            {
+                // 경로 압축
+                return parents[x] = Find(parent);
+            }
+            else
+            {
+                return x;
+            }
+        }
+
+        public void Union(int a, int b)
+        {
+            int aSetRepresentative = Find(a);
+            int bSetRepresentative = Find(b);
+
+            if (aSetRepresentative == bSetRepresentative)
+                return;
+
+            int aSetRepresentativeRank = ranks[aSetRepresentative];
+            int bSetRepresentativeRank = ranks[bSetRepresentative];
+
+            if (aSetRepresentativeRank > bSetRepresentativeRank)
+            {
+                parents[bSetRepresentative] = aSetRepresentative;
+            }
+            else if (aSetRepresentative < bSetRepresentativeRank)
+            {
+                parents[aSetRepresentative] = bSetRepresentative;
+            }
+            else
+            {
+                parents[bSetRepresentative] = aSetRepresentative;
+                // 랭크는 대표 원소만 업데이트하면 됩니다.
+                ++ranks[aSetRepresentative];
+            }
+
+            parents[Find(a)] = Find(b);
+        }
     }
 }
