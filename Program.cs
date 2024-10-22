@@ -4,99 +4,66 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = int.Parse(Console.ReadLine()!);
 
-        int n = tokens[0];
-        int m = tokens[1];
-        
-        DisjointSet disjointSet = new(n);
+        string pattern = Console.ReadLine()!;
 
         StringBuilder output = new();
-        for (int i = 0; i < m; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            string s = Console.ReadLine()!;
 
-            int command = tokens[0];
-            int a = tokens[1];
-            int b = tokens[2];
-
-            if (command == 0)
-            {
-                disjointSet.Union(a, b);
-            }
-            else
-            {
-                output.AppendLine((disjointSet.Find(a) == disjointSet.Find(b)) ? "YES" : "NO");
-            }
+            output.AppendLine(PatternValidation(pattern, s) ? "DA" : "NE");
         }
         Console.Write(output);
     }
 
-    private class DisjointSet
+    private static bool PatternValidation(string pattern, string s)
     {
-        private int[] parents;
-        private int[] ranks;
+        const char InvalidCharacter = '*';
 
-        public DisjointSet(int n)
+        Queue<char> frontPattern = new();
+        for (int i = 0; pattern[i] != InvalidCharacter; ++i)
         {
-            // MakeSet
-            int length = n + 1;
+            frontPattern.Enqueue(pattern[i]);
+        }
+        
+        int frontReadCount = 0;
+        while (frontPattern.Count > 0)
+        {
+            char c = frontPattern.Dequeue();
 
-            parents = new int[length];
-            for (int i = 0; i < parents.Length; ++i)
-            {
-                parents[i] = i;
-            }
+            if (frontReadCount >= s.Length)
+                return false;
 
-            ranks = new int[length];
-            for (int i = 0; i < ranks.Length; ++i)
-            {
-                ranks[i] = 1;
-            }
+            if (s[frontReadCount] != c)
+                return false;
+
+            ++frontReadCount;
         }
 
-        public int Find(int x)
+        Queue<char> backPattern = new();
+        for (int i = pattern.Length - 1; pattern[i] != InvalidCharacter; --i)
         {
-            int parent = parents[x];
-
-            if (x != parent)
-            {
-                // 경로 압축
-                return parents[x] = Find(parent);
-            }
-            else
-            {
-                return x;
-            }
+            backPattern.Enqueue(pattern[i]);
         }
 
-        public void Union(int a, int b)
+        int backReadCount = 0;
+        while (backPattern.Count > 0)
         {
-            int aSetRepresentative = Find(a);
-            int bSetRepresentative = Find(b);
+            char c = backPattern.Dequeue();
 
-            if (aSetRepresentative == bSetRepresentative)
-                return;
+            int currentReadIndex = s.Length - 1 - backReadCount;
 
-            int aSetRepresentativeRank = ranks[aSetRepresentative];
-            int bSetRepresentativeRank = ranks[bSetRepresentative];
+            if (currentReadIndex <= frontReadCount - 1)
+                return false;
 
-            if (aSetRepresentativeRank > bSetRepresentativeRank)
-            {
-                parents[bSetRepresentative] = aSetRepresentative;
-            }
-            else if (aSetRepresentative < bSetRepresentativeRank)
-            {
-                parents[aSetRepresentative] = bSetRepresentative;
-            }
-            else
-            {
-                parents[bSetRepresentative] = aSetRepresentative;
-                // 랭크는 대표 원소만 업데이트하면 됩니다.
-                ++ranks[aSetRepresentative];
-            }
+            if (s[currentReadIndex] != c)
+                return false;
 
-            parents[Find(a)] = Find(b);
+            ++backReadCount;
         }
+
+        return true;
     }
 }
