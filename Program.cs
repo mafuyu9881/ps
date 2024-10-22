@@ -1,69 +1,147 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
+        const char R = 'R';
+        const char G = 'G';
+
         int n = int.Parse(Console.ReadLine()!);
 
-        string pattern = Console.ReadLine()!;
+        int mapLength = n * n;
 
-        StringBuilder output = new();
-        for (int i = 0; i < n; ++i)
+        char[] map = new char[mapLength];
+        for (int row = 0; row < n; ++row)
         {
-            string s = Console.ReadLine()!;
+            string tokens = Console.ReadLine()!;
+            for (int col = 0; col < n; ++col)
+            {
+                int index = ConvertIndex2DTo1D(n, new(row, col));
 
-            output.AppendLine(PatternValidation(pattern, s) ? "DA" : "NE");
+                map[index] = tokens[col];
+            }
         }
-        Console.Write(output);
+
+        int normalAreaCount = ComputeAreaCount(n, map, (char c0, char c1) => { return c0 == c1; });
+        int blindAreaCount = ComputeAreaCount(n, map, (char c0, char c1) => 
+        {
+            if (c0 == c1)
+                return true;
+
+            if (c0 == R && c1 == G)
+                return true;
+
+            if (c1 == R && c0 == G)
+                return true;
+
+            return false;
+        });
+
+        Console.Write($"{normalAreaCount} {blindAreaCount}");
     }
 
-    private static bool PatternValidation(string pattern, string s)
+    private static int ComputeAreaCount(int width, char[] map, Func<char, char, bool> colorEquals)
     {
-        const char InvalidCharacter = '*';
+        int mapLength = map.Length;
 
-        Queue<char> frontPattern = new();
-        for (int i = 0; pattern[i] != InvalidCharacter; ++i)
+        HashSet<int> waitingIndices = new();
+        for (int i = 0; i < mapLength; ++i)
         {
-            frontPattern.Enqueue(pattern[i]);
-        }
-        
-        int frontReadCount = 0;
-        while (frontPattern.Count > 0)
-        {
-            char c = frontPattern.Dequeue();
-
-            if (frontReadCount >= s.Length)
-                return false;
-
-            if (s[frontReadCount] != c)
-                return false;
-
-            ++frontReadCount;
+            waitingIndices.Add(i);
         }
 
-        Queue<char> backPattern = new();
-        for (int i = pattern.Length - 1; pattern[i] != InvalidCharacter; --i)
+        bool[] visitedLookup = new bool[mapLength];
+        Queue<int> visitingQueue = new();
+
+        LinkedList<LinkedList<int>> areaList = new();
+        LinkedList<int>[] areaLookup = new LinkedList<int>[mapLength];
+
+        while (waitingIndices.Count > 0)
         {
-            backPattern.Enqueue(pattern[i]);
+            if (visitingQueue.Count < 1)
+            {
+                int waitingIndex = waitingIndices.First();
+                visitingQueue.Enqueue(waitingIndex);
+                waitingIndices.Remove(waitingIndex);
+            }
+
+            int visitingIndex = visitingQueue.Dequeue();
+            Index2D visitingIndex2D = ConvertIndex1DTo2D(width, visitingIndex);
+
+            LinkedList<int>? area;
+            if (visitedLookup[visitingIndex])
+            {
+                area = areaLookup[visitingIndex];
+            }
+            else
+            {
+                area = new LinkedList<int>();
+                area.AddLast(visitingIndex);
+                
+                areaList.AddLast(area);
+                areaLookup[visitingIndex] = area;
+            }
+
+            visitedLookup[visitingIndex] = true;
+
+            Index2D[] adjacentIndices = new Index2D[]
+            {
+                new(visitingIndex2D.row + 1, visitingIndex2D.col),
+                new(visitingIndex2D.row, visitingIndex2D.col + 1),
+                new(visitingIndex2D.row - 1, visitingIndex2D.col),
+                new(visitingIndex2D.row, visitingIndex2D.col - 1),
+            };
+
+            for (int i = 0; i < adjacentIndices.Length; ++i)
+            {
+                Index2D adjacentIndex2D = adjacentIndices[i];
+                int adjacentIndex = ConvertIndex2DTo1D(width, adjacentIndex2D);
+
+                if (Index2DValidation(width, width, adjacentIndex2D) == false)
+                    continue;
+
+                if (visitedLookup[adjacentIndex])
+                    continue;
+
+                if (colorEquals(map[visitingIndex], map[adjacentIndex]) == false)
+                    continue;
+
+                visitedLookup[adjacentIndex] = true;
+                visitingQueue.Enqueue(adjacentIndex);
+                area.AddLast(adjacentIndex);
+                areaLookup[adjacentIndex] = area;
+            }
         }
 
-        int backReadCount = 0;
-        while (backPattern.Count > 0)
+        return areaList.Count();
+    }
+    
+    private static bool Index2DValidation(int width, int height, Index2D index2D)
+    {
+        int row = index2D.row;
+        int col = index2D.col;
+
+        return (row >= 0) && (row < height) && (col >= 0) && (col < width);
+    }
+
+    private static Index2D ConvertIndex1DTo2D(int width, int index1D)
+    {
+        return new(index1D / width, index1D % width);
+    }
+
+    private static int ConvertIndex2DTo1D(int width, Index2D index2D)
+    {
+        return index2D.row * width + index2D.col;
+    }
+
+    private struct Index2D
+    {
+        public int row;
+        public int col;
+
+        public Index2D(int row, int col)
         {
-            char c = backPattern.Dequeue();
-
-            int currentReadIndex = s.Length - 1 - backReadCount;
-
-            if (currentReadIndex <= frontReadCount - 1)
-                return false;
-
-            if (s[currentReadIndex] != c)
-                return false;
-
-            ++backReadCount;
+            this.row = row;
+            this.col = col;
         }
-
-        return true;
     }
 }
