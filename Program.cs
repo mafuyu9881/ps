@@ -1,145 +1,49 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        const char R = 'R';
-        const char G = 'G';
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int n = int.Parse(Console.ReadLine()!);
+        int n = tokens[0];
+        int m = tokens[1];
 
-        int mapLength = n * n;
+        int side = n + 1;
 
-        char[] map = new char[mapLength];
-        for (int row = 0; row < n; ++row)
+        int[,] map = new int[side, side];
+        for (int i = 0; i < n; ++i)
         {
-            string tokens = Console.ReadLine()!;
-            for (int col = 0; col < n; ++col)
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int j = 0; j < n; ++j)
             {
-                map[ConvertIndex2DTo1D(n, new(row, col))] = tokens[col];
+                map[i + 1, j + 1] = tokens[j];
             }
         }
 
-        int normalAreaCount = ComputeAreaCount(n, map, (char c0, char c1) => { return c0 == c1; });
-        int blindAreaCount = ComputeAreaCount(n, map, (char c0, char c1) => 
+        int[,] sumLookup = new int[side, side];
+        for (int row = 1; row < side; ++row)
         {
-            if (c0 == c1)
-                return true;
-
-            if (c0 == R && c1 == G)
-                return true;
-
-            if (c1 == R && c0 == G)
-                return true;
-
-            return false;
-        });
-
-        Console.Write($"{normalAreaCount} {blindAreaCount}");
-    }
-
-    private static int ComputeAreaCount(int width, char[] map, Func<char, char, bool> colorEquals)
-    {
-        int mapLength = map.Length;
-
-        HashSet<int> waitingIndices = new();
-        for (int i = 0; i < mapLength; ++i)
-        {
-            waitingIndices.Add(i);
-        }
-
-        bool[] visitedLookup = new bool[mapLength];
-        Queue<int> visitingQueue = new();
-
-        LinkedList<LinkedList<int>> areaList = new();
-        LinkedList<int>[] areaLookup = new LinkedList<int>[mapLength];
-
-        while (waitingIndices.Count > 0)
-        {
-            if (visitingQueue.Count < 1)
+            int colSum = 0;
+            for (int col = 1; col < side; ++col)
             {
-                int waitingIndex = waitingIndices.First();
-                visitingQueue.Enqueue(waitingIndex);
-                waitingIndices.Remove(waitingIndex);
-            }
-
-            int visitingIndex = visitingQueue.Dequeue();
-            Index2D visitingIndex2D = ConvertIndex1DTo2D(width, visitingIndex);
-
-            LinkedList<int>? area;
-            if (visitedLookup[visitingIndex])
-            {
-                area = areaLookup[visitingIndex];
-            }
-            else
-            {
-                area = new LinkedList<int>();
-                area.AddLast(visitingIndex);
-                
-                areaList.AddLast(area);
-                areaLookup[visitingIndex] = area;
-            }
-
-            visitedLookup[visitingIndex] = true;
-
-            Index2D[] adjacentIndices = new Index2D[]
-            {
-                new(visitingIndex2D.row + 1, visitingIndex2D.col),
-                new(visitingIndex2D.row, visitingIndex2D.col + 1),
-                new(visitingIndex2D.row - 1, visitingIndex2D.col),
-                new(visitingIndex2D.row, visitingIndex2D.col - 1),
-            };
-
-            for (int i = 0; i < adjacentIndices.Length; ++i)
-            {
-                Index2D adjacentIndex2D = adjacentIndices[i];
-                int adjacentIndex = ConvertIndex2DTo1D(width, adjacentIndex2D);
-
-                if (Index2DValidation(width, width, adjacentIndex2D) == false)
-                    continue;
-
-                if (visitedLookup[adjacentIndex])
-                    continue;
-
-                if (colorEquals(map[visitingIndex], map[adjacentIndex]) == false)
-                    continue;
-
-                visitedLookup[adjacentIndex] = true;
-                visitingQueue.Enqueue(adjacentIndex);
-                area.AddLast(adjacentIndex);
-                areaLookup[adjacentIndex] = area;
+                colSum += map[row, col];
+                sumLookup[row, col] = sumLookup[row - 1, col] + colSum;
             }
         }
 
-        return areaList.Count();
-    }
-    
-    private static bool Index2DValidation(int width, int height, Index2D index2D)
-    {
-        int row = index2D.row;
-        int col = index2D.col;
-
-        return (row >= 0) && (row < height) && (col >= 0) && (col < width);
-    }
-
-    private static Index2D ConvertIndex1DTo2D(int width, int index1D)
-    {
-        return new(index1D / width, index1D % width);
-    }
-
-    private static int ConvertIndex2DTo1D(int width, Index2D index2D)
-    {
-        return index2D.row * width + index2D.col;
-    }
-
-    private struct Index2D
-    {
-        public int row;
-        public int col;
-
-        public Index2D(int row, int col)
+        StringBuilder output = new();
+        for (int i = 0; i < m; ++i)
         {
-            this.row = row;
-            this.col = col;
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            int x1 = tokens[0];
+            int y1 = tokens[1];
+            int x2 = tokens[2];
+            int y2 = tokens[3];
+
+            output.AppendLine($"{sumLookup[x2, y2] - (sumLookup[x1 - 1, y2] + sumLookup[x2, y1 - 1]) + sumLookup[x1 - 1, y1 - 1]}");
         }
+        Console.Write(output);
     }
 }
