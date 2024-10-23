@@ -1,116 +1,46 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
-    const int Infinity = -1;
-
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = int.Parse(Console.ReadLine()!);
 
-        int n = tokens[0];
-        int e = tokens[1];
+        const int Width = 3;
 
-        int verticesCount = n + 1;
+        int dpWidth = 1 + Width + 1;
+        int dpHeight = n + 1;
 
-        LinkedList<ConnectionData>[] adjList = new LinkedList<ConnectionData>[verticesCount];
-        for (int i = 0; i < adjList.Length; ++i)
+        const int Infinity = 10;
+
+        int[,] maxDP = new int[dpHeight, dpWidth];
+        int[,] minDP = new int[dpHeight, dpWidth];
+        for (int row = 1; row < dpHeight; ++row)
         {
-            adjList[i] = new();
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            int prevRow = row - 1;
+
+            int left = tokens[0];
+            int center = tokens[1];
+            int right = tokens[2];
+
+            maxDP[row, 1] = left + Math.Max(maxDP[prevRow, 1], maxDP[prevRow, 2]);
+            maxDP[row, 2] = center + Math.Max(maxDP[prevRow, 1], Math.Max(maxDP[prevRow, 2], maxDP[prevRow, 3]));
+            maxDP[row, 3] = right + Math.Max(maxDP[prevRow, 2], maxDP[prevRow, 3]);
+
+            minDP[row, 1] = left + Math.Min(minDP[prevRow, 1], minDP[prevRow, 2]);
+            minDP[row, 2] = center + Math.Min(minDP[prevRow, 1], Math.Min(minDP[prevRow, 2], minDP[prevRow, 3]));
+            minDP[row, 3] = right + Math.Min(minDP[prevRow, 2], minDP[prevRow, 3]);
+            minDP[row, 0] = Infinity;
+            minDP[row, dpWidth - 1] = Infinity;
         }
 
-        for (int i = 0; i < e; ++i)
+        int max = maxDP[n, 1];
+        int min = minDP[n, 1];
+        for (int i = 2; i <= Width; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            int aVertex = tokens[0];
-            int bVertex = tokens[1];
-            int cost = tokens[2];
-            
-            adjList[aVertex].AddLast(new ConnectionData(bVertex, cost));
-            adjList[bVertex].AddLast(new ConnectionData(aVertex, cost));
+            max = Math.Max(max, maxDP[n, i]);
+            min = Math.Min(min, minDP[n, i]);
         }
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        int v1Vertex = tokens[0];
-        int v2Vertex = tokens[1];
-        
-        int srcVertex = 1;
-        int dstVertex = n;
-        
-        var fromSrcMinimumCostTable = ComputeMinimumCostTable(verticesCount, adjList, srcVertex);
-        var fromV1MinimumCostTable = ComputeMinimumCostTable(verticesCount, adjList, v1Vertex);
-        var fromV2MinimumCostTable = ComputeMinimumCostTable(verticesCount, adjList, v2Vertex);
-
-        int v1ToV2Cost = fromV1MinimumCostTable[v2Vertex];
-        int srcToDstCost = fromSrcMinimumCostTable[dstVertex];
-        int srcToV1Cost = fromSrcMinimumCostTable[v1Vertex];
-        int srcToV2Cost = fromSrcMinimumCostTable[v2Vertex];
-        int v1ToDstCost = fromV1MinimumCostTable[dstVertex];
-        int v2ToDstCost = fromV2MinimumCostTable[dstVertex];
-        
-        int output;
-        if (srcToDstCost == Infinity || v1ToV2Cost == Infinity)
-        {
-            output = Infinity;
-        }
-        else
-        {
-            output = v1ToV2Cost + Math.Min(srcToV1Cost + v2ToDstCost, srcToV2Cost + v1ToDstCost);
-        }
-        Console.Write(output);
-    }
-    
-    private static int[] ComputeMinimumCostTable(int verticesCount, LinkedList<ConnectionData>[] adjList, int srcVertex)
-    {
-        int[] minimumCostTable = new int[verticesCount];
-        for (int i = 0; i < minimumCostTable.Length; ++i)
-        {
-            minimumCostTable[i] = (i == srcVertex) ? 0 : Infinity;
-        }
-
-        PriorityQueue<ConnectionData, int> visitingQueue = new();
-        visitingQueue.Enqueue(new(srcVertex, 0), 0);
-        while (visitingQueue.Count > 0)
-        {
-            ConnectionData nearConnectionData = visitingQueue.Dequeue();
-            int nearVertex = nearConnectionData.connectedVertex;
-            int nearCost = nearConnectionData.cost;
-
-            if (minimumCostTable[nearVertex] != Infinity &&
-                minimumCostTable[nearVertex] < nearCost)
-                continue;
-
-            var nearAdjacencies = adjList[nearVertex];
-            for (var node = nearAdjacencies.First; node != null; node = node.Next)
-            {
-                ConnectionData nearAdjConnectionData = node.Value;
-                int nearAdjVertex = nearAdjConnectionData.connectedVertex;
-                int nearAdjCost = nearAdjConnectionData.cost;
-
-                int newCost = nearCost + nearAdjCost;
-                if (minimumCostTable[nearAdjVertex] != Infinity &&
-                    minimumCostTable[nearAdjVertex] <= newCost)
-                    continue;
-
-                minimumCostTable[nearAdjVertex] = newCost;
-                visitingQueue.Enqueue(new(nearAdjVertex, newCost), newCost);
-            }
-        }
-
-        return minimumCostTable;
-    }
-
-    private struct ConnectionData
-    {
-        public int connectedVertex;
-        public int cost;
-        
-        public ConnectionData(int connectedVertex, int cost)
-        {
-            this.connectedVertex = connectedVertex;
-            this.cost = cost;
-        }
+        Console.Write($"{max} {min}");
     }
 }
