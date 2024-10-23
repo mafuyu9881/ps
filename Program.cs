@@ -32,6 +32,25 @@
             minDP[row, 3] = right + Math.Min(minDP[prevRow, 2], minDP[prevRow, 3]);
             minDP[row, 0] = Infinity;
             minDP[row, dpWidth - 1] = Infinity;
+
+            //for (int col = 1; col <= Width; ++col)
+            //{
+            //    int token = tokens[col - 1];
+            //
+            //    int leftUpMaxDP = maxDP[prevRow, col - 1];
+            //    int centerUpMaxDP = maxDP[prevRow, col];
+            //    int rightUpMaxDP = maxDP[prevRow, col + 1];
+            //
+            //    maxDP[row, col] = token + Math.Max(leftUpMaxDP, Math.Max(centerUpMaxDP, rightUpMaxDP));
+            //
+            //    int leftUpMinDP = minDP[prevRow, col - 1];
+            //    int centerUpMinDP = minDP[prevRow, col];
+            //    int rightUpMinDP = minDP[prevRow, col + 1];
+            //
+            //    minDP[row, col] = token + Math.Min(leftUpMinDP, Math.Min(centerUpMinDP, rightUpMinDP));
+            //    minDP[row, 0] = Infinity;
+            //    minDP[row, dpWidth - 1] = Infinity;
+            //}
         }
 
         int max = maxDP[n, 1];
