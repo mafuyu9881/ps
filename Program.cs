@@ -15,9 +15,7 @@
             string tokens = Console.ReadLine()!;
             for (int col = 0; col < n; ++col)
             {
-                int index = ConvertIndex2DTo1D(n, new(row, col));
-
-                map[index] = tokens[col];
+                map[ConvertIndex2DTo1D(n, new(row, col))] = tokens[col];
             }
         }
 
