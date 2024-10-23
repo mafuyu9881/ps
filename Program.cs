@@ -33,6 +33,8 @@
             minDP[row, 0] = Infinity;
             minDP[row, dpWidth - 1] = Infinity;
 
+            // NOTE: minDP의 각 원소는 Infinity보다 큰 값이 될 수 있습니다.
+            // 때문에 아래의 코드는 통과할 수 없습니다.
             //for (int col = 1; col <= Width; ++col)
             //{
             //    int token = tokens[col - 1];
