@@ -1,84 +1,131 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
+    private static Dictionary<char, int> romanToArabicDictionary = new()
+    {
+        {'I', 1},
+        {'V', 5},
+        {'X', 10},
+        {'L', 50},
+        {'C', 100},
+        {'D', 500},
+        {'M', 1000},
+    };
+
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        int n = tokens[0];
-        int m = tokens[1];
-
-        DisjointSet disjointSet = new(n);
-        int output = 0;
-        for (int i = 0; i < m; ++i)
-        {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            
-            int a = tokens[0];
-            int b = tokens[1];
-
-            if (disjointSet.Union(a, b))
-                continue;
-
-            output = i + 1;
-            break;
-        }
-        Console.Write(output);
+        string roman0 = Console.ReadLine()!;
+        string roman1 = Console.ReadLine()!;
+        
+        int arabic0 = ConvertRomanToArabic(roman0);
+        int arabic1 = ConvertRomanToArabic(roman1);
+        
+        int arabicSum = arabic0 + arabic1;
+        string romanSum = ConvertArabicToRoman(arabicSum);
+        
+        Console.WriteLine(arabicSum);
+        Console.WriteLine(romanSum);
     }
 
-    private class DisjointSet
+    private static int ConvertRomanToArabic(string input)
     {
-        private int[]? _ranks;
-        private int[]? _parents;
+        int output = 0;
 
-        public DisjointSet(int n)
+        if (input.Length > 1)
         {
-            _ranks = new int[n];
-
-            _parents = new int[n];
-            for (int i = 0; i < _parents.Length; ++i)
+            char prevRoman = input[0];
+            for (int i = 1; i < input.Length; ++i)
             {
-                _parents[i] = i;
+                char currRoman = input[i];
+
+                int prevArabic = romanToArabicDictionary[prevRoman];
+                int currArabic = romanToArabicDictionary[currRoman];
+
+                if (prevArabic < currArabic)
+                {
+                    output -= prevArabic;
+                }
+                else
+                {
+                    output += prevArabic;
+                }
+
+                if (i == input.Length - 1)
+                {
+                    output += currArabic;
+                }
+
+                prevRoman = currRoman;
+            }
+        }
+        else
+        {
+            output = romanToArabicDictionary[input[0]];
+        }
+
+        return output;
+    }
+
+    private static string ConvertArabicToRoman(int input)
+    {
+        return ConvertArabicToRoman($"{input}");
+    }
+    private static string ConvertArabicToRoman(string input)
+    {
+        StringBuilder output = new();
+
+        int inputLength = input.Length;
+        for (int i = 0; i < inputLength; ++i)
+        {
+            char c = input[i];
+
+            int digit = inputLength - i;
+
+            string s = "";
+            if (c == '4')
+            {
+                if (digit == 1) s = "IV";
+                if (digit == 2) s = "XL";
+                if (digit == 3) s = "CD";
+                output.Append(s);
+            }
+            else if (c == '5')
+            {
+                if (digit == 1) s = "V";
+                if (digit == 2) s = "L";
+                if (digit == 3) s = "D";
+                output.Append(s);
+            }
+            else if (c == '9')
+            {
+                if (digit == 1) s = "IX";
+                if (digit == 2) s = "XC";
+                if (digit == 3) s = "CM";
+                output.Append(s);
+            }
+            else if (c > '5')
+            {
+                if (digit == 1) s = "V";
+                if (digit == 2) s = "L";
+                if (digit == 3) s = "D";
+                output.Append(s);
+
+                if (digit == 1) s = "I";
+                if (digit == 2) s = "X";
+                if (digit == 3) s = "C";
+                for (int j = 0; j < (c - '5'); ++j) output.Append(s);
+            }
+            else // if (c < '4')
+            {
+                if (digit == 1) s = "I";
+                if (digit == 2) s = "X";
+                if (digit == 3) s = "C";
+                if (digit == 4) s = "M";
+                for (int j = 0; j < (c - '0'); ++j) output.Append(s);
             }
         }
 
-        public int Find(int x)
-        {
-            if (x == _parents![x])
-            {
-                return x;
-            }
-            else
-            {
-                return _parents[x] = Find(_parents[x]);
-            }
-        }
-
-        public bool Union(int a, int b)
-        {
-            int aSetRepresentative = Find(a);
-            int bSetRepresentative = Find(b);
-
-            if (aSetRepresentative == bSetRepresentative)
-                return false;
-
-            int aSetRank = _ranks![aSetRepresentative];
-            int bSetRank = _ranks[bSetRepresentative];
-
-            if (aSetRank > bSetRank)
-            {
-                _parents![bSetRepresentative] = aSetRepresentative;
-            }
-            else if (aSetRank < bSetRank)
-            {
-                _parents![aSetRepresentative] = bSetRepresentative;
-            }
-            else
-            {
-                _parents![bSetRepresentative] = aSetRepresentative;
-                ++_ranks[aSetRepresentative];
-            }
-
-            return true;
-        }
+        return $"{output}";
     }
 }
