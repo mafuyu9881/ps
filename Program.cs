@@ -28,13 +28,14 @@
 
             for (int j = 1; j <= c; ++j)
             {
+                dp[i, j] = dp[i - 1, j];
+                
                 if (j <= customers)
                 {
-                    dp[i, j] = Math.Min(dp[i - 1, j], cost);
+                    dp[i, j] = Math.Min(dp[i, j], cost);
                 }
                 else
                 {
-                    dp[i, j] = dp[i - 1, j];
                     for (int promotionCount = 1; j - (customers * promotionCount) > 0; ++promotionCount)
                     {
                         dp[i, j] = Math.Min(dp[i, j], dp[i, j - (customers * promotionCount)] + cost * promotionCount);
