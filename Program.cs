@@ -1,131 +1,61 @@
-﻿using System.Text;
+﻿// 1 ≤ N ≤ 100,000, 1 ≤ M ≤ 1,000,000,000
+// log 1 ≤ log M ≤ log 1,000,000,000 (단, 로그의 밑은 2)
+// 0 ≤ log M ≤ 29.xxx
+
+using System.Text;
 
 internal class Program
 {
-    private static Dictionary<char, int> romanToArabicDictionary = new()
-    {
-        {'I', 1},
-        {'V', 5},
-        {'X', 10},
-        {'L', 50},
-        {'C', 100},
-        {'D', 500},
-        {'M', 1000},
-    };
-
     private static void Main(string[] args)
     {
-        string roman0 = Console.ReadLine()!;
-        string roman1 = Console.ReadLine()!;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
         
-        int arabic0 = ConvertRomanToArabic(roman0);
-        int arabic1 = ConvertRomanToArabic(roman1);
-        
-        int arabicSum = arabic0 + arabic1;
-        string romanSum = ConvertArabicToRoman(arabicSum);
-        
-        Console.WriteLine(arabicSum);
-        Console.WriteLine(romanSum);
-    }
+        int n = tokens[0];
+        int m = tokens[1];
 
-    private static int ConvertRomanToArabic(string input)
-    {
-        int output = 0;
-
-        if (input.Length > 1)
+        int maxExaminingTime = 0;
+        int[] examiningTimeArray = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            char prevRoman = input[0];
-            for (int i = 1; i < input.Length; ++i)
-            {
-                char currRoman = input[i];
-
-                int prevArabic = romanToArabicDictionary[prevRoman];
-                int currArabic = romanToArabicDictionary[currRoman];
-
-                if (prevArabic < currArabic)
-                {
-                    output -= prevArabic;
-                }
-                else
-                {
-                    output += prevArabic;
-                }
-
-                if (i == input.Length - 1)
-                {
-                    output += currArabic;
-                }
-
-                prevRoman = currRoman;
-            }
-        }
-        else
-        {
-            output = romanToArabicDictionary[input[0]];
+            int examiningTime = int.Parse(Console.ReadLine()!);
+            examiningTimeArray[i] = examiningTime;
+            maxExaminingTime = Math.Max(maxExaminingTime, examiningTime);
         }
 
-        return output;
-    }
-
-    private static string ConvertArabicToRoman(int input)
-    {
-        return ConvertArabicToRoman($"{input}");
-    }
-    private static string ConvertArabicToRoman(string input)
-    {
-        StringBuilder output = new();
-
-        int inputLength = input.Length;
-        for (int i = 0; i < inputLength; ++i)
+        long output = 0;
+        // 전체 심사 시간의 최솟값은 심사대의 수가 심사 인원의 수보다 크거나 같고,
+        // 각 심사대의 심사 시간이 모두 최솟값인 1일 때의 값과 같습니다.
+        long left = 1;
+        long right = maxExaminingTime * (long)m;
+        while (left <= right)
         {
-            char c = input[i];
+            long mid = (left + right) / 2;
 
-            int digit = inputLength - i;
+            if (Examinable(mid, m, examiningTimeArray))
+            {
+                right = mid - 1;
+                output = mid;
+            }
+            else
+            {
+                left = mid + 1;
+            }
+        }
+        Console.Write(output);
+    }
 
-            string s = "";
-            if (c == '4')
-            {
-                if (digit == 1) s = "IV";
-                if (digit == 2) s = "XL";
-                if (digit == 3) s = "CD";
-                output.Append(s);
-            }
-            else if (c == '5')
-            {
-                if (digit == 1) s = "V";
-                if (digit == 2) s = "L";
-                if (digit == 3) s = "D";
-                output.Append(s);
-            }
-            else if (c == '9')
-            {
-                if (digit == 1) s = "IX";
-                if (digit == 2) s = "XC";
-                if (digit == 3) s = "CM";
-                output.Append(s);
-            }
-            else if (c > '5')
-            {
-                if (digit == 1) s = "V";
-                if (digit == 2) s = "L";
-                if (digit == 3) s = "D";
-                output.Append(s);
+    private static bool Examinable(long givenTime, long waitingExaminationCount, int[] examiningTimeArray)
+    {
+        for (int i = 0; i < examiningTimeArray.Length; ++i)
+        {
+            waitingExaminationCount -= givenTime / examiningTimeArray[i];
 
-                if (digit == 1) s = "I";
-                if (digit == 2) s = "X";
-                if (digit == 3) s = "C";
-                for (int j = 0; j < (c - '5'); ++j) output.Append(s);
-            }
-            else // if (c < '4')
+            if (waitingExaminationCount <= 0)
             {
-                if (digit == 1) s = "I";
-                if (digit == 2) s = "X";
-                if (digit == 3) s = "C";
-                if (digit == 4) s = "M";
-                for (int j = 0; j < (c - '0'); ++j) output.Append(s);
+                return true;
             }
         }
 
-        return $"{output}";
+        return false;
     }
 }
