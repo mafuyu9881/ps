@@ -1,6 +1,4 @@
-﻿// 1 ≤ N ≤ 100,000, 1 ≤ M ≤ 1,000,000,000
-// log 1 ≤ log M ≤ log 1,000,000,000 (단, 로그의 밑은 2)
-// 0 ≤ log M ≤ 29.xxx
+﻿// 0 ≤ (수직선 상의 집의 좌표) ≤ 1,000,000,000
 
 using System.Text;
 
@@ -9,54 +7,53 @@ internal class Program
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        
-        int n = tokens[0];
-        int m = tokens[1];
 
-        int maxExaminingTime = 0;
-        int[] examiningTimeArray = new int[n];
+        int n = tokens[0];
+        int c = tokens[1];
+        
+        int[] coordinates = new int[n];
         for (int i = 0; i < n; ++i)
         {
-            int examiningTime = int.Parse(Console.ReadLine()!);
-            examiningTimeArray[i] = examiningTime;
-            maxExaminingTime = Math.Max(maxExaminingTime, examiningTime);
+            coordinates[i] = int.Parse(Console.ReadLine()!);
         }
+        Array.Sort(coordinates);
 
-        long output = 0;
-        // 전체 심사 시간의 최솟값은 심사대의 수가 심사 인원의 수보다 크거나 같고,
-        // 각 심사대의 심사 시간이 모두 최솟값인 1일 때의 값과 같습니다.
-        long left = 1;
-        // int 자료형 간의 곱셈은 대입되는 대상이 long이더라도 int 범위 내에서 계산됩니다.
-        long right = maxExaminingTime * (long)m;
+        int output = 0;
+        int left = 1;
+        int right = 1000000000;
         while (left <= right)
         {
-            long mid = (left + right) / 2;
+            int mid = (left + right) / 2;
 
-            if (Examinable(mid, m, examiningTimeArray))
+            if (Validation(c, coordinates, mid))
             {
-                right = mid - 1;
                 output = mid;
+                left = mid + 1;
             }
             else
             {
-                left = mid + 1;
+                right = mid - 1;
             }
         }
         Console.Write(output);
     }
 
-    private static bool Examinable(long givenTime, long waitingExaminationCount, int[] examiningTimeArray)
+    private static bool Validation(int installableRouters, int[] coordinates, int leastRouterDistance)
     {
-        for (int i = 0; i < examiningTimeArray.Length; ++i)
-        {
-            waitingExaminationCount -= givenTime / examiningTimeArray[i];
+        int prevCoord = coordinates[0];
+        --installableRouters;
 
-            if (waitingExaminationCount <= 0)
+        for (int i = 1; i < coordinates.Length; ++i)
+        {
+            int currCoord = coordinates[i];
+
+            if (currCoord - prevCoord >= leastRouterDistance)
             {
-                return true;
+                --installableRouters;
+                prevCoord = currCoord;
             }
         }
 
-        return false;
+        return installableRouters < 1;
     }
 }
