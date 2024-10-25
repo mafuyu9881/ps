@@ -26,6 +26,7 @@ internal class Program
         // 전체 심사 시간의 최솟값은 심사대의 수가 심사 인원의 수보다 크거나 같고,
         // 각 심사대의 심사 시간이 모두 최솟값인 1일 때의 값과 같습니다.
         long left = 1;
+        // int 자료형 간의 곱셈은 대입되는 대상이 long이더라도 int 범위 내에서 계산됩니다.
         long right = maxExaminingTime * (long)m;
         while (left <= right)
         {
