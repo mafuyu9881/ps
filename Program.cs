@@ -98,21 +98,20 @@ internal class Program
         {
             int beadValue = beadValues[i];
 
-            if (groupedBeadValue + beadValue > mid)
+            // 1. (i == 0)
+            // 2. (groupedBeadCountNode == null)
+            // 3. (outGroupedBeadCountList.Count == 0)
+            // 1, 2, 3 모두 첫 순회임을 나타내는 조건입니다.
+            // 컴파일 경고를 피하기 위해 2번의 조건문으로 선택했습니다.
+            if (groupedBeadCountNode == null ||
+                groupedBeadValue + beadValue > mid)
             {
-                groupedBeadCountNode = outGroupedBeadCountList.AddLast(1);
-                groupedBeadValue = beadValue;
+                groupedBeadCountNode = outGroupedBeadCountList.AddLast(0);
+                groupedBeadValue = 0;
             }
-            else
-            {
-                // i == 0일 경우입니다.
-                // 컴파일 경고 방지를 위해 조건문을 약간 다르게 작성했습니다.
-                if (groupedBeadCountNode == null)
-                    groupedBeadCountNode = outGroupedBeadCountList.AddLast(0);
 
-                ++groupedBeadCountNode.ValueRef;
-                groupedBeadValue += beadValue;
-            }
+            ++groupedBeadCountNode.ValueRef;
+            groupedBeadValue += beadValue;
 
             // 구슬 묶음의 총합이 요구된 매개변수 값보다 크다면,
             // 이 매개변수는 실현될 수 없는 값입니다.
