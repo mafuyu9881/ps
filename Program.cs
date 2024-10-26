@@ -4,38 +4,25 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int[] distances = new int[n];
-        int totalDistance = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            int distance = int.Parse(Console.ReadLine()!);
-            distances[i] = distance;
-            totalDistance += distance;
-        }
-
-        int[] prefixSum = new int[n];
+        int[] honeies = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        
+        int[] prefixSums = new int[n];
+        prefixSums[0] = honeies[0];
         for (int i = 1; i < n; ++i)
         {
-            prefixSum[i] = prefixSum[i - 1] + distances[i - 1];
+            prefixSums[i] = prefixSums[i - 1] + honeies[i];
         }
 
-        const int InvalidDistance = -1;
-        int maxDistance = InvalidDistance;
-        for (int begin = 0; begin < n; ++begin)
+        int maxCollectedHoney = 0;
+        for (int i = 1; i < n - 1; ++i)
         {
-            for (int end = begin + 1; end < n; ++end)
-            {
-                int cwDistance = prefixSum[end] - prefixSum[begin];
-                int ccwDistance = totalDistance - cwDistance;
-                int distance = Math.Min(cwDistance, ccwDistance);
-
-                if (maxDistance == InvalidDistance ||
-                    maxDistance < distance)
-                {
-                    maxDistance = distance;
-                }
-            }
+            // 벌 - 벌 - 집
+            maxCollectedHoney = Math.Max(maxCollectedHoney, (prefixSums[n - 1] - honeies[0] - honeies[i]) + (prefixSums[n - 1] - prefixSums[i]));
+            // 벌 - 집 - 벌
+            maxCollectedHoney = Math.Max(maxCollectedHoney, (prefixSums[i] - honeies[0]) + (prefixSums[n - 2] - prefixSums[i - 1]));
+            // 집 - 벌 - 벌
+            maxCollectedHoney = Math.Max(maxCollectedHoney, (prefixSums[i - 1]) + (prefixSums[n - 2] - honeies[i]));
         }
-        Console.Write(maxDistance);
+        Console.Write(maxCollectedHoney);
     }
 }
