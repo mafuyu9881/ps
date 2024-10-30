@@ -2,12 +2,8 @@
 {
     private static void Main(string[] args)
     {
-        int l = int.Parse(Console.ReadLine()!);
+        DateTime now = DateTime.Now;
 
-        int output = l / 5;
-        
-        if (l % 5 != 0) ++output;
-        
-        Console.Write(output);
+        Console.Write($"{now.Year}-{now.Month}-{now.Day}");
     }
 }
