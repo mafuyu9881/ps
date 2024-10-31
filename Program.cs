@@ -2,8 +2,9 @@
 {
     private static void Main(string[] args)
     {
-        DateTime now = DateTime.Now;
-
-        Console.Write($"{now.Year}-{now.Month}-{now.Day}");
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        
+        Console.Write(a * b);
     }
 }
