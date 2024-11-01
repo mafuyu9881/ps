@@ -7,30 +7,27 @@
 
         int[] arr = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int backIndex = arr.Length - 1;
-
-        int output = 0;
-        for (int frontIndex = 0; (frontIndex < halfN) && (backIndex > halfN); ++frontIndex)
+        int leftOddCount = 0;
+        int leftEvenCount = 0;
+        long leftOddOutput = 0;
+        long leftEvenOutput = 0;
+        for (int i = 0; i < n; ++i)
         {
-            int frontElement = arr[frontIndex];
+            int element = arr[i];
 
-            if (frontElement % 2 == 0)
-                continue;
-
-            while (backIndex > halfN)
+            if (element % 2 != 0)
             {
-                int backElement = arr[backIndex];
+                ++leftOddCount;
 
-                if (backElement % 2 != 0)
-                    continue;
-
-                arr[frontIndex] = backElement;
-                arr[backIndex] = frontElement;
-                ++output;
-
-                --backIndex;
+                leftEvenOutput += leftEvenCount;
+            }
+            else
+            {
+                ++leftEvenCount;
+                
+                leftOddOutput += leftOddCount;
             }
         }
-        Console.Write(output);
+        Console.Write(Math.Min(leftOddOutput, leftEvenOutput));
     }
 }
