@@ -19,13 +19,13 @@
             {
                 ++leftOddCount;
 
-                leftEvenOutput += leftEvenCount;
+                leftOddOutput += leftEvenCount;
             }
             else
             {
                 ++leftEvenCount;
                 
-                leftOddOutput += leftOddCount;
+                leftEvenOutput += leftOddCount;
             }
         }
         Console.Write(Math.Min(leftOddOutput, leftEvenOutput));
