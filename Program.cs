@@ -1,33 +1,39 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        int halfN = n / 2;
+        int t = int.Parse(Console.ReadLine()!);
 
-        int[] arr = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        int leftOddCount = 0;
-        int leftEvenCount = 0;
-        long leftOddOutput = 0;
-        long leftEvenOutput = 0;
-        for (int i = 0; i < n; ++i)
+        StringBuilder output = new();
+        for (int i = 0; i < t; ++i)
         {
-            int element = arr[i];
+            int k = int.Parse(Console.ReadLine()!);
 
-            if (element % 2 != 0)
-            {
-                ++leftOddCount;
+            int[] files = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-                leftOddOutput += leftEvenCount;
-            }
-            else
+            PriorityQueue<long, long> priorityFiles = new();
+            for (int j = 0; j < files.Length; ++j)
             {
-                ++leftEvenCount;
-                
-                leftEvenOutput += leftOddCount;
+                int file = files[j];
+                priorityFiles.Enqueue(file, file);
             }
+            
+            long totalCost = 0;
+            while (priorityFiles.Count > 1)
+            {
+                long fileA = priorityFiles.Dequeue();
+                long fileB = priorityFiles.Dequeue();
+
+                long cost = fileA + fileB;
+
+                totalCost += cost;
+
+                priorityFiles.Enqueue(cost, cost);
+            }
+            output.AppendLine($"{totalCost}");
         }
-        Console.Write(Math.Min(leftOddOutput, leftEvenOutput));
+        Console.WriteLine(output);
     }
 }
