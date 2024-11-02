@@ -4,36 +4,14 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        int t = tokens[0];
+        int s = tokens[1];
 
         StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
-        {
-            int k = int.Parse(Console.ReadLine()!);
-
-            int[] files = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            PriorityQueue<long, long> priorityFiles = new();
-            for (int j = 0; j < files.Length; ++j)
-            {
-                int file = files[j];
-                priorityFiles.Enqueue(file, file);
-            }
-            
-            long totalCost = 0;
-            while (priorityFiles.Count > 1)
-            {
-                long fileA = priorityFiles.Dequeue();
-                long fileB = priorityFiles.Dequeue();
-
-                long cost = fileA + fileB;
-
-                totalCost += cost;
-
-                priorityFiles.Enqueue(cost, cost);
-            }
-            output.AppendLine($"{totalCost}");
-        }
-        Console.WriteLine(output);
+        if (s == 1 || t < 12 || t > 16) output.Append("280");
+        else output.Append("320");
+        Console.Write(output);
     }
 }
