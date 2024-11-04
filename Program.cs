@@ -1,10 +1,22 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int cupcakeCount = 0;
-        cupcakeCount += int.Parse(Console.ReadLine()!) * 8;
-        cupcakeCount += int.Parse(Console.ReadLine()!) * 3;
-        Console.Write(cupcakeCount - 28);
+        int caseNumber = 0;
+        StringBuilder output = new();
+        while (true)
+        {
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            if (tokens.Length == 1 && tokens[0] == 0)
+                break;
+
+            ++caseNumber;
+
+            output.AppendLine($"Case {caseNumber}: Sorting... done!");
+        }
+        Console.Write(output);
     }
 }
