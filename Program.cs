@@ -1,21 +1,39 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int caseNumber = 0;
-        StringBuilder output = new();
-        while (true)
+        int n = int.Parse(Console.ReadLine()!);
+
+        int[] sequence = new int[n];
+        int[] lisLengths = new int[n];
+        int[] ldsLengths = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            sequence[i] = int.Parse(Console.ReadLine()!);
+            lisLengths[i] = 1;
+            ldsLengths[i] = 1;
+        }
 
-            if (tokens.Length == 1 && tokens[0] == 0)
-                break;
+        int output = 0;
+        for (int i = 1; i < n; ++i)
+        {
+            for (int j = 0; j < i; ++j)
+            {
+                int iElement = sequence[i];
+                int jElement = sequence[j];
+                
+                if (jElement < iElement)
+                {
+                    lisLengths[i] = Math.Max(lisLengths[j] + 1, lisLengths[i]);
+                }
 
-            ++caseNumber;
+                if (jElement > iElement)
+                {
+                    ldsLengths[i] = Math.Max(ldsLengths[j] + 1, ldsLengths[j]);
+                }
 
-            output.AppendLine($"Case {caseNumber}: Sorting... done!");
+                output = Math.Max(output, lisLengths[i] + ldsLengths[i] - 1);
+            }
         }
         Console.Write(output);
     }
