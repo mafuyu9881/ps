@@ -10,8 +10,8 @@
         for (int i = 0; i < n; ++i)
         {
             sequence[i] = int.Parse(Console.ReadLine()!);
-            lisLengths[i] = 1;
-            ldsLengths[i] = 1;
+            //lisLengths[i] = 1;
+            //ldsLengths[i] = 1;
         }
 
         int output = 0;
@@ -24,16 +24,19 @@
 
                 if (jElement < iElement)
                 {
-                    lisLengths[i] = Math.Max(lisLengths[j] + 1, lisLengths[i]);
+                    //lisLengths[i] = Math.Max(lisLengths[j] + 1, lisLengths[i]);
+                    lisLengths[i] = Math.Max(lisLengths[j], lisLengths[i]);
                 }
 
                 if (jElement > iElement)
                 {
-                    ldsLengths[i] = Math.Max(ldsLengths[j] + 1, ldsLengths[i]);
+                    //ldsLengths[i] = Math.Max(ldsLengths[j] + 1, ldsLengths[i]);
+                    ldsLengths[i] = Math.Max(ldsLengths[j], ldsLengths[i]);
                 }
-
-                output = Math.Max(output, lisLengths[i] + ldsLengths[i] - 1);
             }
+            ++lisLengths[i];
+            ++ldsLengths[i];
+            output = Math.Max(output, lisLengths[i] + ldsLengths[i] - 1);
         }
         Console.Write(output);
     }
