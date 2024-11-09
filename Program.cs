@@ -2,39 +2,69 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int[] sequence = new int[n];
-        int[] lisLengths = new int[n];
-        int[] ldsLengths = new int[n];
-        for (int i = 0; i < n; ++i)
-        {
-            sequence[i] = int.Parse(Console.ReadLine()!);
-            lisLengths[i] = 1;
-            ldsLengths[i] = 1;
-        }
-        
-        int output = 0;
-        for (int i = n - 1; i > -1; --i)
-        {
-            int iElement = sequence[i];
+        int n = tokens[0];
+        int m = tokens[1];
+        int l = tokens[2];
 
-            for (int j = i + 1; j < n; ++j)
+        LinkedList<int> initialRestAreaList = new();
+
+        if (n > 0)
+        {
+            int[] initialRestAreaArray = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            Array.Sort(initialRestAreaArray);
+
+            for (int i = 0; i < n; ++i)
             {
-                int jElement = sequence[j];
+                initialRestAreaList.AddLast(initialRestAreaArray[i]);
+            }
+        }
 
-                if (iElement < jElement)
-                {
-                    lisLengths[i] = Math.Max(lisLengths[j] + 1, lisLengths[i]);
-                }
+        int left = 1;
+        int right = l - 2;
+        int output = 0;
+        while (left <= right)
+        {
+            int mid = (left + right) / 2;
 
-                if (iElement > jElement)
+            int remainRestAreaCount = m;
+            LinkedList<int> restAreaList = new(initialRestAreaList);
+            var startpointNode = restAreaList.AddFirst(0);
+            var endpointNode = restAreaList.AddLast(l);
+            for (var node = restAreaList.First; (node != null) && (node != endpointNode); node = node.Next)
+            {
+                int begin = node.Value;
+                int end = node.Next!.Value;
+
+                int interval = end - begin;
+                if (interval <= mid)
+                    continue;
+
+                int equalDivisionCount = (interval - 1) / mid + 1;
+                int equalDivisionStride = Math.Max(interval / equalDivisionCount, mid);
+                
+                var targetNode = node;
+                for (int i = 1; i < equalDivisionCount; ++i)
                 {
-                    ldsLengths[i] = Math.Max(ldsLengths[j] + 1, ldsLengths[i]);
+                    int newRestAreaPoint = begin + equalDivisionStride * i;
+                    if (newRestAreaPoint >= end)
+                        break;
+
+                    targetNode = restAreaList.AddAfter(targetNode, newRestAreaPoint);
+                    --remainRestAreaCount;
                 }
             }
 
-            output = Math.Max(output, lisLengths[i] + ldsLengths[i] - 1);
+            if (remainRestAreaCount < 0)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
+                output = mid;
+            }
         }
         Console.Write(output);
     }
