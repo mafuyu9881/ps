@@ -6,26 +6,43 @@
 
         int n = tokens[0];
         int m = tokens[1];
-        
-        int[] marbleCountArray = new int[m];
-        for (int i = 0; i < m; ++i)
+
+        int[] requirements = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            marbleCountArray[i] = int.Parse(Console.ReadLine()!);
+            requirements[i] = int.Parse(Console.ReadLine()!);
         }
 
         int low = 1 - 1;
-        int high = marbleCountArray.Max() + 1;
+        int high = requirements.Sum() + 1;
         while (low + 1 < high)
         {
-            int mid = (low + high) / 2;
+            int mid = (low + high) / 2; // withdrawal amount;
 
-            int bundles = 0;
-            for (int i = 0; i < marbleCountArray.Length; ++i)
+            int holdingMoney = 0;
+            int withdrawalCount = 0;
+            for (int i = 0; i < requirements.Length; ++i)
             {
-                bundles += ((marbleCountArray[i] - 1) / mid) + 1;
+                int requirement = requirements[i];
+
+                if (holdingMoney < requirement)
+                {
+                    if (mid < requirement)
+                    {
+                        withdrawalCount = m + 1; // make an error intentionally
+                        break;
+                    }
+
+                    holdingMoney = mid - requirement;
+                    ++withdrawalCount;
+                }
+                else
+                {
+                    holdingMoney -= requirement;
+                }
             }
 
-            if (bundles > n)
+            if (withdrawalCount > m)
             {
                 low = mid;
             }
