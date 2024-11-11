@@ -6,66 +6,47 @@
 
         int n = tokens[0];
         int m = tokens[1];
-        int l = tokens[2];
 
-        LinkedList<int> initialRestAreaList = new();
-
-        if (n > 0)
+        int[] runningTimes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        
+        int low = 1 - 1;
+        int high = runningTimes.Sum() + 1;
+        while (low + 1 < high)
         {
-            int[] initialRestAreaArray = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            Array.Sort(initialRestAreaArray);
+            int mid = (low + high) / 2;
 
-            for (int i = 0; i < n; ++i)
+            int blurayCount = 1;
+            int blurayRunningTime = 0;
+            for (int i = 0; i < runningTimes.Length; ++i)
             {
-                initialRestAreaList.AddLast(initialRestAreaArray[i]);
-            }
-        }
+                int runningTime = runningTimes[i];
 
-        int left = 1;
-        int right = l - 2;
-        int output = 0;
-        while (left <= right)
-        {
-            int mid = (left + right) / 2;
-
-            int remainRestAreaCount = m;
-            LinkedList<int> restAreaList = new(initialRestAreaList);
-            var startpointNode = restAreaList.AddFirst(0);
-            var endpointNode = restAreaList.AddLast(l);
-            for (var node = restAreaList.First; (node != null) && (node != endpointNode); node = node.Next)
-            {
-                int begin = node.Value;
-                int end = node.Next!.Value;
-
-                int interval = end - begin;
-                if (interval <= mid)
-                    continue;
-
-                int equalDivisionCount = (interval - 1) / mid + 1;
-                int equalDivisionStride = Math.Max(interval / equalDivisionCount, mid);
-                
-                var targetNode = node;
-                for (int i = 1; i < equalDivisionCount; ++i)
+                if (runningTime > mid)
                 {
-                    int newRestAreaPoint = begin + equalDivisionStride * i;
-                    if (newRestAreaPoint >= end)
-                        break;
+                    blurayCount = m + 1; // 실패 처리
+                    break;
+                }
+                else
+                {
+                    blurayRunningTime += runningTime;
 
-                    targetNode = restAreaList.AddAfter(targetNode, newRestAreaPoint);
-                    --remainRestAreaCount;
+                    if (blurayRunningTime > mid)
+                    {
+                        blurayRunningTime = runningTime;
+                        ++blurayCount;
+                    }
                 }
             }
 
-            if (remainRestAreaCount < 0)
+            if (blurayCount > m)
             {
-                left = mid + 1;
+                low = mid;
             }
             else
             {
-                right = mid - 1;
-                output = mid;
+                high = mid;
             }
         }
-        Console.Write(output);
+        Console.Write(high);
     }
 }
