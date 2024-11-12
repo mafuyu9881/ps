@@ -17,9 +17,7 @@
             int spentBudget = 0;
             for (int i = 0; i < requestedBudgets.Length; ++i)
             {
-                int requestedBudget = requestedBudgets[i];
-
-                spentBudget += Math.Min(mid, requestedBudget);
+                spentBudget += Math.Min(mid, requestedBudgets[i]);
             }
 
             if (spentBudget > budget)
