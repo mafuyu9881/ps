@@ -2,50 +2,45 @@
 {
     private static void Main(string[] args)
     {
-        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        int n = int.Parse(Console.ReadLine()!);
 
-        long a = tokens[0];
-        long b = tokens[1];
+        int[] requestedBudgets = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int requestedBudgetsLength = requestedBudgets.Length;
 
-        double aSqrt = Math.Sqrt(a);
-        double bSqrt = Math.Sqrt(b);
+        int budget = int.Parse(Console.ReadLine()!);
 
-        int candidateCommentCount = 0;
-        for (long i = 1; (i * i) <= b; ++i)
+        int output;
+        if (requestedBudgets.Sum() > budget)
         {
-            if ((i * i) > a)
+            int low = 1 - 1;
+            int high = budget - (requestedBudgetsLength - 1) + 1;
+            while (low < high - 1)
             {
-                ++candidateCommentCount;
+                int mid = (low + high) / 2;
+
+                int spentBudget = 0;
+                for (int i = 0; i < requestedBudgetsLength; ++i)
+                {
+                    int requestedBudget = requestedBudgets[i];
+
+                    spentBudget += Math.Min(mid, requestedBudget);
+                }
+
+                if (spentBudget > budget)
+                {
+                    high = mid;
+                }
+                else
+                {
+                    low = mid;
+                }
             }
-        }
-        long allCommentCount = b - a;
-        long gcd = ComputeGCD(allCommentCount, candidateCommentCount);
-
-        long numerator = candidateCommentCount / gcd;
-        long denominator = allCommentCount / gcd;
-
-        string output;
-        if (numerator == 0)
-        {
-            output = "0";
+            output = low;
         }
         else
         {
-            output = $"{numerator}/{denominator}";
+            output = requestedBudgets.Max();
         }
         Console.Write(output);
-    }
-
-    private static long ComputeGCD(long a, long b)
-    {
-        long bigger = Math.Max(a, b);
-        long smaller = Math.Min(a, b);
-        while (smaller != 0)
-        {
-            long r = bigger % smaller;
-            bigger = smaller;
-            smaller = r;
-        }
-        return bigger;
     }
 }
