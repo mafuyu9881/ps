@@ -4,48 +4,36 @@
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int n = tokens[0];
-        int k = tokens[1];
+        int s = tokens[0];
+        int c = tokens[1];
 
-        int[] volumes = new int[n];
-        for (int i = 0; i < n; ++i)
+        long[] springOnions = new long[s];
+        for (int i = 0; i < s; ++i)
         {
-            volumes[i] = int.Parse(Console.ReadLine()!);
+            springOnions[i] = int.Parse(Console.ReadLine()!);
         }
 
-        long output = 0;
-        if (n > 0)
+        long low = 1 - 1;
+        long high = springOnions.Max() + 1;
+        while (low < high - 1)
         {
-            long low = 0 - 1;
-            long high = int.MaxValue + 1L;
-            while (low < high - 1)
+            long mid = (low + high) / 2;
+
+            long distributed = 0;
+            for (int i = 0; i < s; ++i)
             {
-                long mid = (low + high) / 2;
-
-                long distributed = 0;
-                if (mid == 0)
-                {
-                    distributed = k; // can distribute always
-                }
-                else
-                {
-                    for (int i = 0; i < n; ++i)
-                    {
-                        distributed += volumes[i] / mid;
-                    }
-                }
-
-                if (distributed < k)
-                {
-                    high = mid;
-                }
-                else
-                {
-                    low = mid;
-                }
+                distributed += springOnions[i] / mid;
             }
-            output = low;
+
+            if (distributed < c)
+            {
+                high = mid;
+            }
+            else
+            {
+                low = mid;
+            }
         }
-        Console.Write(output);
+        Console.Write(springOnions.Sum() - (low * c));
     }
 }
