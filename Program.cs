@@ -5,7 +5,6 @@
         int n = int.Parse(Console.ReadLine()!);
 
         int[] requestedBudgets = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int requestedBudgetsLength = requestedBudgets.Length;
 
         int budget = int.Parse(Console.ReadLine()!);
 
@@ -16,7 +15,7 @@
             int mid = (low + high) / 2;
 
             int spentBudget = 0;
-            for (int i = 0; i < requestedBudgetsLength; ++i)
+            for (int i = 0; i < requestedBudgets.Length; ++i)
             {
                 int requestedBudget = requestedBudgets[i];
 
