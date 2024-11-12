@@ -2,51 +2,50 @@
 {
     private static void Main(string[] args)
     {
-        const int InvalidLandingPosition = -1;
-        const int RangeStart = 0;
-        const int RangeEnd = 1000000000;
+        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
 
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        long a = tokens[0];
+        long b = tokens[1];
 
-        int n = tokens[0];
-        int k = tokens[1];
+        double aSqrt = Math.Sqrt(a);
+        double bSqrt = Math.Sqrt(b);
 
-        int[] hayBalePositions = new int[n];
-        for (int i = 0; i < n; ++i)
+        int candidateCommentCount = 0;
+        for (long i = 1; (i * i) <= b; ++i)
         {
-            hayBalePositions[i] = int.Parse(Console.ReadLine()!);
-        }
-        Array.Sort(hayBalePositions);
-
-        int low = 1 - 1;
-        int high = RangeEnd / 2 + 1;
-        while (low < high - 1)
-        {
-            int mid = (low + high) / 2;
-
-            int shoots = 0;
-            int lastLandingPosition = InvalidLandingPosition;
-            for (int i = 0; i < hayBalePositions.Length; ++i)
+            if ((i * i) > a)
             {
-                int hayBalePosition = hayBalePositions[i];
-
-                if ((lastLandingPosition == InvalidLandingPosition) ||
-                    (hayBalePosition > lastLandingPosition + mid))
-                {
-                    lastLandingPosition = Math.Clamp(hayBalePosition + mid, RangeStart + mid, RangeEnd - mid);
-                    ++shoots;
-                }
-            }
-
-            if (shoots > k)
-            {
-                low = mid;
-            }
-            else
-            {
-                high = mid;
+                ++candidateCommentCount;
             }
         }
-        Console.Write(high);
+        long allCommentCount = b - a;
+        long gcd = ComputeGCD(allCommentCount, candidateCommentCount);
+
+        long numerator = candidateCommentCount / gcd;
+        long denominator = allCommentCount / gcd;
+
+        string output;
+        if (numerator == 0)
+        {
+            output = "0";
+        }
+        else
+        {
+            output = $"{numerator}/{denominator}";
+        }
+        Console.Write(output);
+    }
+
+    private static long ComputeGCD(long a, long b)
+    {
+        long bigger = Math.Max(a, b);
+        long smaller = Math.Min(a, b);
+        while (smaller != 0)
+        {
+            long r = bigger % smaller;
+            bigger = smaller;
+            smaller = r;
+        }
+        return bigger;
     }
 }
