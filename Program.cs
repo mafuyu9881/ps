@@ -1,35 +1,49 @@
-﻿internal class Program
+﻿using System.Numerics;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = int.Parse(Console.ReadLine()!);
 
-        int m = tokens[0];
-        int n = tokens[1];
+        int serverRackMapLength = n * n;
+        int[] serverRackMap = new int[serverRackMapLength];
 
-        int[] snackLengths = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        BigInteger allComputers = 0;
+        for (int row = 0; row < n; ++row)
+        {
+            int[] serverRackLine = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < n; ++col)
+            {
+                int serverRack = serverRackLine[col];
+                allComputers += serverRack;
+                serverRackMap[n * row + col] = serverRack;
+            }
+        }
 
-        int low = 1 - 1;
-        int high = snackLengths.Max() + 1;
-        while (low < high - 1)
+        int output = 0;
+        int low = 0;
+        int high = serverRackMap.Max();
+        while (low <= high)
         {
             int mid = (low + high) / 2;
 
-            int snackCount = 0;
-            for (int i = 0; i < n; ++i)
+            BigInteger coldComputers = 0;
+            for (int i = 0; i < serverRackMapLength; ++i)
             {
-                snackCount += snackLengths[i] / mid;
+                coldComputers += Math.Min(mid, serverRackMap[i]);
             }
 
-            if (snackCount < m)
+            if (coldComputers * 2 < allComputers)
             {
-                high = mid;
+                low = mid + 1;
             }
             else
             {
-                low = mid;
+                high = mid - 1;
+                output = mid;
             }
         }
-        Console.Write(low);
+        Console.Write(output);
     }
 }
