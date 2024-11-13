@@ -21,10 +21,9 @@ internal class Program
             }
         }
 
-        int output = 0;
-        int low = 0;
-        int high = serverRackMap.Max();
-        while (low <= high)
+        int low = 0 - 1;
+        int high = serverRackMap.Max() + 1;
+        while (low < high - 1)
         {
             int mid = (low + high) / 2;
 
@@ -36,14 +35,13 @@ internal class Program
 
             if (coldComputers * 2 < allComputers)
             {
-                low = mid + 1;
+                low = mid;
             }
             else
             {
-                high = mid - 1;
-                output = mid;
+                high = mid;
             }
         }
-        Console.Write(output);
+        Console.Write(high);
     }
 }
