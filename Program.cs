@@ -1,47 +1,54 @@
-﻿using System.Numerics;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int serverRackMapLength = n * n;
-        int[] serverRackMap = new int[serverRackMapLength];
+        int n = tokens[0];
+        int k = tokens[1];
+        int m = tokens[2];
 
-        BigInteger allComputers = 0;
-        for (int row = 0; row < n; ++row)
+        int[] lengths = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            int[] serverRackLine = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < n; ++col)
-            {
-                int serverRack = serverRackLine[col];
-                allComputers += serverRack;
-                serverRackMap[n * row + col] = serverRack;
-            }
+            lengths[i] = int.Parse(Console.ReadLine()!);
         }
 
-        int low = 0 - 1;
-        int high = serverRackMap.Max() + 1;
+        int low = 1 - 1;
+        int high = 1000000000 + 1;
         while (low < high - 1)
         {
             int mid = (low + high) / 2;
 
-            BigInteger coldComputers = 0;
-            for (int i = 0; i < serverRackMapLength; ++i)
+            int remainM = m;
+            for (int i = 0; i < n; ++i)
             {
-                coldComputers += Math.Min(mid, serverRackMap[i]);
+                int length = lengths[i];
+
+                if (length <= k)
+                    continue;
+
+                if (length < 2 * k)
+                {
+                    length -= k;
+                }
+                else
+                {
+                    length -= 2 * k;
+                }
+
+                remainM = Math.Max(0, remainM - (length / mid));
             }
 
-            if (coldComputers * 2 < allComputers)
-            {
-                low = mid;
-            }
-            else
+            if (remainM > 0)
             {
                 high = mid;
             }
+            else
+            {
+                low = mid;
+            }
         }
-        Console.Write(high);
+        Console.Write((low != 0) ? low : -1);
     }
 }
