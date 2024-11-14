@@ -6,49 +6,49 @@
 
         int n = tokens[0];
         int k = tokens[1];
-        int m = tokens[2];
 
-        int[] lengths = new int[n];
-        for (int i = 0; i < n; ++i)
-        {
-            lengths[i] = int.Parse(Console.ReadLine()!);
-        }
+        int[] heights = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int low = 1 - 1;
-        int high = 1000000000 + 1;
+        int low = 0 - 1;
+        int high = heights.Max() + 1;
         while (low < high - 1)
         {
-            int mid = (low + high) / 2;
+            int mid = (int)((low + (long)high) / 2);
 
-            int remainM = m;
+            int exhaustedCount = 0;
             for (int i = 0; i < n; ++i)
             {
-                int length = lengths[i];
+                int myHeight = heights[i];
 
-                if (length <= k)
+                bool exhausted = false;
+
+                if (i > 0 &&
+                    Math.Abs(myHeight - heights[i - 1]) > mid)
+                {
+                    exhausted |= true;
+                }
+
+                if (i < (n - 1) &&
+                    Math.Abs(myHeight - heights[i + 1]) > mid)
+                {
+                    exhausted |= true;
+                }
+
+                if (exhausted == false)
                     continue;
 
-                if (length < 2 * k)
-                {
-                    length -= k;
-                }
-                else
-                {
-                    length -= 2 * k;
-                }
-
-                remainM = Math.Max(0, remainM - (length / mid));
+                ++exhaustedCount;
             }
-
-            if (remainM > 0)
-            {
-                high = mid;
-            }
-            else
+            
+            if (exhaustedCount > k)
             {
                 low = mid;
             }
+            else
+            {
+                high = mid;
+            }
         }
-        Console.Write((low != 0) ? low : -1);
+        Console.Write(high);
     }
 }
