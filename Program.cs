@@ -2,45 +2,26 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
 
-        int n = tokens[0];
-        int k = tokens[1];
+        long n = tokens[0];
+        long k = tokens[1];
 
-        int[] heights = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        long[] scores = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
 
-        int low = 0 - 1;
-        int high = heights.Max() + 1;
+        long low = 0 - 1;
+        long high = scores.Max() + 1;
         while (low < high - 1)
         {
-            int mid = (int)((low + (long)high) / 2);
+            long mid = (low + high) / 2;
 
-            int exhaustedCount = 0;
+            long remainK = k;
             for (int i = 0; i < n; ++i)
             {
-                int myHeight = heights[i];
-
-                bool exhausted = false;
-
-                if (i > 0 &&
-                    Math.Abs(myHeight - heights[i - 1]) > mid)
-                {
-                    exhausted |= true;
-                }
-
-                if (i < (n - 1) &&
-                    Math.Abs(myHeight - heights[i + 1]) > mid)
-                {
-                    exhausted |= true;
-                }
-
-                if (exhausted == false)
-                    continue;
-
-                ++exhaustedCount;
+                remainK -= Math.Max(0, scores[i] - mid);
             }
-            
-            if (exhaustedCount > k)
+
+            if (remainK < 0)
             {
                 low = mid;
             }
