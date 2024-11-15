@@ -4,74 +4,45 @@
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
         int n = tokens[0];
-        int t = tokens[1];
-        int[] durations = new int[n];
-        for (int i = 0; i < n; ++i)
-        {
-            durations[i] = int.Parse(Console.ReadLine()!);
-        }
+        int m = tokens[1];
+        int c = tokens[2];
+        int[] arrivalTimes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(arrivalTimes);
 
-        const int FailedRemainT = -1;
+        const int InvalidRemainM = -1;
 
         int low = 0 - 1;
-        int high = n + 1;
+        int high = 1000000000 + 1; // arrivalTimes.Max() + 1
         while (low < high - 1)
         {
             int mid = (low + high) / 2;
 
-            int remainT = t;
-            if (mid > 0)
+            int remainM = m;
+            int elapsedTime = 0;
+            int targetCowIndex = 0;
+            while (targetCowIndex < arrivalTimes.Length)
             {
-                LinkedList<int> durationsInProgress = new(durations);
-                while (durationsInProgress.Count > 0)
+                while (targetCowIndex < (arrivalTimes.Length - 1) &&
+                       arrivalTimes[targetCowIndex] == arrivalTimes[targetCowIndex + 1])
                 {
-                    LinkedListNode<int>?[] nodes = new LinkedListNode<int>[mid];
-                    nodes[0] = durationsInProgress.First;
-                    int minDuration = nodes[0]!.Value;
-                    for (int i = 1; i < mid; ++i)
-                    {
-                        var prevNode = nodes[i - 1];
-                        if (prevNode == null)
-                            break;
-
-                        var currNode = prevNode.Next;
-                        if (currNode == null) // It can't be, but to prevent a compile warning.
-                            break;
-
-                        int duration = currNode.Value;
-                        if (duration < minDuration)
-                        {
-                            minDuration = duration;
-                        }
-
-                        nodes[i] = currNode;
-                    }
-
-                    remainT = Math.Max(FailedRemainT, remainT - minDuration);
-                    if (remainT == FailedRemainT)
-                        break;
-
-                    for (int i = 0; i < mid; ++i)
-                    {
-                        var node = nodes[i];
-                        if (node == null) // It can be when the remains are less than mid.
-                            break;
-
-                        node.ValueRef -= minDuration;
-
-                        if (node.Value > 0)
-                            continue;
-
-                        durationsInProgress.Remove(node);
-                    }
+                    targetCowIndex = targetCowIndex + 1;
                 }
-            }
-            else
-            {
-                remainT = FailedRemainT;
+
+                int arrivalTime = arrivalTimes[targetCowIndex];
+
+                if (arrivalTime - elapsedTime >= mid)
+                {
+                    remainM = Math.Max(InvalidRemainM, remainM - ((targetCowIndex / c) + 1)); // = ((((targetCowIndex + 1) - 1) / c) + 1) = ((cowCount - 1 / c) + 1);
+                }
+
+                elapsedTime = arrivalTime; // elapsedTime += (arrivalTime - elapsedTime);
+                ++targetCowIndex;
+
+                if (remainM == InvalidRemainM)
+                    break;
             }
 
-            if (remainT == FailedRemainT)
+            if (remainM == InvalidRemainM)
             {
                 low = mid;
             }
