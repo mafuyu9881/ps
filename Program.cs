@@ -35,42 +35,21 @@
 
                 waitingCowIndices.AddLast(arrivalTimeIndex);
 
-                // I avoided using some force flag for forcing logic.
+                // I avoid using some force flag for forcing logic.
                 int nextArrivalTime = InfinityArrivalTime;
                 int nextArrivalTimeIndex = arrivalTimeIndex + 1;
                 if (nextArrivalTimeIndex < arrivalTimes.Length)
                 {
                     nextArrivalTime = arrivalTimes[nextArrivalTimeIndex];
 
-                    if (nextArrivalTime == lastArrivalTime &&
-                        arrivalTimeIndex != lastArrivalTimeIndex)
+                    if ((nextArrivalTime == lastArrivalTime) &&
+                        (arrivalTimeIndex != lastArrivalTimeIndex) &&
+                        (nextArrivalTime - arrivalTimes[arrivalTimeIndex]) <= mid)
                     {
-                        
+                        waitingCowIndices.AddLast(lastArrivalTimeIndex);
+                        arrivalTimeIndex = lastArrivalTimeIndex; // to exit this while loop.
                     }
                 }
-
-                //var waitingIndexNode = waitingCowIndices.First;
-                //while (waitingIndexNode != null)
-                //{
-                //    int cowIndex = waitingIndexNode.Value;
-
-                //    int cowArrivalTime = arrivalTimes[cowIndex];
-                //    int cowCount = cowIndex + 1;
-
-                //    if ((nextArrivalTime - cowArrivalTime) >= mid)
-                //    {
-                //        waitingCowIndices.Remove(waitingIndexNode);
-                //        waitingIndexNode = waitingCowIndices.First;
-
-                //        // 여기서 2, 3, 4, 5, 6마리로 지워버리니까 remainM이 남아나질 않음
-                //        // 뒤에서부터 검색해서 지우기 성공하면 앞에 노드도 다 날려버리는 식으로 해야할듯
-                //        remainM = Math.Max(InvalidRemainM, remainM - ((cowCount - 1) / c + 1));
-                //    }
-                //    else
-                //    {
-                //        waitingIndexNode = waitingIndexNode.Next;
-                //    }
-                //}
 
                 var waitingCowIndexNode = waitingCowIndices.Last;
                 while (waitingCowIndexNode != null)
