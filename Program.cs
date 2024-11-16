@@ -2,6 +2,8 @@
 
 internal class Program
 {
+    private static int[]? _cutPoints = null;
+
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -9,18 +11,16 @@ internal class Program
         int m = tokens[1];
         int l = tokens[2];
 
-        int[] cutPoints = new int[m + 1];
+        _cutPoints = new int[m];
         for (int i = 0; i < m; ++i)
         {
-            cutPoints[i] = int.Parse(Console.ReadLine()!);
+            _cutPoints[i] = int.Parse(Console.ReadLine()!);
         }
-        cutPoints[m] = l;
 
         StringBuilder output = new();
         for (int i = 0; i < n; ++i)
         {
-            int cutCount = int.Parse(Console.ReadLine()!);
-            int pieceCount = cutCount + 1;
+            int leastSliceCount = int.Parse(Console.ReadLine()!);
 
             // 1 < L ≤ 4,000,000
             int low = 1 - 1;
@@ -28,53 +28,8 @@ internal class Program
             while (low < high - 1)
             {
                 int mid = (low + high) / 2;
-
-                LinkedList<int> slicedLengthLL = new();
-                PriorityQueue<LinkedListNode<int>, int> slicedLengthPQ = new();
-                int prevCutPoint = 0;
-                for (int j = 0; j < cutPoints.Length; ++j)
-                {
-                    int currCutPoint = cutPoints[j];
-
-                    int slicedLength = currCutPoint - prevCutPoint;
-
-                    var node = slicedLengthLL.AddLast(slicedLength);
-                    slicedLengthPQ.Enqueue(node, slicedLength);
-
-                    prevCutPoint = currCutPoint;
-                }
-
-                while (slicedLengthLL.Count > pieceCount)
-                {
-                    var node = slicedLengthPQ.Dequeue();
-                    if (node.List == null)
-                        continue;
-
-                    var prevNode = node.Previous;
-                    var nextNode = node.Next;
-                    LinkedListNode<int>? mergeTargetNode = prevNode;
-                    if ((mergeTargetNode == null) ||
-                        (nextNode != null && nextNode.Value < mergeTargetNode.Value))
-                    {
-                        mergeTargetNode = nextNode;
-                    }
-
-                    // there is no chance both Next and Previous are null
-                    int mergedLength = node.Value + mergeTargetNode!.Value;
-                    var mergedNode = slicedLengthLL.AddBefore(node, mergedLength);
-                    slicedLengthPQ.Enqueue(mergedNode, mergedLength);
-
-                    slicedLengthLL.Remove(node);
-                    slicedLengthLL.Remove(mergeTargetNode);
-                }
-
-                // get rid of invalid nodes
-                while (slicedLengthPQ.Peek().List == null)
-                {
-                    slicedLengthPQ.Dequeue();
-                }
-
-                if (mid < slicedLengthPQ.Peek().Value)
+                
+                if (Validation(l, leastSliceCount, mid))
                 {
                     low = mid;
                 }
@@ -83,8 +38,37 @@ internal class Program
                     high = mid;
                 }
             }
-            output.AppendLine($"{high}");
+            output.AppendLine($"{low}");
         }
         Console.Write(output);
+    }
+
+    private static bool Validation(int l, int leastSliceCount, int leastSliceLength)
+    {
+        // never happens, but for preventing a compile warning
+        if (_cutPoints == null)
+            return false;
+
+        int slicedCount = 0;
+        int prevSlicePoint = 0;
+        for (int j = 0; j < _cutPoints.Length; ++j)
+        {
+            int currSlicePoint = _cutPoints[j];
+            int slicedLength = currSlicePoint - prevSlicePoint;
+
+            if (slicedLength < leastSliceLength)
+                continue;
+
+            ++slicedCount;
+            prevSlicePoint = currSlicePoint;
+        }
+
+        if (slicedCount > leastSliceCount)
+            return true;
+
+        if (slicedCount == leastSliceCount && l - prevSlicePoint >= leastSliceLength)
+            return true;
+        
+        return false;
     }
 }
