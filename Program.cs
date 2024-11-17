@@ -2,73 +2,58 @@
 
 internal class Program
 {
-    private static int[]? _cutPoints = null;
-
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
         int n = tokens[0];
         int m = tokens[1];
-        int l = tokens[2];
 
-        _cutPoints = new int[m];
-        for (int i = 0; i < m; ++i)
+        LinkedList<int>[] adjList = new LinkedList<int>[n];
+        for (int i = 0; i < n; ++i) // max tc = n = 250 (1 <= n <= 250)
         {
-            _cutPoints[i] = int.Parse(Console.ReadLine()!);
+            adjList[i] = new();
+        }
+        for (int i = 0; i < m; ++i) // max tc = 250 * (250 - 1) / 2 = 31,125 (1 <= m <= n*(n-1)/2)
+        {
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            int c0 = tokens[0] - 1;
+            int c1 = tokens[1] - 1;
+
+            adjList[c0].AddLast(c1);
+            adjList[c1].AddLast(c0);
         }
 
-        StringBuilder output = new();
-        for (int i = 0; i < n; ++i)
+        bool[] visitedTable = new bool[n];
+        Queue<int> visitingQueue = new();
+        int v0 = 0;
+        visitingQueue.Enqueue(v0);
+        visitedTable[v0] = true;
+        while (visitingQueue.Count > 0)
         {
-            int leastSliceCount = int.Parse(Console.ReadLine()!);
+            int v = visitingQueue.Dequeue();
 
-            // 1 < L ≤ 4,000,000
-            int low = 1 - 1;
-            int high = 4000000 + 1;
-            while (low < high - 1)
+            var adjs = adjList[v];
+            for (var node = adjs.First; node != null; node = node.Next) // max tc = n - 1 (exclude self)
             {
-                int mid = (low + high) / 2;
-                
-                if (Validation(l, leastSliceCount, mid))
-                {
-                    low = mid;
-                }
-                else
-                {
-                    high = mid;
-                }
+                int adjV = node.Value;
+
+                if (visitedTable[adjV])
+                    continue;
+
+                visitingQueue.Enqueue(adjV);
+                visitedTable[adjV] = true;
             }
-            output.AppendLine($"{low}");
         }
-        Console.Write(output);
-    }
-
-    private static bool Validation(int l, int leastSliceCount, int leastSliceLength)
-    {
-        // never happens, but for preventing a compile warning
-        if (_cutPoints == null)
-            return false;
-
-        int slicedCount = 0;
-        int prevSlicePoint = 0;
-        for (int j = 0; j < _cutPoints.Length; ++j)
-        {
-            int currSlicePoint = _cutPoints[j];
-            int slicedLength = currSlicePoint - prevSlicePoint;
-
-            if (slicedLength < leastSliceLength)
-                continue;
-
-            ++slicedCount;
-            prevSlicePoint = currSlicePoint;
-        }
-
-        if (slicedCount > leastSliceCount)
-            return true;
-
-        if (slicedCount == leastSliceCount && l - prevSlicePoint >= leastSliceLength)
-            return true;
         
-        return false;
+        StringBuilder output = new();
+        for (int v = 0; v < n; ++v) // max tc = n = 250 (1 <= n <= 250)
+        {
+            if (visitedTable[v])
+                continue;
+            
+            output.AppendLine($"{v + 1}");
+        }
+        Console.Write((output.Length < 1) ? "0" : output);
     }
 }
