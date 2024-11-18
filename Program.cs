@@ -1,33 +1,18 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int k = tokens[1];
+        // −10^9 ≤ x, y ≤ 10^9
+        int n = int.Parse(Console.ReadLine()!);
 
-        int[] depths = new int[k + 1];
-        Queue<int> visitingQueue = new();
-        visitingQueue.Enqueue(a);
-        while (visitingQueue.Count > 0)
+        StringBuilder output = new();
+        for (int i = 0; i < n; ++i)
         {
-            int ai = visitingQueue.Dequeue(); // which means the ith element in integer A's sequence
-
-            int aiVisitedTurns = depths[ai];
-
-            int next = ai + 1;
-            if (next <= k && depths[next] < 1)
-            {
-                visitingQueue.Enqueue(next);
-                depths[next] = aiVisitedTurns + 1;
-            }
-            int twice = ai * 2;
-            if (twice <= k && depths[twice] < 1)
-            {
-                visitingQueue.Enqueue(twice);
-                depths[twice] = aiVisitedTurns + 1;
-            }
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            output.AppendLine($"{tokens[0] + tokens[1]}");
         }
-        Console.Write(depths[k]);
+        Console.Write(output);
     }
 }
