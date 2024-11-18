@@ -43,9 +43,7 @@
             
             Index2D[] adjacentIndices2D = new Index2D[]
             {
-                new(row - 1, col),
                 new(row + 1, col),
-                new(row, col - 1),
                 new(row, col + 1),
             };
 
