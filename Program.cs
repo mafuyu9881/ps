@@ -1,75 +1,51 @@
 ﻿internal class Program
 {
-    private struct Index2D
-    {
-        private int _row;
-        public int Row => _row;
-        private int _col;
-        public int Col => _col;
-        public Index2D(int row, int col)
-        {
-            _row = row;
-            _col = col;
-        }
-    }
-
     private static void Main(string[] args)
     {
-        // 1 ≤ n, m ≤ 300
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0];
-        int m = tokens[1];
+        int n = int.Parse(Console.ReadLine()!);
 
-        bool[,] map = new bool[m, n];
-        for (int row = 0; row < m; ++row)
+        int[] steppingStones = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
+
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
+        int departureIndex = tokens[0] - 1;
+        int arrivalIndex = tokens[1] - 1;
+        
+        const int InvalidMovedCount = -1;
+
+        Queue<int> visitingIndices = new();
+        int[] movedCounts = new int[n];
+        // of course, this loop takes more time but it also gives consistency for the whole code
+        // max of n is 10,000 in this problem so, it's safe enough from the time limit
+        for (int i = 0; i < n; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < n; ++col)
-            {
-                map[row, col] = tokens[col] == 1;
-            }
+            movedCounts[i] = InvalidMovedCount;
         }
 
-        bool[,] visitedTable = new bool[m, n];
-        Queue<Index2D> visitingIndices = new();
-        Index2D ltIndex2D = new(0, 0);
-        visitingIndices.Enqueue(ltIndex2D);
-        visitedTable[ltIndex2D.Row, ltIndex2D.Col] = true;
+        visitingIndices.Enqueue(departureIndex);
+        movedCounts[departureIndex] = 0;
+
         while (visitingIndices.Count > 0)
         {
-            Index2D index2D = visitingIndices.Dequeue();
-            int row = index2D.Row;
-            int col = index2D.Col;
-            
-            Index2D[] adjacentIndices2D = new Index2D[]
+            int currIndex = visitingIndices.Dequeue();
+            int steppingStone = steppingStones[currIndex];
+
+            for (int nextIndex = 0; nextIndex < n; ++nextIndex)
             {
-                new(row + 1, col),
-                new(row, col + 1),
-            };
+                // we can omit this condition
+                //if (nextIndex == currIndex)
+                //    continue;
 
-            for (int i = 0; i < adjacentIndices2D.Length; ++i)
-            {
-                Index2D adjacentIndex2D = adjacentIndices2D[i];
-                int adjacentRow = adjacentIndex2D.Row;
-                int adjacentCol = adjacentIndex2D.Col;
-
-                if (adjacentRow < 0 || adjacentRow > (m - 1))
+                if ((nextIndex - currIndex) % steppingStone != 0)
                     continue;
 
-                if (adjacentCol < 0 || adjacentCol > (n - 1))
+                ref int nextmovedCountRef = ref movedCounts[nextIndex];
+                if (nextmovedCountRef != InvalidMovedCount)
                     continue;
 
-                if (visitedTable[adjacentRow, adjacentCol])
-                    continue;
-
-                if (map[adjacentRow, adjacentCol] == false)
-                    continue;
-
-                visitingIndices.Enqueue(adjacentIndex2D);
-                visitedTable[adjacentRow, adjacentCol] = true;
+                visitingIndices.Enqueue(nextIndex);
+                nextmovedCountRef = movedCounts[currIndex] + 1;
             }
         }
-        Index2D rbIndex2D = new(m - 1, n - 1);
-        Console.Write(visitedTable[rbIndex2D.Row, rbIndex2D.Col] ? "Yes" : "No");
+        Console.Write(movedCounts[arrivalIndex]);
     }
 }
