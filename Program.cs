@@ -4,48 +4,58 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int[] steppingStones = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
+        // I guess it's better to use extended arrays rather than adjusted input indices
+        int extendedN = n + 1;
 
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
-        int departureIndex = tokens[0] - 1;
-        int arrivalIndex = tokens[1] - 1;
-        
-        const int InvalidMovedCount = -1;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int s = tokens[0];
+        int e = tokens[1];
 
-        Queue<int> visitingIndices = new();
-        int[] movedCounts = new int[n];
-        // of course, this loop takes more time but it also gives consistency for the whole code
-        // max of n is 10,000 in this problem so, it's safe enough from the time limit
-        for (int i = 0; i < n; ++i)
+        int m = int.Parse(Console.ReadLine()!);
+        LinkedList<int>[] adjList = new LinkedList<int>[extendedN];
+        for (int i = 0; i < extendedN; ++i) // max tc = 100
         {
-            movedCounts[i] = InvalidMovedCount;
+            adjList[i] = new();
+        }
+        for (int i = 0; i < m; ++i) // max tc < 100 (maybe?)
+        {
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int a = tokens[0];
+            int b = tokens[1];
+            adjList[a].AddLast(b);
+            adjList[b].AddLast(a);
+        }
+        
+        const int InvalidDistance = -1;
+
+        Queue<int> visitingQueue = new();
+        int[] distanceTable = new int[extendedN];
+        for (int i = 0; i < extendedN; ++i) // max tc = 100
+        {
+            distanceTable[i] = InvalidDistance;
         }
 
-        visitingIndices.Enqueue(departureIndex);
-        movedCounts[departureIndex] = 0;
+        visitingQueue.Enqueue(s);
+        distanceTable[s] = 0;
 
-        while (visitingIndices.Count > 0)
+        while (visitingQueue.Count > 0)
         {
-            int currIndex = visitingIndices.Dequeue();
-            int steppingStone = steppingStones[currIndex];
+            int visitedIndex = visitingQueue.Dequeue();
+            int visitedDistance = distanceTable[visitedIndex];
 
-            for (int nextIndex = 0; nextIndex < n; ++nextIndex)
+            var adjs = adjList[visitedIndex];
+            for (var node = adjs.First; node != null; node = node.Next)
             {
-                // we can omit this condition
-                //if (nextIndex == currIndex)
-                //    continue;
+                int adjIndex = node.Value;
 
-                if ((nextIndex - currIndex) % steppingStone != 0)
+                if (distanceTable[adjIndex] != InvalidDistance)
                     continue;
 
-                ref int nextmovedCountRef = ref movedCounts[nextIndex];
-                if (nextmovedCountRef != InvalidMovedCount)
-                    continue;
-
-                visitingIndices.Enqueue(nextIndex);
-                nextmovedCountRef = movedCounts[currIndex] + 1;
+                visitingQueue.Enqueue(adjIndex);
+                distanceTable[adjIndex] = visitedDistance + 1;
             }
         }
-        Console.Write(movedCounts[arrivalIndex]);
+        
+        Console.Write(distanceTable[e]);
     }
 }
