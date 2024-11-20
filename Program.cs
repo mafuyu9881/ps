@@ -18,44 +18,36 @@ internal class Program
 
     private static void Main(string[] args)
     {
-        // geosurvcomp, detectors for underground oil deposits
-        // works on one large rect at a time,
-        // and creates a grid which divides the rect into numerous square plots
-        // @: pocket (because it contains oil), *: just a plot
-        // check how many different deposits are contained in a grid
-        // => connected components problem
-        
         StringBuilder output = new();
         while (true)
         {
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int height = tokens[0]; // [1..100]
-            int width = tokens[1]; // [1..100]
+            int w = tokens[0];
+            int h = tokens[1];
 
-            if (height == 0) // as the problem guided
+            if (w == 0)
                 break;
-            
+
+            bool[] map = new bool[w * h];
             LinkedList<int> objectives = new();
-            bool[] map = new bool[width * height];
-            for (int row = 0; row < height; ++row)
+            for (int row = 0; row < h; ++row)
             {
-                string line = Console.ReadLine()!;
-                for (int col = 0; col < width; ++col)
+                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+                for (int col = 0; col < w; ++col)
                 {
-                    if (line[col] == '@')
-                    {
-                        int index1D = ConvertIndex2DTo1D(width, new(row, col));
-                        map[index1D] = true;
-                        objectives.AddLast(index1D);
-                    }
+                    int index1D = ConvertIndex2DTo1D(w, new(row, col));
+
+                    bool land = tokens[col] == 1;
+                    map[index1D] = land;
+                    if (land) objectives.AddLast(index1D);
                 }
             }
 
-            Dictionary<int, HashSet<int>> deposits = new();
+            Dictionary<int, HashSet<int>> islands = new();
             Queue<int> visitingQueue = new();
-            bool[] visitedTable = new bool[width * height];
+            bool[] visitedTable = new bool[w * h];
 
-            int depositCount = 0;
+            int islandCount = 0;
             while (objectives.Count > 0)
             {
                 if (visitingQueue.Count < 1)
@@ -64,70 +56,70 @@ internal class Program
                     if (node == null) // never happens, but to prevent a compile warning
                         break;
 
-                    visitingQueue.Enqueue(node.Value);
+                    int index1D = node.Value;
+                    visitingQueue.Enqueue(index1D);
+                    visitedTable[index1D] = true;
                     objectives.Remove(node);
                 }
 
-                int index1D = visitingQueue.Dequeue();
-                Index2D index2D = ConvertIndex1DTo2D(width, index1D);
-                int row = index2D.Row;
-                int col = index2D.Col;
+                int srcIndex1D = visitingQueue.Dequeue();
+                Index2D srcIndex2D = ConvertIndex1DTo2D(w, srcIndex1D);
+                int srcRow = srcIndex2D.Row;
+                int srcCol = srcIndex2D.Col;
 
-                HashSet<int>? deposit = null;
-                if (visitedTable[index1D])
+                HashSet<int>? island = null;
+                if (islands.ContainsKey(srcIndex1D))
                 {
-                    deposit = deposits[index1D];
+                    island = islands[srcIndex1D];
                 }
                 else
                 {
-                    deposit = new() { index1D };
-                    deposits.Add(index1D, deposit);
-                    ++depositCount;
+                    island = new() { srcIndex1D };
+                    islands.Add(srcIndex1D, island);
+                    ++islandCount;
                 }
-                
+
                 Index2D[] adjIndices2D = new Index2D[]
                 {
-                    new(row - 1, col),
-                    new(row + 1, col),
-                    new(row, col - 1),
-                    new(row, col + 1),
-                    new(row - 1, col - 1),
-                    new(row - 1, col + 1),
-                    new(row + 1, col - 1),
-                    new(row + 1, col + 1),
+                    new(srcRow - 1, srcCol),
+                    new(srcRow + 1, srcCol),
+                    new(srcRow, srcCol - 1),
+                    new(srcRow, srcCol + 1),
+                    new(srcRow - 1, srcCol - 1),
+                    new(srcRow - 1, srcCol + 1),
+                    new(srcRow + 1, srcCol - 1),
+                    new(srcRow + 1, srcCol + 1),
                 };
-                for (int j = 0; j < adjIndices2D.Length; ++j)
+                for (int i = 0; i < adjIndices2D.Length; ++i)
                 {
-                    Index2D adjIndex2D = adjIndices2D[j];
-
+                    Index2D adjIndex2D = adjIndices2D[i];
                     int adjRow = adjIndex2D.Row;
-                    if (adjRow < 0 || adjRow > (height - 1))
+                    int adjCol = adjIndex2D.Col;
+                    int adjIndex1D = ConvertIndex2DTo1D(w, adjIndex2D);
+                    
+                    if (adjRow < 0 || adjRow > (h - 1))
                         continue;
 
-                    int adjCol = adjIndex2D.Col;
-                    if (adjCol < 0 || adjCol > (width - 1))
+                    if (adjCol < 0 || adjCol > (w - 1))
                         continue;
-                    
-                    int adjIndex1D = ConvertIndex2DTo1D(width, adjIndex2D);
+
                     if (visitedTable[adjIndex1D])
                         continue;
 
                     if (map[adjIndex1D] == false)
                         continue;
 
-                    // if deposits already contain the deposit which adjIndex1D associated,
-                    // then deposit already contains adjIndex1D too
-                    if (deposits.ContainsKey(adjIndex1D) == false)
+                    if (islands.ContainsKey(adjIndex1D) == false)
                     {
-                        deposit.Add(adjIndex1D);
-                        deposits.Add(adjIndex1D, deposit);
+                        island.Add(adjIndex1D);
+                        islands.Add(adjIndex1D, island);
                     }
 
                     visitingQueue.Enqueue(adjIndex1D);
                     visitedTable[adjIndex1D] = true;
                 }
             }
-            output.AppendLine($"{depositCount}");
+            output.AppendLine($"{islandCount}");
         }
         Console.Write(output);
     }
