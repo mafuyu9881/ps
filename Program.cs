@@ -1,63 +1,116 @@
 ﻿internal class Program
 {
+    struct Index2D
+    {
+        private int _row;
+        public int Row => _row;
+        private int _col;
+        public int Col => _col;
+        
+        public Index2D(int row, int col)
+        {
+            _row = row;
+            _col = col;
+        }
+    }
+
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // 2 ≤ n ≤ 500
-        int extendedN = n + 1;
+        int n = int.Parse(Console.ReadLine()!); // 1 <= n <= 1,000
 
-        int m = int.Parse(Console.ReadLine()!); // 1 ≤ m ≤ 10000
+        const char asteroidCharacter = '*';
 
-        LinkedList<int>[] adjList = new LinkedList<int>[extendedN];
-        for (int i = 0; i < adjList.Length; ++i)
+        char[] map = new char[n * n];
+        HashSet<int> visitableAsteroids = new();
+        for (int row = 0; row < n; ++row) // max tc = 1000,000
         {
-            adjList[i] = new();
-        }
-
-        for (int i = 0; i < m; ++i)
-        {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int a = tokens[0];
-            int b = tokens[1];
-
-            adjList[a].AddLast(b);
-            adjList[b].AddLast(a);
-        }
-
-        const int InvalidDistance = -1;
-
-        Queue<int> visitingQueue = new();
-        int[] distanceTable = new int[extendedN];
-        for (int i = 0; i < distanceTable.Length; ++i)
-        {
-            distanceTable[i] = InvalidDistance;
-        }
-
-        int s = 1;
-        visitingQueue.Enqueue(s);
-        distanceTable[s] = 0;
-
-        int invitations = 0;
-        while (visitingQueue.Count > 0)
-        {
-            int srcV = visitingQueue.Dequeue();
-
-            int adjVDistance = distanceTable[srcV] + 1;
-            if (adjVDistance > 2)
-                continue;
-
-            var adjs = adjList[srcV];
-            for (var node = adjs.First; node != null; node = node.Next)
+            string line = Console.ReadLine()!;
+            for (int col = 0; col < n; ++col)
             {
-                int adjV = node.Value;
-                if (distanceTable[adjV] != InvalidDistance)
-                    continue;
-                
-                visitingQueue.Enqueue(adjV);
-                distanceTable[adjV] = adjVDistance;
+                char c = line[col];
+                int cIndex1D = ConvertIndex2DTo1D(n, new(row, col));
 
-                ++invitations;
+                map[cIndex1D] = c;
+
+                if (c == asteroidCharacter)
+                {
+                    visitableAsteroids.Add(cIndex1D);
+                }
             }
         }
-        Console.Write(invitations);
+
+        int asteroidChunkCount = 0;
+        Dictionary<int, HashSet<int>> asteroidChunks = new();
+        Queue<int> asteroidQueue = new();
+
+        while (visitableAsteroids.Count > 0)
+        {
+            if (asteroidQueue.Count < 1)
+            {
+                int firstSrcIndex1D = visitableAsteroids.First();
+
+                asteroidQueue.Enqueue(firstSrcIndex1D);
+                visitableAsteroids.Remove(firstSrcIndex1D);
+
+                asteroidChunks.Add(firstSrcIndex1D, new() { firstSrcIndex1D });
+                ++asteroidChunkCount;
+            }
+
+            int srcIndex1D = asteroidQueue.Dequeue();
+            Index2D srcIndex2D = ConvertIndex1DTo2D(n, srcIndex1D);
+            int srcRow = srcIndex2D.Row;
+            int srcCol = srcIndex2D.Col;
+
+            HashSet<int> srcAsteroidChunk = asteroidChunks[srcIndex1D];
+
+            Index2D[] adjIndices2D = new Index2D[]
+            {
+                new(srcRow - 1, srcCol),
+                new(srcRow + 1, srcCol),
+                new(srcRow, srcCol - 1),
+                new(srcRow, srcCol + 1),
+            };
+            
+            for (int i = 0; i < adjIndices2D.Length; ++i)
+            {
+                Index2D adjIndex2D = adjIndices2D[i];
+                int adjRow = adjIndex2D.Row;
+                int adjCol = adjIndex2D.Col;
+                if (adjRow < 0 || adjRow > (n - 1))
+                    continue;
+
+                if (adjCol < 0 || adjCol > (n - 1))
+                    continue;
+
+                int adjIndex1D = ConvertIndex2DTo1D(n, adjIndex2D);
+                if (map[adjIndex1D] != asteroidCharacter)
+                    continue;
+
+                // The semantic of this condition is whether 'asteroid which of ID is adjIndex1D'
+                // already confirmed to be affiliated with any asteroid chunk.
+                // So, it's same with 'asteroidChunks.ContainsKey(adjIndex1D)'
+                // or 'visitableAsteroids.Contains(adjIndex1D)'.
+                if (srcAsteroidChunk.Contains(adjIndex1D))
+                    continue;
+
+                srcAsteroidChunk.Add(adjIndex1D);
+                asteroidChunks.Add(adjIndex1D, srcAsteroidChunk);
+
+                asteroidQueue.Enqueue(adjIndex1D);
+                visitableAsteroids.Remove(adjIndex1D);
+            }
+        }
+
+        Console.Write(asteroidChunkCount);
+    }
+
+    private static Index2D ConvertIndex1DTo2D(int width, int index1D)
+    {
+        return new(index1D / width, index1D % width);
+    }
+
+    private static int ConvertIndex2DTo1D(int width, Index2D index2D)
+    {
+        return index2D.Row * width + index2D.Col;
     }
 }
