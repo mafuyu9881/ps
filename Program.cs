@@ -21,8 +21,11 @@
         const char asteroidCharacter = '*';
 
         char[] map = new char[n * n];
-        HashSet<int> visitableAsteroids = new();
-        for (int row = 0; row < n; ++row) // max tc = 1000,000
+        // Hoped to use HashSet<int> in here but,
+        // There is no ways to get any element from the HashSet in O(1) time complexity.
+        // So sadly, I choosed to use linked list here.
+        LinkedList<int> visitableAsteroids = new();
+        for (int row = 0; row < n; ++row) // max tc = 1,000,000
         {
             string line = Console.ReadLine()!;
             for (int col = 0; col < n; ++col)
@@ -34,26 +37,33 @@
 
                 if (c == asteroidCharacter)
                 {
-                    visitableAsteroids.Add(cIndex1D);
+                    visitableAsteroids.AddLast(cIndex1D);
                 }
             }
         }
 
+        // we don't use a variable just for visiting history
         int asteroidChunkCount = 0;
         Dictionary<int, HashSet<int>> asteroidChunks = new();
         Queue<int> asteroidQueue = new();
 
-        while (visitableAsteroids.Count > 0)
+        while (visitableAsteroids.Count > 0) // max tc = 1,000,000
         {
-            if (asteroidQueue.Count < 1)
+            while (asteroidQueue.Count < 1)
             {
-                int firstSrcIndex1D = visitableAsteroids.First();
+                var node = visitableAsteroids.First!;
 
-                asteroidQueue.Enqueue(firstSrcIndex1D);
-                visitableAsteroids.Remove(firstSrcIndex1D);
+                int firstSrcIndex1D = node.Value;
+                if (asteroidChunks.ContainsKey(firstSrcIndex1D) == false)
+                {
+                    // birth of the new chunk
+                    asteroidChunks.Add(firstSrcIndex1D, new() { firstSrcIndex1D });
+                    ++asteroidChunkCount;
 
-                asteroidChunks.Add(firstSrcIndex1D, new() { firstSrcIndex1D });
-                ++asteroidChunkCount;
+                    asteroidQueue.Enqueue(firstSrcIndex1D); // tc = 1
+                }
+
+                visitableAsteroids.Remove(node);
             }
 
             int srcIndex1D = asteroidQueue.Dequeue();
@@ -71,7 +81,7 @@
                 new(srcRow, srcCol + 1),
             };
             
-            for (int i = 0; i < adjIndices2D.Length; ++i)
+            for (int i = 0; i < adjIndices2D.Length; ++i) // tc = 4
             {
                 Index2D adjIndex2D = adjIndices2D[i];
                 int adjRow = adjIndex2D.Row;
@@ -88,8 +98,7 @@
 
                 // The semantic of this condition is whether 'asteroid which of ID is adjIndex1D'
                 // already confirmed to be affiliated with any asteroid chunk.
-                // So, it's same with 'asteroidChunks.ContainsKey(adjIndex1D)'
-                // or 'visitableAsteroids.Contains(adjIndex1D)'.
+                // So, it's same with 'visitableAsteroids.Contains(adjIndex1D) == false'.
                 if (srcAsteroidChunk.Contains(adjIndex1D))
                     continue;
 
@@ -97,7 +106,6 @@
                 asteroidChunks.Add(adjIndex1D, srcAsteroidChunk);
 
                 asteroidQueue.Enqueue(adjIndex1D);
-                visitableAsteroids.Remove(adjIndex1D);
             }
         }
 
