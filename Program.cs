@@ -1,6 +1,6 @@
 ﻿internal class Program
 {
-    struct Index2D
+    private struct Index2D
     {
         private int _row;
         public int Row => _row;
@@ -16,113 +16,102 @@
 
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // 1 <= n <= 1,000
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = tokens[0];
+        int width = tokens[1];
 
-        const char asteroidCharacter = '*';
+        const int TastyElevation = 0;
 
-        char[] map = new char[n * n];
-        // Hoped to use HashSet<int> in here but,
-        // There is no ways to get any element from the HashSet in O(1) time complexity.
-        // So sadly, I choosed to use linked list here.
-        LinkedList<int> visitableAsteroids = new();
-        for (int row = 0; row < n; ++row) // max tc = 1,000,000
+        bool[] map = new bool[height * width];
+        LinkedList<int> badList = new();
+        for (int row = 0; row < height; ++row)
         {
-            string line = Console.ReadLine()!;
-            for (int col = 0; col < n; ++col)
+            int[] line = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < width; ++col)
             {
-                char c = line[col];
-                int cIndex1D = ConvertIndex2DTo1D(n, new(row, col));
+                int index1D = ConvertIndex2DTo1D(width, new(row, col));
 
-                map[cIndex1D] = c;
+                bool bad = line[col] > TastyElevation;
 
-                if (c == asteroidCharacter)
-                {
-                    visitableAsteroids.AddLast(cIndex1D);
-                }
+                map[index1D] = bad;
+                if (bad) badList.AddLast(index1D);
             }
         }
 
-        // we don't use a variable just for visiting history
-        int asteroidChunkCount = 0;
-        Dictionary<int, HashSet<int>> asteroidChunks = new();
-        Queue<int> asteroidQueue = new();
+        int badIslandCount = 0;
+        Dictionary<int, HashSet<int>> badIslands = new();
+        Queue<int> visitingQueue = new();
 
-        while (true) // max tc = 1,000,000
+        while (true)
         {
-            while (asteroidQueue.Count < 1 &&
-                   visitableAsteroids.Count > 0)
+            while (visitingQueue.Count < 1 && badList.Count > 0)
             {
-                var node = visitableAsteroids.First!;
+                var node = badList.First!;
 
                 int firstSrcIndex1D = node.Value;
-                if (asteroidChunks.ContainsKey(firstSrcIndex1D) == false)
+                if (badIslands.ContainsKey(firstSrcIndex1D) == false)
                 {
-                    // birth of the new chunk
-                    asteroidChunks.Add(firstSrcIndex1D, new() { firstSrcIndex1D });
-                    ++asteroidChunkCount;
-
-                    asteroidQueue.Enqueue(firstSrcIndex1D); // tc = 1
+                    badIslands.Add(firstSrcIndex1D, new() { firstSrcIndex1D });
+                    visitingQueue.Enqueue(firstSrcIndex1D);
+                    ++badIslandCount;
                 }
 
-                visitableAsteroids.Remove(node);
+                badList.Remove(node);
             }
 
-            if (asteroidQueue.Count < 1) // there is no more asteroid to consider
+            if (visitingQueue.Count < 1)
                 break;
 
-            int srcIndex1D = asteroidQueue.Dequeue();
-            Index2D srcIndex2D = ConvertIndex1DTo2D(n, srcIndex1D);
+            int srcIndex1D = visitingQueue.Dequeue();
+            HashSet<int> srcBadIsland = badIslands[srcIndex1D];
+            Index2D srcIndex2D = ConvertIndex1DTo2D(width, srcIndex1D);
             int srcRow = srcIndex2D.Row;
             int srcCol = srcIndex2D.Col;
-
-            HashSet<int> srcAsteroidChunk = asteroidChunks[srcIndex1D];
-
             Index2D[] adjIndices2D = new Index2D[]
             {
                 new(srcRow - 1, srcCol),
                 new(srcRow + 1, srcCol),
                 new(srcRow, srcCol - 1),
                 new(srcRow, srcCol + 1),
+                new(srcRow - 1, srcCol - 1),
+                new(srcRow + 1, srcCol + 1),
+                new(srcRow - 1, srcCol + 1),
+                new(srcRow + 1, srcCol - 1),
             };
-
-            for (int i = 0; i < adjIndices2D.Length; ++i) // tc = 4
+            for (int i = 0; i < adjIndices2D.Length; ++i)
             {
                 Index2D adjIndex2D = adjIndices2D[i];
+
                 int adjRow = adjIndex2D.Row;
+                if (adjRow < 0 || adjRow > (height - 1))
+                    continue;
+
                 int adjCol = adjIndex2D.Col;
-                if (adjRow < 0 || adjRow > (n - 1))
+                if (adjCol < 0 || adjCol > (width - 1))
                     continue;
 
-                if (adjCol < 0 || adjCol > (n - 1))
+                int adjIndex1D = ConvertIndex2DTo1D(width, adjIndex2D);
+                if (map[adjIndex1D] == false)
                     continue;
 
-                int adjIndex1D = ConvertIndex2DTo1D(n, adjIndex2D);
-                if (map[adjIndex1D] != asteroidCharacter)
+                if (badIslands.ContainsKey(adjIndex1D))
                     continue;
-
-                // The semantic of this condition is whether 'asteroid which of ID is adjIndex1D'
-                // already confirmed to be affiliated with any asteroid chunk.
-                // So, it's same with 'visitableAsteroids.Contains(adjIndex1D) == false'.
-                if (srcAsteroidChunk.Contains(adjIndex1D))
-                    continue;
-
-                srcAsteroidChunk.Add(adjIndex1D);
-                asteroidChunks.Add(adjIndex1D, srcAsteroidChunk);
-
-                asteroidQueue.Enqueue(adjIndex1D);
+                
+                srcBadIsland.Add(adjIndex1D);
+                badIslands.Add(adjIndex1D, srcBadIsland);
+                visitingQueue.Enqueue(adjIndex1D);
             }
         }
-
-        Console.Write(asteroidChunkCount);
-    }
-
-    private static Index2D ConvertIndex1DTo2D(int width, int index1D)
-    {
-        return new(index1D / width, index1D % width);
+        Console.Write(badIslandCount);
     }
 
     private static int ConvertIndex2DTo1D(int width, Index2D index2D)
     {
         return index2D.Row * width + index2D.Col;
+    }
+
+    private static Index2D ConvertIndex1DTo2D(int width, int index1D)
+    {
+        return new(index1D / width, index1D % width);
     }
 }
