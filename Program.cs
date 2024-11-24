@@ -1,4 +1,6 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private struct Index2D
     {
@@ -6,7 +8,7 @@
         public int Row => _row;
         private int _col;
         public int Col => _col;
-
+        
         public Index2D(int row, int col)
         {
             _row = row;
@@ -20,68 +22,68 @@
         int height = tokens[0];
         int width = tokens[1];
 
-        const int TastyElevation = 0;
+        const int WhitePixel = 1;
 
-        bool[] map = new bool[height * width];
-        LinkedList<int> badList = new();
+        const int InvalidDistance = -1;
+        int[] distances = new int[width * height];
+        for (int i = 0; i < distances.Length; ++i)
+        {
+            distances[i] = InvalidDistance;
+        }
+
+        int[] map = new int[width * height];
+        LinkedList<int> whitePixels = new();
         for (int row = 0; row < height; ++row)
         {
-            int[] line = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            string line = Console.ReadLine()!;
             for (int col = 0; col < width; ++col)
             {
+                int pixel = line[col] - '0';
+
                 int index1D = ConvertIndex2DTo1D(width, new(row, col));
 
-                bool bad = line[col] > TastyElevation;
-
-                map[index1D] = bad;
-                if (bad) badList.AddLast(index1D);
+                map[index1D] = pixel;
+                if (pixel == WhitePixel)
+                {
+                    whitePixels.AddLast(index1D);
+                    distances[index1D] = 0;
+                }
             }
         }
 
-        int badIslandCount = 0;
-        Dictionary<int, HashSet<int>> badIslands = new();
         Queue<int> visitingQueue = new();
-
         while (true)
         {
-            while (visitingQueue.Count < 1 && badList.Count > 0)
+            while (visitingQueue.Count < 1 && whitePixels.Count > 0)
             {
-                var node = badList.First!;
+                var node = whitePixels.First!;
 
-                int firstSrcIndex1D = node.Value;
-                if (badIslands.ContainsKey(firstSrcIndex1D) == false)
-                {
-                    badIslands.Add(firstSrcIndex1D, new() { firstSrcIndex1D });
-                    visitingQueue.Enqueue(firstSrcIndex1D);
-                    ++badIslandCount;
-                }
+                int initialSrcIndex1D = node.Value;
 
-                badList.Remove(node);
+                visitingQueue.Enqueue(initialSrcIndex1D);
+                whitePixels.Remove(node);
             }
 
             if (visitingQueue.Count < 1)
                 break;
 
             int srcIndex1D = visitingQueue.Dequeue();
-            HashSet<int> srcBadIsland = badIslands[srcIndex1D];
             Index2D srcIndex2D = ConvertIndex1DTo2D(width, srcIndex1D);
             int srcRow = srcIndex2D.Row;
             int srcCol = srcIndex2D.Col;
+
+            int newDistance = distances[srcIndex1D] + 1;
             Index2D[] adjIndices2D = new Index2D[]
             {
                 new(srcRow - 1, srcCol),
                 new(srcRow + 1, srcCol),
                 new(srcRow, srcCol - 1),
                 new(srcRow, srcCol + 1),
-                new(srcRow - 1, srcCol - 1),
-                new(srcRow + 1, srcCol + 1),
-                new(srcRow - 1, srcCol + 1),
-                new(srcRow + 1, srcCol - 1),
             };
             for (int i = 0; i < adjIndices2D.Length; ++i)
             {
                 Index2D adjIndex2D = adjIndices2D[i];
-
+                
                 int adjRow = adjIndex2D.Row;
                 if (adjRow < 0 || adjRow > (height - 1))
                     continue;
@@ -91,25 +93,34 @@
                     continue;
 
                 int adjIndex1D = ConvertIndex2DTo1D(width, adjIndex2D);
-                if (map[adjIndex1D] == false)
+                int oldDistance = distances[adjIndex1D];
+                if (oldDistance != InvalidDistance &&
+                    oldDistance <= newDistance)
                     continue;
 
-                if (badIslands.ContainsKey(adjIndex1D))
-                    continue;
-                
-                srcBadIsland.Add(adjIndex1D);
-                badIslands.Add(adjIndex1D, srcBadIsland);
+                distances[adjIndex1D] = newDistance;
                 visitingQueue.Enqueue(adjIndex1D);
             }
         }
-        Console.Write(badIslandCount);
+
+        StringBuilder output = new();
+        for (int row = 0; row < height; ++row)
+        {
+            StringBuilder line = new();
+            for (int col = 0; col < width; ++col)
+            {
+                line.Append($"{distances[ConvertIndex2DTo1D(width, new(row, col))]} ");
+            }
+            output.AppendLine($"{line}");
+        }
+        Console.Write(output);
     }
 
     private static int ConvertIndex2DTo1D(int width, Index2D index2D)
     {
         return index2D.Row * width + index2D.Col;
     }
-
+    
     private static Index2D ConvertIndex1DTo2D(int width, int index1D)
     {
         return new(index1D / width, index1D % width);
