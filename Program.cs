@@ -1,83 +1,44 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
-    private struct ConnectionData
-    {
-        private int _dst;
-        public int Dst => _dst;
-        private int _cost;
-        public int Cost => _cost;
-
-        public ConnectionData(int dst, int cost)
-        {
-            _dst = dst;
-            _cost = cost;
-        }
-    }
-
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int vCount = tokens[0]; // 1 ≤ V ≤ 20,000
-        int extendedVCount = vCount + 1;
-        int eCount = tokens[1]; // 1 ≤ E ≤ 300,000
-
-        int k = int.Parse(Console.ReadLine()!);
-
-        LinkedList<ConnectionData>[] adjList = new LinkedList<ConnectionData>[extendedVCount];
-        for (int i = 0; i < adjList.Length; ++i)
-        {
-            adjList[i] = new();
-        }
-        for (int i = 0; i < eCount; ++i)
-        {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int u = tokens[0];
-            int v = tokens[1];
-            int w = tokens[2];
-
-            adjList[u].AddLast(new ConnectionData(v, w));
-        }
-
         const int Infinity = -1;
-        int[] minCosts = new int[extendedVCount];
-        for (int i = 1; i < minCosts.Length; ++i)
+
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int a = tokens[0];
+        int b = tokens[1];
+        
+        int[] distances = new int[b + 1];
+        for (int i = 0; i < distances.Length; ++i)
         {
-            minCosts[i] = (i == k) ? 0 : Infinity;
+            distances[i] = (i != a) ? Infinity : 0;
         }
-
-        int selfCost = 0;
-        PriorityQueue<ConnectionData, int> pq = new();
-        pq.Enqueue(new(k, selfCost), selfCost);
-        while (pq.Count > 0)
+        Queue<long> queue = new();
+        queue.Enqueue(a);
+        while (queue.Count > 0)
         {
-            ConnectionData initConnectionData = pq.Dequeue();
-            int initDst = initConnectionData.Dst;
-            int initCost = initConnectionData.Cost;
-
-            var adjs = adjList[initDst];
-            for (var node = adjs.First; node != null; node = node.Next)
+            long num = queue.Dequeue();
+            int newDistance = distances[num] + 1;
+            long[] nextNums = new long[] { num * 2, num * 10 + 1 };
+            for (int i = 0; i < nextNums.Length; ++i)
             {
-                ConnectionData adjConnectionData = node.Value;
-                int adjDst = adjConnectionData.Dst;
-                int adjCost = adjConnectionData.Cost; // adjCost can't be infinity. If it were, it can't be in adjs.
+                long nextNum = nextNums[i];
+                if (nextNum > b)
+                    continue;
+                
+                int oldDistance = distances[nextNum];
+                if (oldDistance != Infinity && oldDistance < newDistance)
+                    continue;
 
-                int oldCost = minCosts[adjDst];
-                int newCost = initCost + adjCost;
-                if (oldCost == Infinity || oldCost > newCost)
-                {
-                    minCosts[adjDst] = newCost;
-                    pq.Enqueue(new(adjDst, newCost), newCost);
-                }
+                distances[nextNum] = newDistance;
+                queue.Enqueue(nextNum);
             }
         }
-        StringBuilder output = new();
-        for (int i = 1; i < minCosts.Length; ++i)
+        int distance = distances[b];
+        if (distance != -1)
         {
-            int minCost = minCosts[i];
-            output.AppendLine((minCost != Infinity) ? $"{minCost}" : "INF");
+            ++distance;
         }
-        Console.Write(output);
+        Console.Write(distance);
     }
 }
