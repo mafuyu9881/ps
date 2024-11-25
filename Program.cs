@@ -1,74 +1,83 @@
-﻿using System.Numerics;
-using System.Text;
+﻿using System.Text;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private struct ConnectionData
     {
-        // 0 ≤ k ≤ 10
-        // 3 * 2^0 ≤ n ≤ 3 * 2^10 (n = 3 * 2^k)
-        int n = int.Parse(Console.ReadLine()!);
+        private int _dst;
+        public int Dst => _dst;
+        private int _cost;
+        public int Cost => _cost;
 
-        int duplicatingCount = BitOperations.Log2((uint)(n / 3));
-
-        string[] cachedShape = new string[n];
-        cachedShape[0] = "*";
-        cachedShape[1] = "* *";
-        cachedShape[2] = "*****";
-
-        StringBuilder output = new();
-        int writingIndex = 0;
-        while (writingIndex < 3)
+        public ConnectionData(int dst, int cost)
         {
-            int borderBlankCount = n - 1 - writingIndex;
-
-            StringBuilder line = new();
-            line.Append(' ', borderBlankCount);
-            line.Append(cachedShape[writingIndex]);
-            line.Append(' ', borderBlankCount);
-            output.AppendLine(line.ToString());
-
-            ++writingIndex;
+            _dst = dst;
+            _cost = cost;
         }
-        int initialIntervalBlankCount = 5;
-        for (int i = 0; i < duplicatingCount; ++i)
-        {
-            int duplicatingShapeHeight = 3 * ExponentiationBySquaringInteratively(2, i);
-            for (int j = 0; j < duplicatingShapeHeight; ++j)
-            {
-                StringBuilder shape = new();
-                shape.Append(cachedShape[j]);
-                shape.Append(' ', initialIntervalBlankCount - (2 * j));
-                shape.Append(cachedShape[j]);
-                cachedShape[writingIndex] = shape.ToString();
-
-                int borderBlankCount = n - 1 - writingIndex;
-
-                StringBuilder line = new();
-                line.Append(' ', borderBlankCount);
-                line.Append(cachedShape[writingIndex]);
-                line.Append(' ', borderBlankCount);
-                output.AppendLine(line.ToString());
-
-                ++writingIndex;
-            }
-            initialIntervalBlankCount += 3 * ExponentiationBySquaringInteratively(2, i + 1); // 5 + sum of sequence { 0, 6, 12, 24, 48, ... }
-        }
-        Console.Write(output);
     }
 
-    private static int ExponentiationBySquaringInteratively(int basis, int exponent)
+    private static void Main(string[] args)
     {
-        int output = 1;
-        while (exponent > 0)
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int vCount = tokens[0]; // 1 ≤ V ≤ 20,000
+        int extendedVCount = vCount + 1;
+        int eCount = tokens[1]; // 1 ≤ E ≤ 300,000
+
+        int k = int.Parse(Console.ReadLine()!);
+
+        LinkedList<ConnectionData>[] adjList = new LinkedList<ConnectionData>[extendedVCount];
+        for (int i = 0; i < adjList.Length; ++i)
         {
-            if ((exponent & 1) == 1)
-            {
-                output *= basis;
-            }
-            basis *= basis;
-            exponent >>= 1;
+            adjList[i] = new();
         }
-        return output;
+        for (int i = 0; i < eCount; ++i)
+        {
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int u = tokens[0];
+            int v = tokens[1];
+            int w = tokens[2];
+
+            adjList[u].AddLast(new ConnectionData(v, w));
+        }
+
+        const int Infinity = -1;
+        int[] minCosts = new int[extendedVCount];
+        for (int i = 1; i < minCosts.Length; ++i)
+        {
+            minCosts[i] = (i == k) ? 0 : Infinity;
+        }
+
+        int selfCost = 0;
+        PriorityQueue<ConnectionData, int> pq = new();
+        pq.Enqueue(new(k, selfCost), selfCost);
+        while (pq.Count > 0)
+        {
+            ConnectionData initConnectionData = pq.Dequeue();
+            int initDst = initConnectionData.Dst;
+            int initCost = initConnectionData.Cost;
+
+            var adjs = adjList[initDst];
+            for (var node = adjs.First; node != null; node = node.Next)
+            {
+                ConnectionData adjConnectionData = node.Value;
+                int adjDst = adjConnectionData.Dst;
+                int adjCost = adjConnectionData.Cost; // adjCost can't be infinity. If it were, it can't be in adjs.
+
+                int oldCost = minCosts[adjDst];
+                int newCost = initCost + adjCost;
+                if (oldCost == Infinity || oldCost > newCost)
+                {
+                    minCosts[adjDst] = newCost;
+                    pq.Enqueue(new(adjDst, newCost), newCost);
+                }
+            }
+        }
+        StringBuilder output = new();
+        for (int i = 1; i < minCosts.Length; ++i)
+        {
+            int minCost = minCosts[i];
+            output.AppendLine((minCost != Infinity) ? $"{minCost}" : "INF");
+        }
+        Console.Write(output);
     }
 }
