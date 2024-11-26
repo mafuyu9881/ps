@@ -14,14 +14,14 @@
         }
     }
 
-    private struct StackData // sc = 8B
+    private struct AccData // sc = 8B
     {
         private int _v;
         public int V => _v;
         private int _oldCost;
         public int OldCost => _oldCost;
 
-        public StackData(int v, int oldCost)
+        public AccData(int v, int oldCost)
         {
             _v = v;
             _oldCost = oldCost;
@@ -60,20 +60,18 @@
             childAdjs.AddLast(new ConnectionData(parent, cost));
         }
 
-        int globalMaxDiameter = 0;
+        int maxDiameter = 0;
         for (int i = 1; i < extendedN; ++i) // tc = n, max tc = 10000
         {
-            int localMaxDiameter = 0;
-
             bool[] visited = new bool[extendedN]; // sc = 1B * n, max sc = 10000B = 10KB
-            Stack<StackData> stack = new(); // sc = 8B * n, max sc = 80000B = 80KB
+            Stack<AccData> stack = new(); // sc = 8B * n, max sc = 80000B = 80KB
             stack.Push(new(i, 0));
             visited[i] = true;
             while (stack.Count > 0) // tc = n, max tc = 10000
             {
-                StackData stackData = stack.Pop();
-                int v = stackData.V;
-                int oldCost = stackData.OldCost;
+                AccData accData = stack.Pop();
+                int v = accData.V;
+                int oldCost = accData.OldCost;
 
                 var adjs = adjList[v];
                 if (adjs == null)
@@ -88,14 +86,12 @@
                         continue;
 
                     int newCost = oldCost + adjCD.Cost;
-                    localMaxDiameter = Math.Max(localMaxDiameter, newCost);
+                    maxDiameter = Math.Max(maxDiameter, newCost);
                     stack.Push(new(adjV, newCost));
                     visited[adjV] = true;
                 }
             }
-
-            globalMaxDiameter = Math.Max(globalMaxDiameter, localMaxDiameter);
         }
-        Console.Write(globalMaxDiameter);
+        Console.Write(maxDiameter);
     }
 }
