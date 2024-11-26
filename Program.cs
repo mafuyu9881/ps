@@ -30,38 +30,45 @@
             childAdjs.AddLast((parent, weight));
         }
 
-        int maxDiameter = 0;
-        for (int i = 1; i < extendedN; ++i)
-        {
-            GC.Collect();
-            
-            bool[] visited = new bool[extendedN];
-            Stack<(int v, int weightSum)> stack = new();
-            stack.Push(new(i, 0));
-            visited[i] = true;
-            while (stack.Count > 0)
-            {
-                var stackData = stack.Pop();
-                int v = stackData.v;
-                int oldWeightSum = stackData.weightSum;
+        DFS(out int maxAccWeight, out int diameterV0, extendedN, 1, adjList);
+        DFS(out int maxDiameter, out int diameterV1, extendedN, diameterV0, adjList);
+        Console.Write(maxDiameter);
+    }
 
-                var adjs = adjList[v];
-                if (adjs == null)
+    private static void DFS(out int maxAccWeight, out int farthestV, int n, int s, LinkedList<(int v, int weight)>[] adjList)
+    {
+        maxAccWeight = 0;
+        farthestV = s;
+
+        bool[] visited = new bool[n];
+        Stack<(int v, int accWeight)> stack = new();
+        stack.Push((s, 0));
+        visited[s] = true;
+        while (stack.Count > 0)
+        {
+            var element = stack.Pop();
+            int v = element.v;
+            int oldAccWeight = element.accWeight;
+
+            var adjs = adjList[v];
+            if (adjs == null)
+                continue;
+
+            for (var node = adjs.First; node != null; node = node.Next)
+            {
+                int adjV = node.Value.v;
+                if (visited[adjV])
                     continue;
 
-                for (var node = adjs.First; node != null; node = node.Next)
+                int newAccWeight = oldAccWeight + node.Value.weight;
+                if (newAccWeight > maxAccWeight)
                 {
-                    int adjV = node.Value.v;
-                    if (visited[adjV])
-                        continue;
-
-                    int newWeightSum = oldWeightSum + node.Value.weight;
-                    maxDiameter = Math.Max(maxDiameter, newWeightSum);
-                    stack.Push(new(adjV, newWeightSum));
-                    visited[adjV] = true;
+                    maxAccWeight = newAccWeight;
+                    farthestV = adjV;
                 }
+                stack.Push((adjV, newAccWeight));
+                visited[adjV] = true;
             }
         }
-        Console.Write(maxDiameter);
     }
 }
