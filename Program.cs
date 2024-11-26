@@ -1,88 +1,101 @@
 ﻿internal class Program
 {
-    private struct ChildConnectionData
+    private struct ConnectionData // sc = 8B
     {
-        private int _child;
-        public int Child => _child;
+        private int _dst;
+        public int Dst => _dst;
         private int _cost;
         public int Cost => _cost;
 
-        public ChildConnectionData(int child, int cost)
+        public ConnectionData(int dst, int cost)
         {
-            _child = child;
+            _dst = dst;
             _cost = cost;
+        }
+    }
+
+    private struct StackData // sc = 8B
+    {
+        private int _v;
+        public int V => _v;
+        private int _oldCost;
+        public int OldCost => _oldCost;
+
+        public StackData(int v, int oldCost)
+        {
+            _v = v;
+            _oldCost = oldCost;
         }
     }
 
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // 1 ≤ n ≤ 10,000
+        int n = int.Parse(Console.ReadLine()!);
         int extendedN = n + 1;
 
-        LinkedList<ChildConnectionData>[] childrenList = new LinkedList<ChildConnectionData>[extendedN];
-        for (int i = 1; i < extendedN; ++i) // tc = n
-        {
-            childrenList[i] = new();
-        }
-        LinkedList<int> visitableParents = new();
-        for (int i = 0; i < n; ++i) // tc = n
+        // sc = (2n - 2) * 8B
+        // max sc = 19998 * 8B = 159984B = approx 160KB
+        LinkedList<ConnectionData>[] adjList = new LinkedList<ConnectionData>[extendedN];
+        for (int i = 0; i < (n - 1); ++i)
         {
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
             int parent = tokens[0];
             int child = tokens[1];
             int cost = tokens[2];
 
-            visitableParents.AddLast(parent);
-            childrenList[parent].AddLast(new ChildConnectionData(child, cost));
+            var parentAdjs = adjList[parent];
+            if (parentAdjs == null)
+            {
+                parentAdjs = new();
+                adjList[parent] = parentAdjs;
+            }
+            parentAdjs.AddLast(new ConnectionData(child, cost));
+
+            var childAdjs = adjList[child];
+            if (childAdjs == null)
+            {
+                childAdjs = new();
+                adjList[child] = childAdjs;
+            }
+            childAdjs.AddLast(new ConnectionData(parent, cost));
         }
 
-        //int[] diameters = new int[extendedN];
-        int maxDiameter = 0;
-        while (true)
+        int globalMaxDiameter = 0;
+        for (int i = 1; i < extendedN; ++i) // tc = n, max tc = 10000
         {
-            if (visitableParents.Count < 1)
-                break;
+            int localMaxDiameter = 0;
 
-            var node = visitableParents.First!;
-            int parent = node.Value;
-            visitableParents.Remove(node);
-
-            int diameter = 0;
-
-            Queue<ChildConnectionData> ccdQueue = new();
-            var adjs = childrenList[parent];
-            for (var iteratingNode = adjs.First; iteratingNode != null; iteratingNode = iteratingNode.Next)
+            bool[] visited = new bool[extendedN]; // sc = 1B * n, max sc = 10000B = 10KB
+            Stack<StackData> stack = new(); // sc = 8B * n, max sc = 80000B = 80KB
+            stack.Push(new(i, 0));
+            visited[i] = true;
+            while (stack.Count > 0) // tc = n, max tc = 10000
             {
-                ccdQueue.Enqueue(iteratingNode.Value);
-            }
-            while (ccdQueue.Count > 0)
-            {
-                ChildConnectionData ccd = ccdQueue.Dequeue();
+                StackData stackData = stack.Pop();
+                int v = stackData.V;
+                int oldCost = stackData.OldCost;
 
-                diameter += ccd.Cost;
-
-                int child = ccd.Child;
-
-                var leftGrandchildNode = childrenList[child].First;
-                var rightGrandchildNode = childrenList[child].Last;
-                if (leftGrandchildNode == null) // same semantics with 'if (leftGrandchildNode == null && rightGrandchildNode == null)'
+                var adjs = adjList[v];
+                if (adjs == null)
                     continue;
 
-                if (leftGrandchildNode != rightGrandchildNode)
+                for (var node = adjs.First; node != null; node = node.Next) // max tc = 3
                 {
-                    int leftCost = leftGrandchildNode.Value.Cost;
-                    int rightCost = rightGrandchildNode.Value.Cost;
-                }
-                else // child has only one node
-                {
-                    ccdQueue.Enqueue(leftGrandchildNode.Value);
+                    ConnectionData adjCD = node.Value;
+
+                    int adjV = adjCD.Dst;
+                    if (visited[adjV])
+                        continue;
+
+                    int newCost = oldCost + adjCD.Cost;
+                    localMaxDiameter = Math.Max(localMaxDiameter, newCost);
+                    stack.Push(new(adjV, newCost));
+                    visited[adjV] = true;
                 }
             }
 
-            if (diameter > maxDiameter)
-            {
-                maxDiameter = diameter;
-            }
+            globalMaxDiameter = Math.Max(globalMaxDiameter, localMaxDiameter);
         }
+        Console.Write(globalMaxDiameter);
     }
 }
