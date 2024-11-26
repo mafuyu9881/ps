@@ -35,7 +35,7 @@
 
         // sc = (2n - 2) * 8B
         // max sc = 19998 * 8B = 159984B = approx 160KB
-        LinkedList<ConnectionData>[] adjList = new LinkedList<ConnectionData>[extendedN];
+        List<ConnectionData>[] adjList = new List<ConnectionData>[extendedN];
         for (int i = 0; i < (n - 1); ++i)
         {
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -49,7 +49,7 @@
                 parentAdjs = new();
                 adjList[parent] = parentAdjs;
             }
-            parentAdjs.AddLast(new ConnectionData(child, cost));
+            parentAdjs.Add(new ConnectionData(child, cost));
 
             var childAdjs = adjList[child];
             if (childAdjs == null)
@@ -57,7 +57,7 @@
                 childAdjs = new();
                 adjList[child] = childAdjs;
             }
-            childAdjs.AddLast(new ConnectionData(parent, cost));
+            childAdjs.Add(new ConnectionData(parent, cost));
         }
 
         int maxDiameter = 0;
@@ -77,15 +77,13 @@
                 if (adjs == null)
                     continue;
 
-                for (var node = adjs.First; node != null; node = node.Next) // max tc = 3
+                for (int j = 0; j < adjs.Count; ++j) // max tc = 3
                 {
-                    ConnectionData adjCD = node.Value;
-
-                    int adjV = adjCD.Dst;
+                    int adjV = adjs[j].Dst;
                     if (visited[adjV])
                         continue;
 
-                    int newCost = oldCost + adjCD.Cost;
+                    int newCost = oldCost + adjs[j].Cost;
                     maxDiameter = Math.Max(maxDiameter, newCost);
                     stack.Push(new(adjV, newCost));
                     visited[adjV] = true;
