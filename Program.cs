@@ -1,74 +1,73 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
         int extendedN = n + 1;
 
-        LinkedList<(int v, int weight)>[] adjList = new LinkedList<(int, int)>[extendedN];
-        for (int i = 0; i < (n - 1); ++i)
+        int m = int.Parse(Console.ReadLine()!);
+
+        int[] tokens;
+        LinkedList<(int v, int cost)>[] adjList = new LinkedList<(int, int)>[extendedN];
+        for (int i = 0; i < m; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int parent = tokens[0];
-            int child = tokens[1];
-            int weight = tokens[2];
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int v0 = tokens[0];
+            int v1 = tokens[1];
+            int cost = tokens[2];
 
-            var parentAdjs = adjList[parent];
-            if (parentAdjs == null)
+            var v0Adjs = adjList[v0];
+            if (v0Adjs == null)
             {
-                parentAdjs = new();
-                adjList[parent] = parentAdjs;
+                v0Adjs = new();
+                adjList[v0] = v0Adjs;
             }
-            parentAdjs.AddLast((child, weight));
-
-            var childAdjs = adjList[child];
-            if (childAdjs == null)
-            {
-                childAdjs = new();
-                adjList[child] = childAdjs;
-            }
-            childAdjs.AddLast((parent, weight));
+            v0Adjs.AddLast((v1, cost));
         }
 
-        DFS(out int maxAccWeight, out int diameterV0, extendedN, 1, adjList);
-        DFS(out int maxDiameter, out int diameterV1, extendedN, diameterV0, adjList);
-        Console.Write(maxDiameter);
-    }
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int s = tokens[0];
+        int e = tokens[1];
 
-    private static void DFS(out int maxAccWeight, out int farthestV, int n, int s, LinkedList<(int v, int weight)>[] adjList)
-    {
-        maxAccWeight = 0;
-        farthestV = s;
+        const int Infinity = -1;
 
-        bool[] visited = new bool[n];
-        Stack<(int v, int accWeight)> stack = new();
-        stack.Push((s, 0));
-        visited[s] = true;
-        while (stack.Count > 0)
+        int[] minCosts = new int[extendedN];
+        for (int i = 0; i < minCosts.Length; ++i)
         {
-            var element = stack.Pop();
+            minCosts[i] = (i != s) ? Infinity : 0;
+        }
+
+        PriorityQueue<(int v, int cost), int> pq = new();
+        pq.Enqueue((s, 0), 0);
+        while (pq.Count > 0)
+        {
+            var element = pq.Dequeue();
             int v = element.v;
-            int oldAccWeight = element.accWeight;
+            int cost = element.cost;
 
             var adjs = adjList[v];
-            if (adjs == null)
-                continue;
-
-            for (var node = adjs.First; node != null; node = node.Next)
+            if (adjs != null)
             {
-                int adjV = node.Value.v;
-                if (visited[adjV])
-                    continue;
-
-                int newAccWeight = oldAccWeight + node.Value.weight;
-                if (newAccWeight > maxAccWeight)
+                for (var node = adjs.First; node != null; node = node.Next)
                 {
-                    maxAccWeight = newAccWeight;
-                    farthestV = adjV;
+                    int adjV = node.Value.v;
+                    int adjCost = node.Value.cost;
+
+                    int oldCost = minCosts[adjV];
+                    int newCost = cost + adjCost;
+                    if (oldCost == Infinity || oldCost > newCost)
+                    {
+                        minCosts[adjV] = newCost;
+                        pq.Enqueue((adjV, newCost), newCost);
+                    }
                 }
-                stack.Push((adjV, newAccWeight));
-                visited[adjV] = true;
             }
         }
+
+        StringBuilder output = new();
+        output.AppendLine($"{minCosts[e]}");
+        Console.Write(output);
     }
 }
