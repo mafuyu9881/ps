@@ -33,19 +33,23 @@ internal class Program
 
         const int Infinity = -1;
 
-        int[] minCosts = new int[extendedN];
+        (int cost, LinkedList<int>? vList)[] minCosts = new (int, LinkedList<int>?)[extendedN];
         for (int i = 0; i < minCosts.Length; ++i)
         {
-            minCosts[i] = (i != s) ? Infinity : 0;
+            minCosts[i] = ((i != s) ? Infinity : 0, null);
         }
 
-        PriorityQueue<(int v, int cost), int> pq = new();
-        pq.Enqueue((s, 0), 0);
+        PriorityQueue<(int v, int cost, LinkedList<int> vList), int> pq = new();
+        int selfCost = 0;
+        LinkedList<int> sVList = new();
+        sVList.AddLast(s);
+        pq.Enqueue((s, selfCost, sVList), selfCost);
         while (pq.Count > 0)
         {
             var element = pq.Dequeue();
             int v = element.v;
             int cost = element.cost;
+            var oldVList = element.vList;
 
             var adjs = adjList[v];
             if (adjs != null)
@@ -55,19 +59,30 @@ internal class Program
                     int adjV = node.Value.v;
                     int adjCost = node.Value.cost;
 
-                    int oldCost = minCosts[adjV];
+                    int oldCost = minCosts[adjV].cost;
                     int newCost = cost + adjCost;
                     if (oldCost == Infinity || oldCost > newCost)
                     {
-                        minCosts[adjV] = newCost;
-                        pq.Enqueue((adjV, newCost), newCost);
+                        LinkedList<int> newVList = new(oldVList);
+                        newVList.AddLast(adjV);
+                        minCosts[adjV] = (newCost, newVList);
+                        pq.Enqueue((adjV, newCost, newVList), newCost);
                     }
                 }
             }
         }
 
         StringBuilder output = new();
-        output.AppendLine($"{minCosts[e]}");
+        output.AppendLine($"{minCosts[e].cost}");
+        var eVList = minCosts[e].vList;
+        if (eVList != null) // never happens, just to prevent a compile error
+        {
+            output.AppendLine($"{eVList.Count}");
+            for (var node = eVList.First; node != null; node = node.Next)
+            {
+                output.Append($"{node.Value} ");
+            }
+        }
         Console.Write(output);
     }
 }
