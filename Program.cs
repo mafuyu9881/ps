@@ -48,6 +48,9 @@ internal class Program
         {
             var element = pq.Dequeue();
             int v = element.v;
+            if (v == e)
+                break;
+                
             int cost = element.cost;
             var oldVList = element.vList;
 
