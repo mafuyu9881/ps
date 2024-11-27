@@ -2,90 +2,97 @@
 
 internal class Program
 {
+    private struct ConnectionData
+    {
+        private int _v;
+        public int V => _v;
+        private int _dist;
+        public int Dist => _dist;
+
+        public ConnectionData(int v, int dist)
+        {
+            _v = v;
+            _dist = dist;
+        }
+    }
+
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        int extendedN = n + 1;
+        int v = int.Parse(Console.ReadLine()!);
+        int extendedV = v + 1;
 
-        int m = int.Parse(Console.ReadLine()!);
-
-        int[] tokens;
-        LinkedList<(int v, int cost)>[] adjList = new LinkedList<(int, int)>[extendedN];
-        for (int i = 0; i < m; ++i)
+        LinkedList<ConnectionData>[] adjList = new LinkedList<ConnectionData>[extendedV];
+        for (int i = 0; i < v; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
             int v0 = tokens[0];
-            int v1 = tokens[1];
-            int cost = tokens[2];
 
-            var v0Adjs = adjList[v0];
-            if (v0Adjs == null)
+            for (int j = 1; j < tokens.Length; j += 2)
             {
-                v0Adjs = new();
-                adjList[v0] = v0Adjs;
-            }
-            v0Adjs.AddLast((v1, cost));
-        }
+                if (tokens[j] == -1)
+                    break;
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int s = tokens[0];
-        int e = tokens[1];
+                int v1 = tokens[j];
+                int dist = tokens[j + 1];
 
-        const int Infinity = -1;
-
-        (int cost, LinkedList<int>? vList)[] minCosts = new (int, LinkedList<int>?)[extendedN];
-        for (int i = 0; i < minCosts.Length; ++i)
-        {
-            minCosts[i] = ((i != s) ? Infinity : 0, null);
-        }
-
-        PriorityQueue<(int v, int cost, LinkedList<int> vList), int> pq = new();
-        int selfCost = 0;
-        LinkedList<int> sVList = new();
-        sVList.AddLast(s);
-        pq.Enqueue((s, selfCost, sVList), selfCost);
-        while (pq.Count > 0)
-        {
-            var element = pq.Dequeue();
-            int v = element.v;
-            if (v == e)
-                break;
-                
-            int cost = element.cost;
-            var oldVList = element.vList;
-
-            var adjs = adjList[v];
-            if (adjs != null)
-            {
-                for (var node = adjs.First; node != null; node = node.Next)
+                var v0Adjs = adjList[v0];
+                if (v0Adjs == null)
                 {
-                    int adjV = node.Value.v;
-                    int adjCost = node.Value.cost;
-
-                    int oldCost = minCosts[adjV].cost;
-                    int newCost = cost + adjCost;
-                    if (oldCost == Infinity || oldCost > newCost)
-                    {
-                        LinkedList<int> newVList = new(oldVList);
-                        newVList.AddLast(adjV);
-                        minCosts[adjV] = (newCost, newVList);
-                        pq.Enqueue((adjV, newCost, newVList), newCost);
-                    }
+                    v0Adjs = new();
+                    adjList[v0] = v0Adjs;
                 }
+                v0Adjs.AddLast(new ConnectionData(v1, dist));
+
+                var v1Adjs = adjList[v1];
+                if (v1Adjs == null)
+                {
+                    v1Adjs = new();
+                    adjList[v1] = v1Adjs;
+                }
+                v1Adjs.AddLast(new ConnectionData(v0, dist));
             }
         }
 
-        StringBuilder output = new();
-        output.AppendLine($"{minCosts[e].cost}");
-        var eVList = minCosts[e].vList;
-        if (eVList != null) // never happens, just to prevent a compile error
+        DFS(out int maxAccDist, out int diameterV0, extendedV, 1, adjList);
+        DFS(out int diameter, out int diameterV1, extendedV, diameterV0, adjList);
+        Console.Write(diameter);
+    }
+
+    private static void DFS(out int maxAccDist, out int farthestV, int n, int s, LinkedList<ConnectionData>[] adjList)
+    {
+        maxAccDist = 0;
+        farthestV = s;
+
+        bool[] visited = new bool[n];
+        Stack<(int v, int accDist)> stack = new();
+        stack.Push((s, 0));
+        visited[s] = true;
+        while (stack.Count > 0)
         {
-            output.AppendLine($"{eVList.Count}");
-            for (var node = eVList.First; node != null; node = node.Next)
+            var element = stack.Pop();
+            int v = element.v;
+            int oldAccDist = element.accDist;
+            
+            var adjs = adjList[v];
+            if (adjs == null)
+                continue;
+
+            for (var node = adjs.First; node != null; node = node.Next)
             {
-                output.Append($"{node.Value} ");
+                int adjV = node.Value.V;
+                if (visited[adjV])
+                    continue;
+
+                int newAccDist = oldAccDist + node.Value.Dist;
+                if (newAccDist > maxAccDist)
+                {
+                    maxAccDist = newAccDist;
+                    farthestV = adjV;
+                }
+                stack.Push((adjV, newAccDist));
+                visited[adjV] = true;
             }
         }
-        Console.Write(output);
     }
 }
