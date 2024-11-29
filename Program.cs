@@ -2,8 +2,6 @@
 
 internal class Program
 {
-
-
     private static void Main(string[] args)
     {
         int t = int.Parse(Console.ReadLine()!);
@@ -15,32 +13,28 @@ internal class Program
             int n = tokens[0];
             int m = tokens[1];
 
-            //int cases = 1; // 0 < N ≤ M < 30
-            //for (int j = 0; j < n; ++j)
-            //{
-            //    cases *= (m - j) - (n - j - 1);
-            //}
-            int cases = 0;
-            ComputeCases(ref cases, n, m, 0, 0);
-            output.AppendLine($"{cases}");
+            output.AppendLine($"{CombinationByMemoization(m, n)}");
         }
         Console.Write(output);
     }
 
-    private static void ComputeCases(ref int cases, int n, int m, int lastEastOccupiedSiteCount, int currWestSiteIndex)
+    private static int CombinationByMemoization(int n, int r)
     {
-        for (int occupiableEastSiteIndex = lastEastOccupiedSiteCount;
-             occupiableEastSiteIndex < m - (n - currWestSiteIndex - 1);
-             ++occupiableEastSiteIndex)
+        int[,] dp = new int[n + 1, r + 1];
+        for (int i = 0; i <= n; ++i)
         {
-            if (currWestSiteIndex < n - 1)
+            for (int j = 0; j <= i && j <= r; ++j)
             {
-                ComputeCases(ref cases, n, m, lastEastOccupiedSiteCount + 1, currWestSiteIndex + 1);
-            }
-            else
-            {
-                ++cases;
+                if (i == j || j == 0)
+                {
+                    dp[i, j] = 1;
+                }
+                else
+                {
+                    dp[i, j] = dp[i - 1, j - 1] + dp[i - 1, j];
+                }
             }
         }
+        return dp[n, r];
     }
 }
