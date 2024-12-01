@@ -3,16 +3,20 @@
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
-        // index of the array 'dp' means the length of longest side
-        // or it can be said as amount of tiles.
-        // and element of it means the area of corresponded rectangle.
-        long[] dp = new long[n + 1];
-        dp[1] = 4; // 1 ≤ N ≤ 80
-        if (dp.Length > 2) dp[2] = 6;
-        for (int i = 3; i < dp.Length; ++i)
+        // the problem said not to replace integer B's place
+        // but actually no need to care about it
+        // because the formula S only uses the plus operation
+        // so the commutative property will be validated on there
+        int[] a = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(a);
+        int[] b = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(b);
+        Array.Reverse(b);
+        int output = 0;
+        for (int i = 0; i < n; ++i)
         {
-            dp[i] = dp[i - 1] + dp[i - 2];
+            output += a[i] * b[i];
         }
-        Console.Write(dp[n]);
+        Console.Write(output);
     }
 }
