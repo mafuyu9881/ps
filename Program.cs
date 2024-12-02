@@ -4,24 +4,21 @@
     {
         int n = int.Parse(Console.ReadLine()!);
         
-        PriorityQueue<int, int> pizzaTowers = new();
-        pizzaTowers.Enqueue(n, n);
-        int pleasure = 0;
-        while (pizzaTowers.Count > 0)
+        int[] dp = new int[Math.Max(3, n + 1)];
+        dp[0] = 0;
+        dp[1] = 0;
+        dp[2] = 1;
+        for (int i = 3; i < dp.Length; ++i)
         {
-            int height = pizzaTowers.Dequeue();
-
-            int separatedHeight0 = height / 2;
-            int separatedHeight1 = height - separatedHeight0;
-
-            pleasure += separatedHeight0 * separatedHeight1;
-
-            if (separatedHeight0 > 1)
-                pizzaTowers.Enqueue(separatedHeight0, separatedHeight0);
-
-            if (separatedHeight1 > 1)
-                pizzaTowers.Enqueue(separatedHeight1, separatedHeight1);
+            if ((i & 1) == 0)
+            {
+                dp[i] = (i / 2) * (i / 2) + dp[i / 2] + dp[i / 2];
+            }
+            else
+            {
+                dp[i] = (i / 2) * (i / 2 + 1) + dp[i / 2] + dp[i / 2 + 1];
+            }
         }
-        Console.Write(pleasure);
+        Console.Write(dp[n]);
     }
 }
