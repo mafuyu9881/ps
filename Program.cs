@@ -3,20 +3,25 @@
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
-        // the problem said not to replace integer B's place
-        // but actually no need to care about it
-        // because the formula S only uses the plus operation
-        // so the commutative property will be validated on there
-        int[] a = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(a);
-        int[] b = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(b);
-        Array.Reverse(b);
-        int output = 0;
-        for (int i = 0; i < n; ++i)
+        
+        PriorityQueue<int, int> pizzaTowers = new();
+        pizzaTowers.Enqueue(n, n);
+        int pleasure = 0;
+        while (pizzaTowers.Count > 0)
         {
-            output += a[i] * b[i];
+            int height = pizzaTowers.Dequeue();
+
+            int separatedHeight0 = height / 2;
+            int separatedHeight1 = height - separatedHeight0;
+
+            pleasure += separatedHeight0 * separatedHeight1;
+
+            if (separatedHeight0 > 1)
+                pizzaTowers.Enqueue(separatedHeight0, separatedHeight0);
+
+            if (separatedHeight1 > 1)
+                pizzaTowers.Enqueue(separatedHeight1, separatedHeight1);
         }
-        Console.Write(output);
+        Console.Write(pleasure);
     }
 }
