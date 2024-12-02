@@ -1,24 +1,48 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        
-        int[] dp = new int[Math.Max(3, n + 1)];
-        dp[0] = 0;
-        dp[1] = 0;
-        dp[2] = 1;
-        for (int i = 3; i < dp.Length; ++i)
+        string s = Console.ReadLine()!;
+        int xCount = 0;
+        StringBuilder output = new();
+        for (int i = 0; i < s.Length; ++i)
         {
-            if ((i & 1) == 0)
+            char c = s[i];
+
+            if (c == 'X')
             {
-                dp[i] = (i / 2) * (i / 2) + dp[i / 2] + dp[i / 2];
+                ++xCount;
             }
-            else
+
+            if ((xCount % 2 != 0) &&
+                (c == '.' || i == (s.Length - 1)))
             {
-                dp[i] = (i / 2) * (i / 2 + 1) + dp[i / 2] + dp[i / 2 + 1];
+                output.Clear();
+                output.Append("-1");
+                break;
+            }
+
+            if (xCount == 4)
+            {
+                output.Append("AAAA");
+                xCount = 0;
+            }
+
+            if ((xCount == 2) &&
+                (i == (s.Length - 1) || c == '.'))
+            {
+                output.Append("BB");
+                xCount = 0;
+            }
+
+            if ((xCount == 0) &&
+                (c == '.'))
+            {
+                output.Append('.');
             }
         }
-        Console.Write(dp[n]);
+        Console.Write(output);
     }
 }
