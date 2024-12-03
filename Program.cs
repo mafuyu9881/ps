@@ -1,48 +1,22 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        string s = Console.ReadLine()!;
-        int xCount = 0;
-        StringBuilder output = new();
-        for (int i = 0; i < s.Length; ++i)
+        int n = int.Parse(Console.ReadLine()!); // 1 ≤ n ≤ 100,000
+        int output = 0;
+        while (n > 0)
         {
-            char c = s[i];
-
-            if (c == 'X')
+            if (n % 5 != 0)
             {
-                ++xCount;
+                ++output;
+                n -= 2;
             }
-
-            if ((xCount % 2 != 0) &&
-                (c == '.' || i == (s.Length - 1)))
+            else
             {
-                output.Clear();
-                output.Append("-1");
-                break;
-            }
-
-            if (xCount == 4)
-            {
-                output.Append("AAAA");
-                xCount = 0;
-            }
-
-            if ((xCount == 2) &&
-                (i == (s.Length - 1) || c == '.'))
-            {
-                output.Append("BB");
-                xCount = 0;
-            }
-
-            if ((xCount == 0) &&
-                (c == '.'))
-            {
-                output.Append('.');
+                output += n / 5;
+                n = 0;
             }
         }
-        Console.Write(output);
+        Console.WriteLine((n != 0) ? -1 : output);
     }
 }
