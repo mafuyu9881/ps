@@ -2,37 +2,30 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // 1 ≤ n ≤ 100,000
+        int n = int.Parse(Console.ReadLine()!);
 
-        int[] coins = new int[] { 2, 5 };
-
-        const int Invalid = -1;
-        int[] dp = new int[n + 1];
-        for (int i = 1; i < dp.Length; ++i)
+        int mine = int.Parse(Console.ReadLine()!);
+        
+        int[] candidates = new int[n - 1]; // n = (0..50]
+        int candidatesLength = candidates.Length;
+        for (int i = 0; i < candidates.Length; ++i)
         {
-            dp[i] = Invalid;
+            candidates[i] = int.Parse(Console.ReadLine()!);
+        }
+        Array.Sort(candidates);
 
-            for (int j = 0; j < coins.Length; ++j)
+        int output = 0;
+        if (candidatesLength > 0)
+        {
+            int lastCandidatesIndex = candidatesLength - 1;
+            while (mine <= candidates[lastCandidatesIndex])
             {
-                int coin = coins[j];
-
-                if (i - coin < 0)
-                    continue;
-
-                if (dp[i - coin] != Invalid)
-                {
-                    if (dp[i] != Invalid)
-                    {
-                        dp[i] = Math.Min(dp[i], dp[i - coin] + 1);
-                    }
-                    else
-                    {
-                        dp[i] = dp[i - coin] + 1;
-                    }
-                }
+                ++mine;
+                --candidates[lastCandidatesIndex];
+                ++output;
+                Array.Sort(candidates);
             }
         }
-
-        Console.Write(dp[n]);
+        Console.Write(output);
     }
 }
