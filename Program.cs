@@ -1,31 +1,21 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-
-        int mine = int.Parse(Console.ReadLine()!);
-        
-        int[] candidates = new int[n - 1]; // n = (0..50]
-        int candidatesLength = candidates.Length;
-        for (int i = 0; i < candidates.Length; ++i)
-        {
-            candidates[i] = int.Parse(Console.ReadLine()!);
-        }
-        Array.Sort(candidates);
+        StringBuilder sb = new(Console.ReadLine()!);
+        sb.Append('\0');
 
         int output = 0;
-        if (candidatesLength > 0)
+        for (int i = 0; i < sb.Length - 1; ++i)
         {
-            int lastCandidatesIndex = candidatesLength - 1;
-            while (mine <= candidates[lastCandidatesIndex])
+            if (sb[i] != sb[i + 1])
             {
-                ++mine;
-                --candidates[lastCandidatesIndex];
                 ++output;
-                Array.Sort(candidates);
             }
         }
-        Console.Write(output);
+
+        Console.WriteLine(output / 2);
     }
 }
