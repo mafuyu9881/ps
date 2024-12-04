@@ -1,21 +1,27 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        StringBuilder sb = new(Console.ReadLine()!);
-        sb.Append('\0');
-
-        int output = 0;
-        for (int i = 0; i < sb.Length - 1; ++i)
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0];
+        int exN = n + 1;
+        int k = tokens[1];
+        int exK = k + 1;
+        int[,] dp = new int[exN, exK];
+        for (int row = 1; row < exN; ++row)
         {
-            if (sb[i] != sb[i + 1])
+            for (int col = 1; col < exK; ++col)
             {
-                ++output;
+                if (col == 1 || row == col)
+                {
+                    dp[row, col] = 1;
+                }
+                else
+                {
+                    dp[row, col] = dp[row - 1, col - 1] + dp[row - 1, col];
+                }
             }
         }
-
-        Console.WriteLine(output / 2);
+        Console.Write(dp[n, k]);
     }
 }
