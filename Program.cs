@@ -3,11 +3,11 @@
     private static void Main(string[] args)
     {
         long s = long.Parse(Console.ReadLine()!);
-        uint output = 1;
-        while (s >= 0)
+        uint output = 0;
+        while (s > output)
         {
-            s -= output++;
+            s -= ++output;
         }
-        Console.Write(output - 2);
+        Console.Write(output);
     }
 }
