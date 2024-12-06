@@ -3,25 +3,38 @@
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int h = tokens[0]; // 10,000 ≤ H ≤ 100,000
-        int y = tokens[1]; // 0 ≤ Y ≤ 10
+        int n = tokens[0]; // 0 <= n <= 50
+        int m = tokens[1]; // 1 <= m <= 1,000
 
-        int[] dp = new int[y + 1];
-        dp[0] = h;
-        for (int currIndex = 1; currIndex < dp.Length; ++currIndex)
+        // It may feel quite inefficient.
+        // But to write the code that computes box count more clearly,
+        // I should make a conditional statement right here.
+        // I guess this input code can be written in better form with C++,
+        // by virtue of the mechanism of the std::cin.
+        int[] bookWeights; // 1 <= books[i] <= m
+        if (n > 0)
         {
-            dp[currIndex] = (int)(dp[currIndex - 1] * 1.05);
+            bookWeights = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        }
+        else
+        {
+            bookWeights = new int[0];
+        }
 
-            if (currIndex >= 3)
-            {
-                dp[currIndex] = Math.Max(dp[currIndex], (int)(dp[currIndex - 3] * 1.2));
-            }
+        int boxCount = 0;
+        int boxWeight = m;
+        for (int i = 0; i < bookWeights.Length; ++i)
+        {
+            int bookWeight = bookWeights[i];
 
-            if (currIndex >= 5)
+            boxWeight += bookWeight;
+
+            if (boxWeight > m)
             {
-                dp[currIndex] = Math.Max(dp[currIndex], (int)(dp[currIndex - 5] * 1.35));
+                boxWeight = bookWeight;
+                ++boxCount;
             }
         }
-        Console.Write(dp[y]);
+        Console.Write(boxCount);
     }
 }
