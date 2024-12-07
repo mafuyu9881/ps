@@ -2,39 +2,40 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // 0 <= n <= 50
-        int m = tokens[1]; // 1 <= m <= 1,000
+        long n = long.Parse(Console.ReadLine()!);
 
-        // It may feel quite inefficient.
-        // But to write the code that computes box count more clearly,
-        // I should make a conditional statement right here.
-        // I guess this input code can be written in better form with C++,
-        // by virtue of the mechanism of the std::cin.
-        int[] bookWeights; // 1 <= books[i] <= m
-        if (n > 0)
+        LinkedList<long> factorials = new();
+        while (true)
         {
-            bookWeights = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        }
-        else
-        {
-            bookWeights = new int[0];
-        }
-
-        int boxCount = 0;
-        int boxWeight = m;
-        for (int i = 0; i < bookWeights.Length; ++i)
-        {
-            int bookWeight = bookWeights[i];
-
-            boxWeight += bookWeight;
-
-            if (boxWeight > m)
+            long factorial;
+            if (factorials.Count > 0)
             {
-                boxWeight = bookWeight;
-                ++boxCount;
+                factorial = factorials.Last!.Value * factorials.Count;
             }
+            else
+            {
+                factorial = 1;
+            }
+
+            if (factorial > n)
+                break;
+
+            factorials.AddLast(factorial);
         }
-        Console.Write(boxCount);
+
+        int m = 0;
+        while (factorials.Count > 0 && n != 0)
+        {
+            long factorial = factorials.Last!.Value;
+            factorials.RemoveLast();
+
+            if (factorial > n)
+                continue;
+            
+            n -= factorial;
+            ++m;
+        }
+        
+        Console.Write(n == 0 && m > 0 ? "YES" : "NO");
     }
 }
