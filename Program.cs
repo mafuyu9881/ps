@@ -2,40 +2,26 @@
 {
     private static void Main(string[] args)
     {
-        long n = long.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // m < n ≤ 10
+        int m = tokens[1]; // 1 ≤ m < n
 
-        LinkedList<long> factorials = new();
-        while (true)
+        int basketStart = 0;
+
+        int j = int.Parse(Console.ReadLine()!);
+
+        int moves = 0;
+        for (int i = 0; i < j; ++i)
         {
-            long factorial;
-            if (factorials.Count > 0)
+            int fallingPoint = int.Parse(Console.ReadLine()!) - 1;
+
+            while (fallingPoint < basketStart ||
+                   fallingPoint > basketStart + m - 1)
             {
-                factorial = factorials.Last!.Value * factorials.Count;
+                basketStart += Math.Sign(fallingPoint - basketStart);
+                ++moves;
             }
-            else
-            {
-                factorial = 1;
-            }
-
-            if (factorial > n)
-                break;
-
-            factorials.AddLast(factorial);
         }
-
-        int m = 0;
-        while (factorials.Count > 0 && n != 0)
-        {
-            long factorial = factorials.Last!.Value;
-            factorials.RemoveLast();
-
-            if (factorial > n)
-                continue;
-            
-            n -= factorial;
-            ++m;
-        }
-        
-        Console.Write(n == 0 && m > 0 ? "YES" : "NO");
+        Console.Write(moves);
     }
 }
