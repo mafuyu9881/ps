@@ -3,51 +3,45 @@
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // 2 ≤ n ≤ 10
-        int s = tokens[1]; // 1 ≤ s
-        int r = tokens[2]; // r ≤ n
+        // 1 ≤ a, b < 1000, a ≠ b
+        int a = tokens[0];
+        int b = tokens[1];
 
-        int[] kayaks = new int[n];
-        for (int i = 0; i < kayaks.Length; ++i) // max tc = 10
+        // 1 ≤ n ≤ 5
+        int n = int.Parse(Console.ReadLine()!);
+        int[] frequencies = new int[n];
+        for (int i = 0; i < frequencies.Length; ++i)
         {
-            kayaks[i] = 1;
-        }
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        for (int i = 0; i < s; ++i) // max tc = 10
-        {
-            --kayaks[tokens[i] - 1];
-        }
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        for (int i = 0; i < r; ++i) // max tc = 10
-        {
-            ++kayaks[tokens[i] - 1];
+            frequencies[i] = int.Parse(Console.ReadLine()!);
         }
 
         int output = 0;
-        for (int i = 0; i < kayaks.Length; ++i) // max tc = 10
+        while (a != b)
         {
-            int leftIndex = i - 1;
-            if (kayaks[i] > 1 && leftIndex > -1 && kayaks[leftIndex] < 1)
+            int newA;
+
+            int leftA = a - 1;
+            int rightA = a + 1;
+            if (Math.Abs(b - leftA) < Math.Abs(b - rightA))
             {
-                ++kayaks[leftIndex];
-                --kayaks[i];
-                --output;
+                newA = leftA;
+            }
+            else
+            {
+                newA = rightA;
             }
 
-            // we need to check the condition 'kayaks[i] > 1' for each twice
-            int rightIndex = i + 1;
-            if (kayaks[i] > 1 && rightIndex < kayaks.Length && kayaks[rightIndex] < 1)
+            for (int i = 0; i < frequencies.Length; ++i)
             {
-                ++kayaks[rightIndex];
-                --kayaks[i];
+                int frequency = frequencies[i];
+                if (Math.Abs(b - frequency) < Math.Abs(b - newA))
+                {
+                    newA = frequency;
+                }
             }
-            
-            if (kayaks[i] < 1)
-            {
-                ++output;
-            }
+
+            a = newA;
+            ++output;
         }
         Console.Write(output);
     }
