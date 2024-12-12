@@ -1,39 +1,34 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        StringBuilder output = new();
-        while (true)
+        int n = int.Parse(Console.ReadLine()!); // 1 ≤ n ≤ 100,000
+
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(tokens);
+        Array.Reverse(tokens);
+
+        LinkedList<int> saplings = new();
+        for (int i = 0; i < tokens.Length; ++i)
         {
-            string? input = Console.ReadLine();
-            if (input == null)
-                break;
-
-            string[] tokens = input.Split();
-
-            string substring = tokens[0];
-            Queue<char> substringQueue = new();
-            for (int i = 0; i < substring.Length; ++i)
-            {
-                substringQueue.Enqueue(substring[i]);
-            }
-
-            string mainstring = tokens[1];
-            for (int i = 0; i < mainstring.Length; ++i)
-            {
-                if (substringQueue.Peek() != mainstring[i])
-                    continue;
-
-                substringQueue.Dequeue();
-
-                if (substringQueue.Count < 1)
-                    break;
-            }
-            
-            output.AppendLine(substringQueue.Count < 1 ? "Yes" : "No");
+            saplings.AddLast(tokens[i]);
         }
-        Console.Write(output);
+
+        int output = 1; // the day we bought a seed was day 1
+        int remainTime = saplings.First!.Value;
+        saplings.RemoveFirst();
+        while (remainTime > 0)
+        {
+            --remainTime;
+
+            if (saplings.Count > 0)
+            {
+                remainTime = Math.Max(remainTime, saplings.First.Value);
+                saplings.RemoveFirst();
+            }
+
+            ++output;
+        }
+        Console.Write(output + 1); // invite foreman on the next day
     }
 }
