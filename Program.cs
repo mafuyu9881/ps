@@ -1,41 +1,25 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!);
 
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i) // max tc = 100
+        PriorityQueue<int, int> cardBundles = new();
+        for (int i = 0; i < n; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!); // 0 ≤ n ≤ 30
+            int cardBundle = int.Parse(Console.ReadLine()!);
 
-            Dictionary<string, int> dictionary = new();
-            for (int j = 0; j < n; ++j) // max tc = 30
-            {
-                string[] tokens = Console.ReadLine()!.Split();
-                string clothes = tokens[0];
-                string kind = tokens[1];
-
-                if (dictionary.ContainsKey(kind))
-                {
-                    ++dictionary[kind];
-                }
-                else
-                {
-                    dictionary.Add(kind, 1 + 1); // '+1' is to consider the case that choose nothing
-                }
-            }
-
-            int cases = 1;
-            foreach (var element in dictionary)
-            {
-                cases *= element.Value;
-            }
-            --cases;
-
-            output.AppendLine($"{cases}");
+            cardBundles.Enqueue(cardBundle, cardBundle);
+        }
+        
+        int output = 0;
+        while (cardBundles.Count > 1)
+        {
+            int firstCardBundle = cardBundles.Dequeue();
+            int secondCardBundle = cardBundles.Dequeue();
+            int newCardBundle = firstCardBundle + secondCardBundle;
+            cardBundles.Enqueue(newCardBundle, newCardBundle);
+            output += newCardBundle;
         }
         Console.Write(output);
     }
