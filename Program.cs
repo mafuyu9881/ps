@@ -4,39 +4,38 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        int t = int.Parse(Console.ReadLine()!);
+
         StringBuilder output = new();
-        int t = int.Parse(Console.ReadLine()!); // 1 ≤ t ≤ 10
-        for (int i = 0; i < t; ++i)
+        for (int i = 0; i < t; ++i) // max tc = 100
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int j = tokens[0]; // 1 ≤ j ≤ 1,000
-            int n = tokens[1]; // 1 ≤ n ≤ 1,000
-            
-            int[] boxArray = new int[n];
-            for (int k = 0; k < n; ++k)
-            {
-                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int r = tokens[0]; // 1 ≤ r ≤ 10,000
-                int c = tokens[1]; // 1 ≤ c ≤ 10,000
-                boxArray[k] = r * c;
-            }
-            Array.Sort(boxArray);
-            Array.Reverse(boxArray);
+            int n = int.Parse(Console.ReadLine()!); // 0 ≤ n ≤ 30
 
-            LinkedList<int> boxLinkedList = new LinkedList<int>();
-            for (int k = 0; k < boxArray.Length; ++k)
+            Dictionary<string, int> dictionary = new();
+            for (int j = 0; j < n; ++j) // max tc = 30
             {
-                boxLinkedList.AddLast(boxArray[k]);
+                string[] tokens = Console.ReadLine()!.Split();
+                string clothes = tokens[0];
+                string kind = tokens[1];
+
+                if (dictionary.ContainsKey(kind))
+                {
+                    ++dictionary[kind];
+                }
+                else
+                {
+                    dictionary.Add(kind, 1 + 1); // '+1' is to consider the case that choose nothing
+                }
             }
 
-            int usedBoxCount = 0;
-            while (j > 0)
+            int cases = 1;
+            foreach (var element in dictionary)
             {
-                j -= boxLinkedList.First!.Value;
-                boxLinkedList.RemoveFirst();
-                ++usedBoxCount;
+                cases *= element.Value;
             }
-            output.AppendLine($"{usedBoxCount}");
+            --cases;
+
+            output.AppendLine($"{cases}");
         }
         Console.Write(output);
     }
