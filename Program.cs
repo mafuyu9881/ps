@@ -16,6 +16,8 @@
             {
                 dp[i] += dp[j];
             }
+            // '-2' means we will count the number from 1
+            // '-1' means array's index
             dp[i] += cylicNumbers[(i - 2 - 1) % cylicNumbers.Length];
             dp[i] %= 10007;
         }
