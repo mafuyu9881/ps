@@ -4,7 +4,7 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int[] cylicNumbers = new int[] { 1, 2, 3, 4, 0, 0, 0 };
+        int[] cylicNumbers = new int[] { 2, 1 };
 
         int[] dp = new int[Math.Max(3, n)];
         dp[0] = 1;
@@ -17,6 +17,7 @@
                 dp[i] += dp[j];
             }
             dp[i] += cylicNumbers[(i - 2 - 1) % cylicNumbers.Length];
+            dp[i] %= 10007;
         }
         Console.Write(dp[n - 1]);
     }
