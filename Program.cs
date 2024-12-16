@@ -2,15 +2,31 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!); // 1 ≤ n ≤ 50,000
+        const int Infinity = 5;
+        int minimumSquareCount = Infinity;
+        ComputeMinimumSquareCount(ref minimumSquareCount, n, 0);
+        Console.Write(minimumSquareCount);
+    }
 
-        int[] dp = new int[Math.Max(2, n)];
-        dp[0] = 1;
-        dp[1] = 3;
-        for (int i = 2; i < dp.Length; ++i)
+    private static void ComputeMinimumSquareCount(ref int minimumSquareCount, int remainN, int prevSquareCount)
+    {
+        int sqrtRemainN = (int)Math.Sqrt(remainN);
+        int currSquareCount = prevSquareCount + 1;
+
+        for (int i = sqrtRemainN; i > sqrtRemainN / 2; --i)
         {
-            dp[i] = (dp[i - 1] + dp[i - 2] * 2) % 10007;
+            int newRemainN = remainN - i * i;
+
+            if (newRemainN == 0)
+            {
+                minimumSquareCount = Math.Min(minimumSquareCount, currSquareCount);
+                return;
+            }
+            else if (currSquareCount < 4)
+            {
+                ComputeMinimumSquareCount(ref minimumSquareCount, newRemainN, currSquareCount);
+            }
         }
-        Console.Write(dp[n - 1]);
     }
 }
