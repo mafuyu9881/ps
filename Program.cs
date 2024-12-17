@@ -1,33 +1,31 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        string input = Console.ReadLine()!;
-
-        int[] tokens = Array.ConvertAll(input.Split(new char[] { '+', '-' }), int.Parse);
-
-        int plusCountBeforeFirstMinus = 0;
-        const int InvalidFirstMinusIndex = -1;
-        int firstMinusIndex = InvalidFirstMinusIndex;
+        StringBuilder input = new(Console.ReadLine()!);
+        input.Append('\0');
+        int output = 0;
+        bool minusFlag = false;
+        StringBuilder sb = new();
         for (int i = 0; i < input.Length; ++i)
         {
             char c = input[i];
 
-            if (c == '+')
+            if (c < '0')
             {
-                ++plusCountBeforeFirstMinus;
-            }
-            else if (c == '-')
-            {
-                firstMinusIndex = plusCountBeforeFirstMinus;
-                break;
-            }
-        }
+                if (sb.Length > 0)
+                {
+                    output += Math.Abs(int.Parse(sb.ToString())) * (minusFlag ? -1 : 1);
+                    sb.Clear();
+                }
 
-        int output = 0;
-        for (int i = 0; i < tokens.Length; ++i)
-        {
-            
+                minusFlag |= c == '-';
+            }
+
+            sb.Append(c);
         }
+        Console.Write(output);
     }
 }
