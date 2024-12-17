@@ -2,31 +2,32 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // 1 ≤ n ≤ 50,000
-        const int Infinity = 5;
-        int minimumSquareCount = Infinity;
-        ComputeMinimumSquareCount(ref minimumSquareCount, n, 0);
-        Console.Write(minimumSquareCount);
-    }
+        string input = Console.ReadLine()!;
 
-    private static void ComputeMinimumSquareCount(ref int minimumSquareCount, int remainN, int prevSquareCount)
-    {
-        int sqrtRemainN = (int)Math.Sqrt(remainN);
-        int currSquareCount = prevSquareCount + 1;
+        int[] tokens = Array.ConvertAll(input.Split(new char[] { '+', '-' }), int.Parse);
 
-        for (int i = sqrtRemainN; i > sqrtRemainN / 2; --i)
+        int plusCountBeforeFirstMinus = 0;
+        const int InvalidFirstMinusIndex = -1;
+        int firstMinusIndex = InvalidFirstMinusIndex;
+        for (int i = 0; i < input.Length; ++i)
         {
-            int newRemainN = remainN - i * i;
+            char c = input[i];
 
-            if (newRemainN == 0)
+            if (c == '+')
             {
-                minimumSquareCount = Math.Min(minimumSquareCount, currSquareCount);
-                return;
+                ++plusCountBeforeFirstMinus;
             }
-            else if (currSquareCount < 4)
+            else if (c == '-')
             {
-                ComputeMinimumSquareCount(ref minimumSquareCount, newRemainN, currSquareCount);
+                firstMinusIndex = plusCountBeforeFirstMinus;
+                break;
             }
+        }
+
+        int output = 0;
+        for (int i = 0; i < tokens.Length; ++i)
+        {
+            
         }
     }
 }
