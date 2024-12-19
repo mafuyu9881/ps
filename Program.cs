@@ -9,52 +9,56 @@
         int begin = 0;
         int end = 0;
 
-        bool[] included = new bool[10];
-        LinkedList<int> includedNumbers = new();
-        included[begin] = true;
-        includedNumbers.AddLast(begin);
-
-        int minimumLength = 1;
-        int length = 1;
-        while (true)
+        const int InvalidIndex = -1;
+        int[] lastIndexOfIncluded = new int[10];
+        for (int i = 0; i < lastIndexOfIncluded.Length; ++i)
         {
-            //if (begin < end)
-            //{
-            //}
-            //else
-            //{
-            //    ++end;
-            //    if (end > tokens.Length - 1)
-            //    {
-            //        break;
-            //    }
-            //}
+            lastIndexOfIncluded[i] = InvalidIndex;
+        }
+        LinkedList<int> includedNumbers = new();
 
-            ++end;
+        int maximumLength = 0;
+        int length = 0;
+        while (end < tokens.Length)
+        {
+            int number = tokens[end];
 
-            int endNumber = tokens[end];
-
-            if (included[endNumber])
+            if (lastIndexOfIncluded[number] != InvalidIndex)
             {
                 ++length;
+                lastIndexOfIncluded[number] = end;
             }
             else
             {
                 if (includedNumbers.Count < 2)
                 {
-                    included[endNumber] = true;
-                    includedNumbers.AddLast(endNumber);
+                    ++length;
                 }
                 else
                 {
-                    //var firstIncludedNumberNode = includedNumbers.First!;
-                    //int firstIncludedNumber = firstIncludedNumberNode.Value;
-                    //includedNumbers.Remove(firstIncludedNumberNode);
-                    //included[firstIncludedNumber] = false;
-                    //length = 
-                    
+                    var firstNode = includedNumbers.First!;
+                    var secondNode = includedNumbers.Last!;
+                    LinkedListNode<int> pendingNode = firstNode;
+                    if (lastIndexOfIncluded[firstNode.Value] > lastIndexOfIncluded[secondNode.Value])
+                    {
+                        pendingNode = secondNode;
+                    }
+
+                    int pendingNumber = pendingNode.Value;
+                    begin = lastIndexOfIncluded[pendingNumber] + 1;
+                    lastIndexOfIncluded[pendingNumber] = InvalidIndex;
+                    includedNumbers.Remove(pendingNode);
+
+                    length = end - begin + 1;
                 }
+
+                lastIndexOfIncluded[number] = end;
+                includedNumbers.AddLast(number);
             }
+
+            maximumLength = Math.Max(maximumLength, length);
+            ++end;
         }
+        Console.Write(maximumLength);
     }
 }
