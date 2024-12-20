@@ -1,78 +1,64 @@
 ﻿internal class Program
 {
+    const int InvalidDistances = -1;
+    const int offsets = 4;
+    static readonly int[] RowOffsets = new int[4] { -1, 1, 0, 0 };
+    static readonly int[] ColOffsets = new int[4] { 0, 0, -1, 1 };
+
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int users = tokens[0]; // 2 ≤ n ≤ 100
-        int usersExt = users + 1;
-        int relations = tokens[1]; // 1 ≤ m ≤ 5,000
+        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = integerTokens[0]; // 2 ≤ height, width ≤ 100
+        int width = integerTokens[1];
 
-        LinkedList<int>[] adjList = new LinkedList<int>[usersExt];
-        for (int i = 0; i < relations; ++i) // max = 5,000
+        int[,] map = new int[height, width];
+        int[,] distances = new int[height, width];
+        for (int row = 0; row < height; ++row)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int v0 = tokens[0];
-            int v1 = tokens[1];
-
-            if (adjList[v0] == null)
+            string stringToken = Console.ReadLine()!;
+            for (int col = 0; col < width; ++col)
             {
-                adjList[v0] = new();
+                map[row, col] = stringToken[col] - '0';
+                distances[row, col] = InvalidDistances;
             }
-            adjList[v0].AddLast(v1);
-
-            if (adjList[v1] == null)
-            {
-                adjList[v1] = new();
-            }
-            adjList[v1].AddLast(v0);
         }
 
-        const int InvalidDistance = -1;
-        const int InvalidKevinBacon = -1;
-        
-        int minKevinBacon = InvalidKevinBacon;
-        PriorityQueue<int, int> minKevinBaconUsers = new();
-        for (int startV = 1; startV < usersExt; ++startV) // max = 100
+        int departureRow = 0;
+        int departureCol = 0;
+        int arrivalRow = height - 1;
+        int arrivalCol = width - 1;
+
+        Queue<(int row, int col)> q = new();
+
+        distances[departureRow, departureCol] = 1;
+        q.Enqueue(new(departureRow, departureCol));
+        while (q.Count > 0)
         {
-            int[] distances = new int[usersExt];
-            for (int i = 0; i < distances.Length; ++i)
+            var index2D = q.Dequeue();
+            int row = index2D.row;
+            int col = index2D.col;
+
+            for (int i = 0; i < offsets; ++i)
             {
-                distances[i] = InvalidDistance;
+                (int row, int col) adjIndex2D = new(row + RowOffsets[i], col + ColOffsets[i]);
+                int adjRow = adjIndex2D.row;
+                if (adjRow < 0 || adjRow > height - 1)
+                    continue;
+
+                int adjCol = adjIndex2D.col;
+                if (adjCol < 0 || adjCol > width - 1)
+                    continue;
+
+                if (map[adjRow, adjCol] == 0)
+                    continue;
+
+                if (distances[adjRow, adjCol] != InvalidDistances)
+                    continue;
+
+                distances[adjRow, adjCol] = distances[row, col] + 1;
+                q.Enqueue(new(adjRow, adjCol));
             }
-            Queue<int> q = new();
-
-            distances[startV] = 0;
-            q.Enqueue(startV);
-
-            while (q.Count > 0)
-            {
-                int v = q.Dequeue();
-
-                var adjs = adjList[v];
-                for (var node = adjs.First; node != null; node = node.Next)
-                {
-                    int adjV = node.Value;
-                    if (distances[adjV] != InvalidDistance)
-                        continue;
-
-                    distances[adjV] = distances[v] + 1;
-                    q.Enqueue(adjV);
-                }
-            }
-
-            int kevinBacon = 0;
-            for (int i = 1; i < distances.Length; ++i) // max = 100
-            {
-                kevinBacon += distances[i];
-            }
-
-            if (minKevinBacon == InvalidKevinBacon || kevinBacon < minKevinBacon)
-            {
-                minKevinBacon = kevinBacon;
-                minKevinBaconUsers.Clear();
-            }
-            minKevinBaconUsers.Enqueue(startV, startV);
         }
-        Console.Write(minKevinBaconUsers.Dequeue());
+        Console.Write(distances[arrivalRow, arrivalCol]);
     }
 }
