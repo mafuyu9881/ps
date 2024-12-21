@@ -1,64 +1,102 @@
-﻿internal class Program
-{
-    const int InvalidDistances = -1;
-    const int offsets = 4;
-    static readonly int[] RowOffsets = new int[4] { -1, 1, 0, 0 };
-    static readonly int[] ColOffsets = new int[4] { 0, 0, -1, 1 };
+﻿using System.Text;
 
+internal class Program
+{
     private static void Main(string[] args)
     {
-        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = integerTokens[0]; // 2 ≤ height, width ≤ 100
-        int width = integerTokens[1];
+        int n = int.Parse(Console.ReadLine()!); // 5 ≤ n ≤ 25
 
-        int[,] map = new int[height, width];
-        int[,] distances = new int[height, width];
-        for (int row = 0; row < height; ++row)
+        const int Offsets = 4;
+        int[] rowOffsets = new int[Offsets] { -1, +1, 0, 0 };
+        int[] colOffsets = new int[Offsets] { 0, 0, -1, 1 };
+
+        int[] map = new int[n * n];
+        LinkedList<int> waitingVisits = new();
+        Dictionary<int, LinkedList<int>?> dictionary = new();
+        for (int row = 0; row < n; ++row)
         {
-            string stringToken = Console.ReadLine()!;
-            for (int col = 0; col < width; ++col)
+            string token = Console.ReadLine()!;
+            for (int col = 0; col < n; ++col)
             {
-                map[row, col] = stringToken[col] - '0';
-                distances[row, col] = InvalidDistances;
+                int index = row * n + col;
+                map[index] = token[col] - '0'; // tokens[i] = 0 or 1
+                waitingVisits.AddLast(index);
+                dictionary.Add(index, null);
             }
         }
 
-        int departureRow = 0;
-        int departureCol = 0;
-        int arrivalRow = height - 1;
-        int arrivalCol = width - 1;
-
-        Queue<(int row, int col)> q = new();
-
-        distances[departureRow, departureCol] = 1;
-        q.Enqueue(new(departureRow, departureCol));
-        while (q.Count > 0)
+        LinkedList<int> emptyConnectedComponent = new();
+        LinkedList<LinkedList<int>> connectedComponents = new();
+        Queue<int> visitingQueue = new();
+        while (true)
         {
-            var index2D = q.Dequeue();
-            int row = index2D.row;
-            int col = index2D.col;
-
-            for (int i = 0; i < offsets; ++i)
+            if (visitingQueue.Count < 1)
             {
-                (int row, int col) adjIndex2D = new(row + RowOffsets[i], col + ColOffsets[i]);
-                int adjRow = adjIndex2D.row;
-                if (adjRow < 0 || adjRow > height - 1)
+                if (waitingVisits.Count < 1)
+                    break;
+
+                var node = waitingVisits.First!;
+                visitingQueue.Enqueue(node.Value);
+                waitingVisits.Remove(node);
+            }
+
+            int srcIndex = visitingQueue.Dequeue();
+
+            LinkedList<int>? connectedComponent = dictionary[srcIndex];
+            if (connectedComponent == null)
+            {
+                if (map[srcIndex] == 0)
+                {
+                    connectedComponent = emptyConnectedComponent;
+                    continue;
+                }
+                else
+                {
+                    connectedComponent = new();
+                    connectedComponent.AddLast(srcIndex);
+                    connectedComponents.AddLast(connectedComponent);
+                    dictionary[srcIndex] = connectedComponent;
+                }
+            }
+
+            int srcRow = srcIndex / n;
+            int srcCol = srcIndex % n;
+            for (int i = 0; i < Offsets; ++i)
+            {
+                int adjRow = srcRow + rowOffsets[i];
+                if (adjRow < 0 || adjRow > n - 1)
                     continue;
 
-                int adjCol = adjIndex2D.col;
-                if (adjCol < 0 || adjCol > width - 1)
+                int adjCol = srcCol + colOffsets[i];
+                if (adjCol < 0 || adjCol > n - 1)
                     continue;
 
-                if (map[adjRow, adjCol] == 0)
+                int adjIndex = adjRow * n + adjCol;
+                if (dictionary[adjIndex] != null) // already visited
                     continue;
 
-                if (distances[adjRow, adjCol] != InvalidDistances)
+                if (map[adjIndex] == 0)
                     continue;
 
-                distances[adjRow, adjCol] = distances[row, col] + 1;
-                q.Enqueue(new(adjRow, adjCol));
+                connectedComponent.AddLast(adjIndex);
+                dictionary[adjIndex] = connectedComponent;
+                visitingQueue.Enqueue(adjIndex);
             }
         }
-        Console.Write(distances[arrivalRow, arrivalCol]);
+
+        PriorityQueue<LinkedList<int>, int> connectedComponentPQ = new();
+        for (var node = connectedComponents.First; node != null; node = node.Next)
+        {
+            var connectedComponent = node.Value;
+            connectedComponentPQ.Enqueue(connectedComponent, connectedComponent.Count);
+        }
+
+        StringBuilder output = new();
+        output.AppendLine($"{connectedComponentPQ.Count}");
+        while (connectedComponentPQ.Count > 0)
+        {
+            output.AppendLine($"{connectedComponentPQ.Dequeue().Count}");
+        }
+        Console.Write(output);
     }
 }
