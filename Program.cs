@@ -4,98 +4,52 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // 5 ≤ n ≤ 25
+        int n = int.Parse(Console.ReadLine()!);
 
-        const int Offsets = 4;
-        int[] rowOffsets = new int[Offsets] { -1, +1, 0, 0 };
-        int[] colOffsets = new int[Offsets] { 0, 0, -1, 1 };
-
-        int[] map = new int[n * n];
-        LinkedList<int> waitingVisits = new();
-        Dictionary<int, LinkedList<int>?> dictionary = new();
-        for (int row = 0; row < n; ++row)
+        LinkedList<int>[] adjList = new LinkedList<int>[n];
+        for (int srcV = 0; srcV < n; ++srcV)
         {
-            string token = Console.ReadLine()!;
-            for (int col = 0; col < n; ++col)
+            LinkedList<int> srcAdjs = new();
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int dstV = 0; dstV < n; ++dstV)
             {
-                int index = row * n + col;
-                map[index] = token[col] - '0'; // tokens[i] = 0 or 1
-                waitingVisits.AddLast(index);
-                dictionary.Add(index, null);
+                if (tokens[dstV] == 0)
+                    continue;
+
+                srcAdjs.AddLast(dstV);
             }
-        }
-
-        LinkedList<int> emptyConnectedComponent = new();
-        LinkedList<LinkedList<int>> connectedComponents = new();
-        Queue<int> visitingQueue = new();
-        while (true)
-        {
-            if (visitingQueue.Count < 1)
-            {
-                if (waitingVisits.Count < 1)
-                    break;
-
-                var node = waitingVisits.First!;
-                visitingQueue.Enqueue(node.Value);
-                waitingVisits.Remove(node);
-            }
-
-            int srcIndex = visitingQueue.Dequeue();
-
-            LinkedList<int>? connectedComponent = dictionary[srcIndex];
-            if (connectedComponent == null)
-            {
-                if (map[srcIndex] == 0)
-                {
-                    connectedComponent = emptyConnectedComponent;
-                    continue;
-                }
-                else
-                {
-                    connectedComponent = new();
-                    connectedComponent.AddLast(srcIndex);
-                    connectedComponents.AddLast(connectedComponent);
-                    dictionary[srcIndex] = connectedComponent;
-                }
-            }
-
-            int srcRow = srcIndex / n;
-            int srcCol = srcIndex % n;
-            for (int i = 0; i < Offsets; ++i)
-            {
-                int adjRow = srcRow + rowOffsets[i];
-                if (adjRow < 0 || adjRow > n - 1)
-                    continue;
-
-                int adjCol = srcCol + colOffsets[i];
-                if (adjCol < 0 || adjCol > n - 1)
-                    continue;
-
-                int adjIndex = adjRow * n + adjCol;
-                if (dictionary[adjIndex] != null) // already visited
-                    continue;
-
-                if (map[adjIndex] == 0)
-                    continue;
-
-                connectedComponent.AddLast(adjIndex);
-                dictionary[adjIndex] = connectedComponent;
-                visitingQueue.Enqueue(adjIndex);
-            }
-        }
-
-        PriorityQueue<LinkedList<int>, int> connectedComponentPQ = new();
-        for (var node = connectedComponents.First; node != null; node = node.Next)
-        {
-            var connectedComponent = node.Value;
-            connectedComponentPQ.Enqueue(connectedComponent, connectedComponent.Count);
+            adjList[srcV] = srcAdjs;
         }
 
         StringBuilder output = new();
-        output.AppendLine($"{connectedComponentPQ.Count}");
-        while (connectedComponentPQ.Count > 0)
+        for (int srcV = 0; srcV < n; ++srcV) // max tc = 100
         {
-            output.AppendLine($"{connectedComponentPQ.Dequeue().Count}");
+            int[] reachable = new int[n];
+            Queue<int> visitingQueue = new();
+
+            reachable[srcV] = 0;
+            visitingQueue.Enqueue(srcV);
+            while (visitingQueue.Count > 0)
+            {
+                int v = visitingQueue.Dequeue();
+
+                var adjs = adjList[v];
+                for (var node = adjs.First; node != null; node = node.Next)
+                {
+                    int adjV = node.Value;
+                    if (reachable[adjV] == 1)
+                        continue;
+
+                    reachable[adjV] = 1;
+                    visitingQueue.Enqueue(adjV);
+                }
+            }
+
+            for (int i = 0; i < reachable.Length; ++i)
+            {
+                output.Append($"{reachable[i]} ");
+            }
+            output.AppendLine();
         }
         Console.Write(output);
     }
