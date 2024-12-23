@@ -1,55 +1,49 @@
-﻿using System.Text;
+﻿using System.Reflection.PortableExecutable;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!); // 1 ≤ n ≤ 1,000,000
+        int sLength = int.Parse(Console.ReadLine()!); // 2n+1 ≤ sLength ≤ 1,000,000
+        string s = Console.ReadLine()!;
 
-        LinkedList<int>[] adjList = new LinkedList<int>[n];
-        for (int srcV = 0; srcV < n; ++srcV)
+        int output = 0;
+        LinkedList<char> charLL = new();
+        for (int i = 0; i < s.Length; ++i)
         {
-            LinkedList<int> srcAdjs = new();
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int dstV = 0; dstV < n; ++dstV)
+            char c = s[i];
+
+            if (c == 'I')
             {
-                if (tokens[dstV] == 0)
-                    continue;
-
-                srcAdjs.AddLast(dstV);
-            }
-            adjList[srcV] = srcAdjs;
-        }
-
-        StringBuilder output = new();
-        for (int srcV = 0; srcV < n; ++srcV) // max tc = 100
-        {
-            int[] reachable = new int[n];
-            Queue<int> visitingQueue = new();
-
-            reachable[srcV] = 0;
-            visitingQueue.Enqueue(srcV);
-            while (visitingQueue.Count > 0)
-            {
-                int v = visitingQueue.Dequeue();
-
-                var adjs = adjList[v];
-                for (var node = adjs.First; node != null; node = node.Next)
+                if (charLL.Count > 0 && charLL.Last!.Value == c)
                 {
-                    int adjV = node.Value;
-                    if (reachable[adjV] == 1)
-                        continue;
+                    charLL.Clear();
+                }
 
-                    reachable[adjV] = 1;
-                    visitingQueue.Enqueue(adjV);
+                charLL.AddLast(c);
+
+                if (charLL.Count >= 2 * n + 1)
+                {
+                    charLL.RemoveFirst();
+                    charLL.RemoveFirst();
+                    ++output;
                 }
             }
-
-            for (int i = 0; i < reachable.Length; ++i)
+            else // if (c == 'O')
             {
-                output.Append($"{reachable[i]} ");
+                if (charLL.Count < 1)
+                    continue;
+
+                if (charLL.Last!.Value == c)
+                {
+                    charLL.Clear();
+                }
+                else
+                {
+                    charLL.AddLast(c);
+                }
             }
-            output.AppendLine();
         }
         Console.Write(output);
     }
