@@ -56,7 +56,7 @@ internal class Program
         else
         {
             int lcm = LCM(m, n);
-            int loops = lcm / m;
+            int loops = lcm / n;
             for (int i = 0; i < loops; ++i)
             {
                 int currX = y + n * i - ((y + n * i - 1) / m) * m;
