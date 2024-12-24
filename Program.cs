@@ -31,21 +31,21 @@ internal class Program
         return bigger;
     }
 
-    private static int LCM(int a, int b)
+    private static long LCM(int a, int b)
     {
-        return a * b * GCD(a, b);
+        return a * (long)b * GCD(a, b);
     }
 
-    private static int ComputeYears(int m, int n, int x, int y)
+    private static long ComputeYears(int m, int n, int x, int y)
     {
         if (m <= n)
         {
-            int lcm = LCM(m, n);
-            int loops = lcm / m;
-            for (int i = 0; i < loops; ++i)
+            long lcm = LCM(m, n);
+            long loops = lcm / m;
+            for (long i = 0; i < loops; ++i)
             {
-                int currX = x;
-                int currY = x + m * i - ((x + m * i - 1) / n) * n;
+                long currX = x;
+                long currY = x + m * i - ((x + m * i - 1) / n) * n;
                 if (currX == x && currY == y)
                 {
                     return x + m * i;
@@ -55,12 +55,12 @@ internal class Program
         }
         else
         {
-            int lcm = LCM(m, n);
-            int loops = lcm / n;
-            for (int i = 0; i < loops; ++i)
+            long lcm = LCM(m, n);
+            long loops = lcm / n;
+            for (long i = 0; i < loops; ++i)
             {
-                int currX = y + n * i - ((y + n * i - 1) / m) * m;
-                int currY = y;
+                long currX = y + n * i - ((y + n * i - 1) / m) * m;
+                long currY = y;
                 if (currX == x && currY == y)
                 {
                     return y + n * i;
