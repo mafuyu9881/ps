@@ -33,19 +33,17 @@ internal class Program
 
     private static long LCM(int a, int b)
     {
-        return a * (long)b * GCD(a, b);
+        return a * (long)b / GCD(a, b);
     }
 
     private static long ComputeYears(int m, int n, int x, int y)
     {
-        long lcm = LCM(m, n);
-        long loops = lcm / m;
-        for (long i = 0; i < loops; ++i)
+        long finalYears = LCM(m, n);
+        for (; x <= finalYears; x += m)
         {
-            long years = x + m * i;
-            if ((years - 1) % n + 1 == y)
+            if ((x - 1) % n + 1 == y)
             {
-                return years;
+                return x;
             }
         }
         return -1;
