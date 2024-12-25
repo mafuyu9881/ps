@@ -4,48 +4,107 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        const int InvalidIndex = -1;
+
+        int n = int.Parse(Console.ReadLine()!);
+
+        int[] absMinHeap = new int[100000];
+        int count = 0;
+
         StringBuilder output = new();
-        int t = int.Parse(Console.ReadLine()!);
-        for (int i = 0; i < t; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int m = tokens[0]; // 1 ≤ m, n ≤ 40,000
-            int n = tokens[1];
-            int x = tokens[2]; // 1 ≤ x ≤ m
-            int y = tokens[3]; // 1 ≤ y ≤ n
-            output.AppendLine($"{ComputeYears(m, n, x, y)}");
+            int x = int.Parse(Console.ReadLine()!); // -2^31 < x < 2^31
+            if (x != 0)
+            {
+                absMinHeap[count] = x;
+
+                int writtenIndex = count;
+                while (true)
+                {
+                    int parentIndex = writtenIndex / 2;
+                    if (writtenIndex % 2 == 0)
+                        parentIndex -= 1;
+
+                    if (parentIndex < 0)
+                        break;
+
+                    int childData = absMinHeap[writtenIndex];
+                    int parentData = absMinHeap[parentIndex];
+                    if (CheckSwapRequired(parentData, childData) == false)
+                        break;
+
+                    absMinHeap[writtenIndex] = parentData;
+                    absMinHeap[parentIndex] = childData;
+                    writtenIndex = parentIndex;
+                }
+                
+                ++count;
+            }
+            else
+            {
+                if (count < 1)
+                {
+                    output.AppendLine("0");
+                }
+                else
+                {
+                    output.AppendLine($"{absMinHeap[0]}");
+
+                    absMinHeap[0] = absMinHeap[count - 1];
+                    int parentIndex = 0;
+
+                    while (true)
+                    {
+                        int leftChildIndex = parentIndex * 2 + 1;
+                        int rightChildIndex = parentIndex * 2 + 2;
+
+                        if (leftChildIndex >= count)
+                            leftChildIndex = InvalidIndex;
+                        
+                        if (rightChildIndex >= count)
+                            rightChildIndex = InvalidIndex;
+
+                        // it's very important to use nextParentIndex in following conditions
+                        // by using this, we can compare data among parent, left child, right child
+                        int nextParentIndex = parentIndex;
+
+                        if (leftChildIndex != InvalidIndex &&
+                            CheckSwapRequired(absMinHeap[nextParentIndex], absMinHeap[leftChildIndex]))
+                            nextParentIndex = leftChildIndex;
+
+                        if (rightChildIndex != InvalidIndex &&
+                            CheckSwapRequired(absMinHeap[nextParentIndex], absMinHeap[rightChildIndex]))
+                            nextParentIndex = rightChildIndex;
+
+                        if (nextParentIndex == parentIndex)
+                            break;
+
+                        int temp = absMinHeap[parentIndex];
+                        absMinHeap[parentIndex] = absMinHeap[nextParentIndex];
+                        absMinHeap[nextParentIndex] = temp;
+                        parentIndex = nextParentIndex;
+                    }
+                    
+                    --count;
+                }
+            }
         }
         Console.Write(output);
     }
 
-    private static int GCD(int a, int b)
+    private static bool CheckSwapRequired(int parentData, int childData)
     {
-        int bigger = Math.Max(a, b);
-        int smaller = Math.Min(a, b);
-        while (smaller != 0)
-        {
-            int r = bigger % smaller;
-            bigger = smaller;
-            smaller = r;
-        }
-        return bigger;
-    }
+        int parentPriority = Math.Abs(parentData);
+        int childPriority = Math.Abs(childData);
 
-    private static long LCM(int a, int b)
-    {
-        return a * (long)b / GCD(a, b);
-    }
-
-    private static long ComputeYears(int m, int n, int x, int y)
-    {
-        long finalYears = LCM(m, n);
-        for (; x <= finalYears; x += m)
+        if (parentPriority == childPriority)
         {
-            if ((x - 1) % n + 1 == y)
-            {
-                return x;
-            }
+            return parentData > childData;
         }
-        return -1;
+        else
+        {
+            return parentPriority > childPriority;
+        }
     }
 }
