@@ -4,107 +4,76 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        const int InvalidIndex = -1;
-
-        int n = int.Parse(Console.ReadLine()!);
-
-        int[] absMinHeap = new int[100000];
-        int count = 0;
+        int t = int.Parse(Console.ReadLine()!);
 
         StringBuilder output = new();
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < t; ++i)
         {
-            int x = int.Parse(Console.ReadLine()!); // -2^31 < x < 2^31
-            if (x != 0)
+            string p = Console.ReadLine()!;
+            int n = int.Parse(Console.ReadLine()!);
+            string[] arr = Console.ReadLine()!.Split(new char[] { '[', ']', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            LinkedList<int> llist = new();
+            for (int j = 0; j < arr.Length; ++j)
             {
-                absMinHeap[count] = x;
-
-                int writtenIndex = count;
-                while (true)
-                {
-                    int parentIndex = writtenIndex / 2;
-                    if (writtenIndex % 2 == 0)
-                        parentIndex -= 1;
-
-                    if (parentIndex < 0)
-                        break;
-
-                    int childData = absMinHeap[writtenIndex];
-                    int parentData = absMinHeap[parentIndex];
-                    if (CheckSwapRequired(parentData, childData) == false)
-                        break;
-
-                    absMinHeap[writtenIndex] = parentData;
-                    absMinHeap[parentIndex] = childData;
-                    writtenIndex = parentIndex;
-                }
-                
-                ++count;
+                llist.AddLast(int.Parse(arr[j]));
             }
-            else
-            {
-                if (count < 1)
-                {
-                    output.AppendLine("0");
-                }
-                else
-                {
-                    output.AppendLine($"{absMinHeap[0]}");
-
-                    absMinHeap[0] = absMinHeap[count - 1];
-                    int parentIndex = 0;
-
-                    while (true)
-                    {
-                        int leftChildIndex = parentIndex * 2 + 1;
-                        int rightChildIndex = parentIndex * 2 + 2;
-
-                        if (leftChildIndex >= count)
-                            leftChildIndex = InvalidIndex;
-                        
-                        if (rightChildIndex >= count)
-                            rightChildIndex = InvalidIndex;
-
-                        // it's very important to use nextParentIndex in following conditions
-                        // by using this, we can compare data among parent, left child, right child
-                        int nextParentIndex = parentIndex;
-
-                        if (leftChildIndex != InvalidIndex &&
-                            CheckSwapRequired(absMinHeap[nextParentIndex], absMinHeap[leftChildIndex]))
-                            nextParentIndex = leftChildIndex;
-
-                        if (rightChildIndex != InvalidIndex &&
-                            CheckSwapRequired(absMinHeap[nextParentIndex], absMinHeap[rightChildIndex]))
-                            nextParentIndex = rightChildIndex;
-
-                        if (nextParentIndex == parentIndex)
-                            break;
-
-                        int temp = absMinHeap[parentIndex];
-                        absMinHeap[parentIndex] = absMinHeap[nextParentIndex];
-                        absMinHeap[nextParentIndex] = temp;
-                        parentIndex = nextParentIndex;
-                    }
-                    
-                    --count;
-                }
-            }
+            output.AppendLine(Proceed(p, llist));
         }
         Console.Write(output);
     }
 
-    private static bool CheckSwapRequired(int parentData, int childData)
+    private static string Proceed(string p, LinkedList<int> llist)
     {
-        int parentPriority = Math.Abs(parentData);
-        int childPriority = Math.Abs(childData);
-
-        if (parentPriority == childPriority)
+        bool reversed = false;
+        for (int j = 0; j < p.Length; ++j)
         {
-            return parentData > childData;
+            if (p[j] == 'R')
+            {
+                reversed = !reversed;
+            }
+            else // if (p[j] == 'D')
+            {
+                if (llist.Count < 1)
+                {
+                    return "error";
+                }
+
+                if (reversed)
+                {
+                    llist.RemoveLast();
+                }
+                else
+                {
+                    llist.RemoveFirst();
+                }
+            }
+        }
+
+        StringBuilder output = new();
+        output.Append('[');
+        if (reversed)
+        {
+            for (var node = llist.Last; node != null; node = node.Previous)
+            {
+                output.Append(node.Value);
+                if (node != llist.First)
+                {
+                    output.Append(',');
+                }
+            }
         }
         else
         {
-            return parentPriority > childPriority;
+            for (var node = llist.First; node != null; node = node.Next)
+            {
+                output.Append(node.Value);
+                if (node != llist.Last)
+                {
+                    output.Append(',');
+                }
+            }
         }
+        output.Append(']');
+        return output.ToString();
     }
 }
