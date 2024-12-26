@@ -1,79 +1,114 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        const int Unriped = 0;
+        const int Riped = 1;
+        
+        int offsetCount = 6;
+        int[] colOffsets = new int[] { -1, 1, 0, 0, 0, 0 };
+        int[] rowOffsets = new int[] { 0, 0, -1, 1, 0, 0 };
+        int[] layerOffsets = new int[] { 0, 0, 0, 0, -1, 1 };
 
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int width = tokens[0]; // [2..100]
+        int height = tokens[1]; // [2..100]
+        int layers = tokens[2]; // [1..100]
+
+        int[] map = new int[width * height * layers]; // [4..1000000]
+        LinkedList<int> ripeds = new();
+        int unripedCount = 0;
+        for (int layer = 0; layer < layers; ++layer)
         {
-            string p = Console.ReadLine()!;
-            int n = int.Parse(Console.ReadLine()!);
-            string[] arr = Console.ReadLine()!.Split(new char[] { '[', ']', ',' }, StringSplitOptions.RemoveEmptyEntries);
-            LinkedList<int> llist = new();
-            for (int j = 0; j < arr.Length; ++j)
+            for (int row = 0; row < height; ++row)
             {
-                llist.AddLast(int.Parse(arr[j]));
-            }
-            output.AppendLine(Proceed(p, llist));
-        }
-        Console.Write(output);
-    }
-
-    private static string Proceed(string p, LinkedList<int> llist)
-    {
-        bool reversed = false;
-        for (int j = 0; j < p.Length; ++j)
-        {
-            if (p[j] == 'R')
-            {
-                reversed = !reversed;
-            }
-            else // if (p[j] == 'D')
-            {
-                if (llist.Count < 1)
+                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+                for (int col = 0; col < width; ++col)
                 {
-                    return "error";
-                }
-
-                if (reversed)
-                {
-                    llist.RemoveLast();
-                }
-                else
-                {
-                    llist.RemoveFirst();
+                    int index = width * height * layer + width * row + col;
+                    int element = tokens[col];
+                    if (element == Unriped)
+                    {
+                        ++unripedCount;
+                    }
+                    else if (element == Riped)
+                    {
+                        ripeds.AddLast(index);
+                    }
+                    map[index] = element;
                 }
             }
         }
 
-        StringBuilder output = new();
-        output.Append('[');
-        if (reversed)
+        string output;
+        if (unripedCount > 0)
         {
-            for (var node = llist.Last; node != null; node = node.Previous)
+            int[] ripedDays = new int[map.Length];
+            Queue<int> visitingQueue = new();
+            while (true)
             {
-                output.Append(node.Value);
-                if (node != llist.First)
+                if (visitingQueue.Count < 1)
                 {
-                    output.Append(',');
+                    if (ripeds.Count > 0)
+                    {
+                        visitingQueue.Enqueue(ripeds.First!.Value);
+                        ripeds.RemoveFirst();
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
+
+                int index = visitingQueue.Dequeue();
+                int layer = index / (width * height);
+                int row = (index % (width * height)) / width;
+                int col = (index % (width * height)) % width;
+
+                for (int i = 0; i < offsetCount; ++i)
+                {
+                    int adjLayer = layer + layerOffsets[i];
+                    if (adjLayer < 0 || adjLayer > layers - 1)
+                        continue;
+
+                    int adjRow = row + rowOffsets[i];
+                    if (adjRow < 0 || adjRow > height - 1)
+                        continue;
+
+                    int adjCol = col + colOffsets[i];
+                    if (adjCol < 0 || adjCol > width - 1)
+                        continue;
+
+                    int adjIndex = adjLayer * width * height + adjRow * width + adjCol;
+                    if (map[adjIndex] != Unriped)
+                        continue;
+
+                    int adjRipedDay = ripedDays[adjIndex];
+                    int newRipedDay = ripedDays[index] + 1;
+                    if (adjRipedDay > 0 && adjRipedDay <= newRipedDay)
+                        continue;
+
+                    if (adjRipedDay == 0)
+                        --unripedCount;
+
+                    ripedDays[adjIndex] = newRipedDay;
+                    visitingQueue.Enqueue(adjIndex);
+                }
+            }
+
+            if (unripedCount > 0)
+            {
+                output = "-1";
+            }
+            else
+            {
+                output = $"{ripedDays.Max()}";
             }
         }
         else
         {
-            for (var node = llist.First; node != null; node = node.Next)
-            {
-                output.Append(node.Value);
-                if (node != llist.Last)
-                {
-                    output.Append(',');
-                }
-            }
+            output = "0";
         }
-        output.Append(']');
-        return output.ToString();
+        Console.Write(output);
     }
 }
