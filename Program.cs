@@ -6,13 +6,13 @@ internal class Program
     {
         LinkedList<int> buffer = new();
 
+        Heap maxHeap = new Heap((int a, int b) => a > b);
+        Heap minHeap = new Heap((int a, int b) => a < b);
+
         StringBuilder output = new();
         int t = int.Parse(Console.ReadLine()!);
         for (int i = 0; i < t; ++i)
         {
-            Heap maxHeap = new Heap((int a, int b) => a > b);
-            Heap minHeap = new Heap((int a, int b) => a < b);
-
             int k = int.Parse(Console.ReadLine()!);
             for (int j = 0; j < k; ++j)
             {
@@ -42,7 +42,7 @@ internal class Program
 
                     if (mainHeap.Dequeue(out int dequeuedMainData))
                     {
-                        while (true) // max tc = log 1,000,000 = 19.xxxx
+                        while (subHeap.Count > 0) // max tc = log 1,000,000 = 19.xxxx
                         {
                             subHeap.Dequeue(out int data);
 
@@ -75,6 +75,9 @@ internal class Program
             {
                 output.AppendLine("EMPTY");
             }
+
+            maxHeap.Clear();
+            minHeap.Clear();
         }
         Console.Write(output);
     }
@@ -84,6 +87,7 @@ internal class Program
         private Func<int, int, bool> _priority;
         private int[] _arr;
         private int _count;
+        public int Count => _count;
 
         public Heap(Func<int, int, bool> priority)
         {
@@ -150,6 +154,11 @@ internal class Program
             }
 
             return true;
+        }
+
+        public void Clear()
+        {
+            _count = 0;
         }
     }
 }
