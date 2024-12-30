@@ -10,10 +10,10 @@ internal class Program
         Heap minHeap = new Heap((int a, int b) => a < b);
 
         StringBuilder output = new();
-        int t = int.Parse(Console.ReadLine()!);
+        int t = int.Parse(Console.ReadLine()!); // max tc = unkown
         for (int i = 0; i < t; ++i)
         {
-            int k = int.Parse(Console.ReadLine()!);
+            int k = int.Parse(Console.ReadLine()!); // max tc = 1,000,000
             for (int j = 0; j < k; ++j)
             {
                 string[] tokens = Console.ReadLine()!.Split();
@@ -22,8 +22,8 @@ internal class Program
                 int n = int.Parse(tokens[1]);
                 if (command == "I")
                 {
-                    maxHeap.Enqueue(n);
-                    minHeap.Enqueue(n);
+                    maxHeap.Enqueue(n); // max tc = log 1,000,000 = 19.xxxx
+                    minHeap.Enqueue(n); // max tc = 19.xxxx
                 }
                 else if (command == "D")
                 {
@@ -40,9 +40,9 @@ internal class Program
                         subHeap = maxHeap;
                     }
 
-                    if (mainHeap.Dequeue(out int dequeuedMainData))
+                    if (mainHeap.Dequeue(out int dequeuedMainData)) // max tc = 19.xxxx
                     {
-                        while (subHeap.Count > 0) // max tc = log 1,000,000 = 19.xxxx
+                        while (subHeap.Count > 0) // max tc = 1,000,000 (timeout)
                         {
                             subHeap.Dequeue(out int data);
 
@@ -56,7 +56,7 @@ internal class Program
                             }
                         }
 
-                        while (buffer.Count > 0) // max tc = 19.xxxx
+                        while (buffer.Count > 0) // max tc = 1,000,000 (timeout)
                         {
                             var node = buffer.First!;
                             subHeap.Enqueue(node.Value);
@@ -104,7 +104,7 @@ internal class Program
             while (writtenIndex > 0)
             {
                 int parentIndex = (writtenIndex - 1) / 2;
-                
+
                 int parentData = _arr[parentIndex];
                 int writtenData = _arr[writtenIndex];
                 if (_priority(parentData, writtenData))
