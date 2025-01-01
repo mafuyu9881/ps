@@ -4,7 +4,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        LinkedList<char>[] commands = new LinkedList<char>[10000];
+        StringBuilder[] commands = new StringBuilder[10000];
         for (int i = 0; i < commands.Length; ++i) // tc = 10000
         {
             commands[i] = new();
@@ -28,7 +28,7 @@ internal class Program
             while (visitingQueue.Count > 0) // max tc = 10000
             {
                 int v = visitingQueue.Dequeue();
-                int newCost = commands[v].Count + 1;
+                int newCost = commands[v].Length + 1;
 
                 char[] adjCommands = new char[4]
                 {
@@ -52,24 +52,16 @@ internal class Program
                     if (adjV == a)
                         continue;
 
-                    int oldCost = commands[adjV].Count;
-                    if (oldCost > 0)
+                    if (commands[adjV].Length > 0)
                         continue;
-                    
-                    for (var node = commands[v].First; node != null; node = node.Next)
-                    {
-                        commands[adjV].AddLast(node.Value);
-                    }
-                    commands[adjV].AddLast(adjCommands[j]);
+
+                    commands[adjV].Append(commands[v]);
+                    commands[adjV].Append(adjCommands[j]);
                     visitingQueue.Enqueue(adjV);
                 }
             }
 
-            for (var node =  commands[b].First; node != null; node = node.Next)
-            {
-                output.Append(node.Value);
-            }
-            output.AppendLine();
+            output.AppendLine($"{commands[b]}");
         }
         Console.Write(output);
     }
