@@ -1,94 +1,136 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        StringBuilder[] commands = new StringBuilder[10000];
-        for (int i = 0; i < commands.Length; ++i) // tc = 10000
-        {
-            commands[i] = new();
-        }
+        LinkedList<(int[] rowOffsets, int[] colOffsets)> offsets = new();
+        offsets.AddLast((
+            new int[] { 0, 1, 2, 3 }, // I tetromino (vertical)
+            new int[] { 0, 0, 0, 0 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 0, 0, 0 }, // I tetromino (horizontal)
+            new int[] { 0, 1, 2, 3 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 0, 1, 1 }, // O tetromino
+            new int[] { 0, 1, 0, 1 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 1, 2, 2 }, // L tetromino
+            new int[] { 0, 0, 0, 1 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 0, 0, 1 }, // L tetromino -90deg
+            new int[] { 0, 1, 2, 0 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 0, 1, 2 }, // L tetromino -180deg
+            new int[] { 0, 1, 1, 1 }
+        ));
+        offsets.AddLast((
+            new int[] { 1, 1, 1, 0 }, // L tetromino -270deg
+            new int[] { 0, 1, 2, 2 }
+        ));
+        offsets.AddLast((
+            new int[] { 2, 2, 1, 0 }, // J tetromino 
+            new int[] { 0, 1, 1, 1 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 1, 1, 1 }, // J tetromino -90deg
+            new int[] { 0, 0, 1, 2 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 0, 1, 2 }, // J tetromino -180deg
+            new int[] { 0, 1, 0, 0 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 0, 0, 1 }, // J tetromino -270deg
+            new int[] { 0, 1, 2, 2 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 1, 1, 2 }, // S tetromino
+            new int[] { 0, 0, 1, 1 }
+        ));
+        offsets.AddLast((
+            new int[] { 1, 1, 0, 0 }, // S tetromino -90deg
+            new int[] { 0, 1, 1, 2 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 1, 1, 2 }, // Z tetromino
+            new int[] { 1, 1, 0, 0 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 0, 1, 1 }, // Z tetromino -90deg
+            new int[] { 0, 1, 1, 2 }
+        ));
+        offsets.AddLast((
+            new int[] { 1, 1, 1, 0 }, // T tetromino
+            new int[] { 0, 1, 2, 1 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 1, 1, 2 }, // T tetromino -90deg
+            new int[] { 0, 0, 1, 0 }
+        ));
+        offsets.AddLast((
+            new int[] { 0, 0, 0, 1 }, // T tetromino -180deg
+            new int[] { 0, 1, 2, 1 }
+        ));
+        offsets.AddLast((
+            new int[] { 1, 0, 1, 2 }, // T tetromino -270deg
+            new int[] { 0, 1, 1, 1 }
+        ));
 
-        StringBuilder output = new();
-        int t = int.Parse(Console.ReadLine()!);
-        for (int i = 0; i < t; ++i) // max tc = unknown
-        {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int a = tokens[0]; // [0, 10000)
-            int b = tokens[1];
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = tokens[0];
+        int width = tokens[1];
 
-            for (int j = 0; j < commands.Length; ++j) // tc = 10000
+        int[] map = new int[width * height];
+        for (int row = 0; row < height; ++row)
+        {
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < width; ++col)
             {
-                commands[j].Clear();
+                map[row * width + col] = tokens[col]; // [1, 1000]
             }
-            Queue<int> visitingQueue = new();
+        }
+        
+        const int InvalidSum = -1;
 
-            visitingQueue.Enqueue(a);
-            while (visitingQueue.Count > 0) // max tc = 10000
+        int maxSum = InvalidSum;
+        for (int index1D = 0; index1D < map.Length; ++index1D)
+        {
+            int row = index1D / width;
+            int col = index1D % width;
+
+            for (var node = offsets.First; node != null; node = node.Next)
             {
-                int v = visitingQueue.Dequeue();
-                int newCost = commands[v].Length + 1;
-
-                char[] adjCommands = new char[4]
+                int sum = 0;
+                int[] rowOffsets = node.Value.rowOffsets;
+                int[] colOffsets = node.Value.colOffsets;
+                for (int j = 0; j < rowOffsets.Length; ++j)
                 {
-                    'D',
-                    'S',
-                    'L',
-                    'R',
-                };
-                int[] adjVs = new int[4]
-                {
-                    CommandD(v),
-                    CommandS(v),
-                    CommandL(v),
-                    CommandR(v),
-                };
+                    int adjRow = row + rowOffsets[j];
+                    int adjCol = col + colOffsets[j];
+                    if (adjRow < 0 || adjRow > height - 1 ||
+                        adjCol < 0 || adjCol > width - 1)
+                    {
+                        sum = InvalidSum;
+                        break;
+                    }
 
-                for (int j = 0; j < adjVs.Length; ++j) // tc = 4
-                {
-                    int adjV = adjVs[j];
-
-                    if (adjV == a)
-                        continue;
-
-                    if (commands[adjV].Length > 0)
-                        continue;
-
-                    commands[adjV].Append(commands[v]);
-                    commands[adjV].Append(adjCommands[j]);
-                    visitingQueue.Enqueue(adjV);
+                    sum += map[adjRow * width + adjCol];
                 }
+
+                if (sum == InvalidSum)
+                    continue;
+
+                if (maxSum != InvalidSum && sum < maxSum)
+                    continue;
+
+                maxSum = sum;
             }
-
-            output.AppendLine($"{commands[b]}");
         }
-        Console.Write(output);
-    }
 
-    private static int CommandD(int input)
-    {
-        return (input * 2) % 10000;
-    }
-
-    private static int CommandS(int input)
-    {
-        if (--input < 0)
-        {
-            input = 9999;
-        }
-        return input;
-    }
-
-    private static int CommandL(int input)
-    {
-        int d1 = input / 1000;
-        return ((input * 10) % 10000) + d1;
-    }
-    
-    private static int CommandR(int input)
-    {
-        int d4 = input % 10;
-        return (input / 10) + (d4 * 1000);
+        Console.Write(maxSum);
     }
 }
