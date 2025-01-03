@@ -23,25 +23,13 @@ internal class Program
             sorter.Remove(min);
         }
 
-        LinkedList<int> sequences = new();
-        Solver(sequences, selectables.Length, m, 0, 0, 0);
-
         StringBuilder output = new();
-        for (var node = sequences.First; node != null; node = node.Next)
-        {
-            for (int i = m; i > 0; --i) // max tc = 8
-            {
-                int place = ExponentiationBySquaringIteratively(10, i);
-                // selectables의 인덱스를 참조해야할듯
-                output.Append($"{selectables[(node.Value % (place * 10)) / place]} ");
-            }
-            output.AppendLine();
-        }
+        Solver(output, selectables, m, 0, 0, 0);
         Console.Write(output);
     }
 
-    private static void Solver(LinkedList<int> sequences,
-                               int selectablesLength,
+    private static void Solver(StringBuilder output,
+                               int[] selectables,
                                int sequenceLength,
                                int leastSelectableIndex,
                                int recursionDepth,
@@ -52,14 +40,14 @@ internal class Program
         int placeExponent = sequenceLength - recursionDepth;
         int place = ExponentiationBySquaringIteratively(10, placeExponent);
 
-        for (int i = leastSelectableIndex; i < selectablesLength; ++i)
+        for (int i = leastSelectableIndex; i < selectables.Length; ++i)
         {
             int newSequence = sequence + i * place;
 
             if (newRecursionDepth < sequenceLength)
             {
-                Solver(sequences,
-                       selectablesLength,
+                Solver(output,
+                       selectables,
                        sequenceLength,
                        i,
                        newRecursionDepth,
@@ -67,7 +55,12 @@ internal class Program
             }
             else
             {
-                sequences.AddLast(newSequence);
+                for (int j = sequenceLength; j > 0; --j) // max tc = 8
+                {
+                    int placeForPrinting = ExponentiationBySquaringIteratively(10, j); // max tc = log2(8)
+                    output.Append($"{selectables[(newSequence % (placeForPrinting * 10)) / placeForPrinting]} ");
+                }
+                output.AppendLine();
             }
         }
     }
