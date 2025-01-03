@@ -24,7 +24,7 @@ internal class Program
         }
 
         LinkedList<int> sequences = new();
-        Solver(sequences, selectables, m, 0, 0, 0);
+        Solver(sequences, selectables.Length, m, 0, 0, 0);
 
         StringBuilder output = new();
         for (var node = sequences.First; node != null; node = node.Next)
@@ -32,7 +32,8 @@ internal class Program
             for (int i = m; i > 0; --i) // max tc = 8
             {
                 int place = ExponentiationBySquaringIteratively(10, i);
-                output.Append($"{(node.Value % (place * 10)) / place} ");
+                // selectables의 인덱스를 참조해야할듯
+                output.Append($"{selectables[(node.Value % (place * 10)) / place]} ");
             }
             output.AppendLine();
         }
@@ -40,7 +41,7 @@ internal class Program
     }
 
     private static void Solver(LinkedList<int> sequences,
-                               int[] selectables,
+                               int selectablesLength,
                                int sequenceLength,
                                int leastSelectableIndex,
                                int recursionDepth,
@@ -51,14 +52,14 @@ internal class Program
         int placeExponent = sequenceLength - recursionDepth;
         int place = ExponentiationBySquaringIteratively(10, placeExponent);
 
-        for (int i = leastSelectableIndex; i < selectables.Length; ++i)
+        for (int i = leastSelectableIndex; i < selectablesLength; ++i)
         {
-            int newSequence = sequence + selectables[i] * place;
+            int newSequence = sequence + i * place;
 
             if (newRecursionDepth < sequenceLength)
             {
                 Solver(sequences,
-                       selectables,
+                       selectablesLength,
                        sequenceLength,
                        i,
                        newRecursionDepth,
