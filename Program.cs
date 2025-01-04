@@ -4,79 +4,62 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // tc = 2
-        int n = tokens[0];
-        int m = tokens[1];
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int a = tokens[0];
+        int b = tokens[1];
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 8
-        SortedSet<int> sorter = new();
-        for (int i = 0; i < tokens.Length; ++i) // max tc = 8
+        SortedDictionary<long, int> dp = new();
+        LinkedList<long> waitings = new();
+
+        dp.Add(a, 1);
+        waitings.AddLast(a);
+        while (waitings.Count > 0)
         {
-            sorter.Add(tokens[i]);
-        }
+            long basis = waitings.First!.Value;
+            waitings.RemoveFirst();
 
-        int[] selectables = new int[sorter.Count];
-        for (int i = 0; i < selectables.Length; ++i) // max tc = 8
-        {
-            int min = sorter.Min; // max tc = log2(8)
-            selectables[i] = min;
-            sorter.Remove(min);
-        }
+            int newComputings = dp[basis] + 1;
 
-        StringBuilder output = new();
-        Solver(output, selectables, m, 0, 0, 0);
-        Console.Write(output);
-    }
-
-    private static void Solver(StringBuilder output,
-                               int[] selectables,
-                               int sequenceLength,
-                               int leastSelectableIndex,
-                               int recursionDepth,
-                               int sequence)
-    {
-        int newRecursionDepth = recursionDepth + 1;
-
-        int placeExponent = sequenceLength - recursionDepth;
-        int place = ExponentiationBySquaringIteratively(10, placeExponent);
-
-        for (int i = leastSelectableIndex; i < selectables.Length; ++i)
-        {
-            int newSequence = sequence + i * place;
-
-            if (newRecursionDepth < sequenceLength)
+            long doubled = basis * 2;
+            if (doubled <= b)
             {
-                Solver(output,
-                       selectables,
-                       sequenceLength,
-                       i,
-                       newRecursionDepth,
-                       newSequence);
-            }
-            else
-            {
-                for (int j = sequenceLength; j > 0; --j) // max tc = 8
+                if (dp.ContainsKey(doubled) == false)
                 {
-                    int placeForPrinting = ExponentiationBySquaringIteratively(10, j); // max tc = log2(8)
-                    output.Append($"{selectables[(newSequence % (placeForPrinting * 10)) / placeForPrinting]} ");
+                    dp.Add(doubled, newComputings);
+                    waitings.AddLast(doubled);
                 }
-                output.AppendLine();
+                else if (newComputings < dp[doubled])
+                {
+                    dp[doubled] = newComputings;
+                    waitings.AddLast(doubled);
+                }
             }
-        }
-    }
 
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
-    {
-        int output = 1;
-        while (exponent > 0)
-        {
-            if ((exponent & 1) == 1)
+            long attached = basis * 10 + 1;
+            if (attached <= b)
             {
-                output *= basis;
+                if (dp.ContainsKey(attached) == false)
+                {
+                    dp.Add(attached, newComputings);
+                    waitings.AddLast(attached);
+                }
+                else if (newComputings < dp[attached])
+                {
+                    dp[doubled] = newComputings;
+                    waitings.AddLast(attached);
+                }
             }
-            basis *= basis;
-            exponent >>= 1;
         }
-        return output;
+
+        string output = "";
+        if (dp.ContainsKey(b))
+        {
+            output = $"{dp[b]}";
+        }
+        else
+        {
+            output = "-1";
+        }
+        Console.Write(output);
     }
 }
