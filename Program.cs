@@ -1,64 +1,30 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int b = tokens[1];
+        string s0 = Console.ReadLine()!;
+        string s1 = Console.ReadLine()!;
 
-        SortedDictionary<long, int> dp = new();
-        LinkedList<long> waitings = new();
-
-        dp.Add(a, 1);
-        waitings.AddLast(a);
-        while (waitings.Count > 0)
+        int output = 0;
+        int height = s0.Length + 1; // 0 row is a margin.
+        int width = s1.Length + 1; // 0 col is a margin.
+        int[,] dp = new int[height, width];
+        for (int row = 1; row < height; ++row)
         {
-            long basis = waitings.First!.Value;
-            waitings.RemoveFirst();
-
-            int newComputings = dp[basis] + 1;
-
-            long doubled = basis * 2;
-            if (doubled <= b)
+            for (int col = 1; col < width; ++col)
             {
-                if (dp.ContainsKey(doubled) == false)
+                int lcsLength;
+                if (s0[row - 1] == s1[col - 1])
                 {
-                    dp.Add(doubled, newComputings);
-                    waitings.AddLast(doubled);
+                    lcsLength = dp[row - 1, col - 1] + 1;
                 }
-                else if (newComputings < dp[doubled])
+                else
                 {
-                    dp[doubled] = newComputings;
-                    waitings.AddLast(doubled);
+                    lcsLength = Math.Max(dp[row - 1, col], dp[row, col - 1]);
                 }
+                dp[row, col] = lcsLength;
+                output = Math.Max(output, lcsLength);
             }
-
-            long attached = basis * 10 + 1;
-            if (attached <= b)
-            {
-                if (dp.ContainsKey(attached) == false)
-                {
-                    dp.Add(attached, newComputings);
-                    waitings.AddLast(attached);
-                }
-                else if (newComputings < dp[attached])
-                {
-                    dp[doubled] = newComputings;
-                    waitings.AddLast(attached);
-                }
-            }
-        }
-
-        string output = "";
-        if (dp.ContainsKey(b))
-        {
-            output = $"{dp[b]}";
-        }
-        else
-        {
-            output = "-1";
         }
         Console.Write(output);
     }
