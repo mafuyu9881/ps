@@ -2,30 +2,44 @@
 {
     private static void Main(string[] args)
     {
-        string s0 = Console.ReadLine()!;
-        string s1 = Console.ReadLine()!;
-
-        int output = 0;
-        int height = s0.Length + 1; // 0 row is a margin.
-        int width = s1.Length + 1; // 0 col is a margin.
-        int[,] dp = new int[height, width];
-        for (int row = 1; row < height; ++row)
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int src = tokens[0];
+        int dst = tokens[1];
+        
+        const int InvalidSpentTime = -1;
+        int[] spentTimes = new int[100001];
+        for (int i = 0; i < spentTimes.Length; ++i)
         {
-            for (int col = 1; col < width; ++col)
+            spentTimes[i] = InvalidSpentTime;
+        }
+        Queue<int> visitingQueue = new();
+
+        spentTimes[src] = 0;
+        visitingQueue.Enqueue(src);
+        while (visitingQueue.Count > 0)
+        {
+            int x = visitingQueue.Dequeue();
+
+            // it's a bit of a burden to allocate heap memories but-
+            // sometimes it needs a sacrifice for the tidy code.
+            int[] adjXs = new int[] { x + 1, x - 1, x * 2 };
+            int[] adjSpentTimes = new int[] { 1, 1, 0 };
+            for (int i = 0; i < adjXs.Length; ++i)
             {
-                int lcsLength;
-                if (s0[row - 1] == s1[col - 1])
-                {
-                    lcsLength = dp[row - 1, col - 1] + 1;
-                }
-                else
-                {
-                    lcsLength = Math.Max(dp[row - 1, col], dp[row, col - 1]);
-                }
-                dp[row, col] = lcsLength;
-                output = Math.Max(output, lcsLength);
+                int adjX = adjXs[i];
+                if (adjX < 0 || adjX > spentTimes.Length - 1)
+                    continue;
+
+                int oldSpentTime = spentTimes[adjX];
+                int newSpentTime = spentTimes[x] + adjSpentTimes[i];
+                if (oldSpentTime != InvalidSpentTime && oldSpentTime <= newSpentTime)
+                    continue;
+
+                spentTimes[adjX] = newSpentTime;
+                visitingQueue.Enqueue(adjX);
             }
         }
-        Console.Write(output);
+        
+        Console.Write(spentTimes[dst]);
     }
 }
