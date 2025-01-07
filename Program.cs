@@ -10,7 +10,6 @@
         int choosableChickenShopCount = tokens[1]; // [1, 13]
 
         LinkedList<int> homeIndices1D = new(); // [1, citySize*2]
-        //int[] chickenShopIndices1D = new int[choosableChickenShopCount];
         LinkedList<int> chickenShopIndices1D = new(); // [1, 13]
         for (int row = 0; row < citySize; ++row) // max tc = 50
         {
@@ -28,13 +27,14 @@
                 if (attribute == ChickenShopAttribute)
                 {
                     chickenShopIndices1D.AddLast(index1D);
-                    //chickenShopIndices1D[chickenShopWritingIndex] = index1D;
-                    //++chickenShopWritingIndex;
                 }
             }
         }
 
-        int[] chickenShopIndex1DArray = new int[chickenShopIndices1D.Count];
+        int homeCount = homeIndices1D.Count;
+        int chickenShopCount = chickenShopIndices1D.Count;
+
+        int[] chickenShopIndex1DArray = new int[chickenShopCount];
         int writingIndex = 0;
         for (var node = chickenShopIndices1D.First; node != null; node = node.Next)
         {
@@ -43,14 +43,14 @@
         }
 
         // arrays of minimum distances from chicken shop to home
-        int[][] minDistanceArrays = new int[choosableChickenShopCount][];
+        int[][] minDistanceArrays = new int[chickenShopCount][];
         for (int i = 0; i < minDistanceArrays.Length; ++i) // max tc = 13
         {
             int chickenShopIndex1D = chickenShopIndex1DArray[i];
             int chickenShopRow = chickenShopIndex1D / citySize;
             int chickenShopCol = chickenShopIndex1D % citySize;
 
-            minDistanceArrays[i] = new int[homeIndices1D.Count];
+            minDistanceArrays[i] = new int[homeCount];
             int minDistanceArrayWritingIndex = 0;
             // max tc = maxCitySize * 2 = 50 * 2
             for (var node = homeIndices1D.First; node != null; node = node.Next)
@@ -66,36 +66,58 @@
 
         LinkedList<int[]> combinations = new();
         // should put in n instead of chickenShopIndex1DArray
-        Combinating(combinations, chickenShopIndex1DArray, choosableChickenShopCount, new(), 0);
+        Combinating(combinations, chickenShopCount, choosableChickenShopCount, new(), 0);
 
-        const int InvalidChickenDistanceSum = -1;
-        int minimumChickenDistanceSum = InvalidChickenDistanceSum;
+        const int InvalidChickenDistance = -1;
+        int minimumChickenDistanceSum = InvalidChickenDistance;
         // max tc = 13C7 = 1716
         for (var node = combinations.First; node != null; node = node.Next)
         {
-            int[] combination = node.Value;
+            int[] chosenChickenShopIDs = node.Value; // chicken shop ID is same with the index of chickenShopIndex1DArray
 
+            int chickenDistanceSum = 0;
+            for (int i = 0; i < homeCount; ++i)
+            {
+                int minimumChickenDistance = InvalidChickenDistance;
+                for (int j = 0; j < chosenChickenShopIDs.Length; ++j)
+                {
+                    int chickenDistance = minDistanceArrays[chosenChickenShopIDs[j]][i];
 
+                    if (minimumChickenDistance != InvalidChickenDistance &&
+                        minimumChickenDistance < chickenDistance)
+                        continue;
+                    
+                    minimumChickenDistance = chickenDistance;
+                }
+                chickenDistanceSum += minimumChickenDistance;
+            }
+
+            if (minimumChickenDistanceSum != InvalidChickenDistance &&
+                minimumChickenDistanceSum < chickenDistanceSum)
+                continue;
+
+            minimumChickenDistanceSum = chickenDistanceSum;
         }
+        Console.Write(minimumChickenDistanceSum);
     }
 
     private static void Combinating(LinkedList<int[]> combinations,
-                                    int[] numbers,
+                                    int n,
                                     int r,
                                     LinkedList<int> history,
                                     int beginIndex)
     {
-        for (int i = beginIndex; i < numbers.Length; ++i)
+        for (int i = beginIndex; i < n; ++i)
         {
-            history.AddLast(numbers[i]);
+            history.AddLast(i);
 
             if (history.Count < r)
             {
-                int remainNumberCount = numbers.Length - (i + 1);
+                int remainNumberCount = n - (i + 1);
                 int remainChoiceCount = r - history.Count;
                 if (remainNumberCount >= remainChoiceCount)
                 {
-                    Combinating(combinations, numbers, r, history, i + 1);
+                    Combinating(combinations, n, r, history, i + 1);
                 }
             }
             else
