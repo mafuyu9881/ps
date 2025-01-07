@@ -2,44 +2,115 @@
 {
     private static void Main(string[] args)
     {
+        const int HomeAttribute = 1;
+        const int ChickenShopAttribute = 2;
+
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int src = tokens[0];
-        int dst = tokens[1];
-        
-        const int InvalidSpentTime = -1;
-        int[] spentTimes = new int[100001];
-        for (int i = 0; i < spentTimes.Length; ++i)
-        {
-            spentTimes[i] = InvalidSpentTime;
-        }
-        Queue<int> visitingQueue = new();
+        int citySize = tokens[0]; // [2, 50]
+        int choosableChickenShopCount = tokens[1]; // [1, 13]
 
-        spentTimes[src] = 0;
-        visitingQueue.Enqueue(src);
-        while (visitingQueue.Count > 0)
+        LinkedList<int> homeIndices1D = new(); // [1, citySize*2]
+        //int[] chickenShopIndices1D = new int[choosableChickenShopCount];
+        LinkedList<int> chickenShopIndices1D = new(); // [1, 13]
+        for (int row = 0; row < citySize; ++row) // max tc = 50
         {
-            int x = visitingQueue.Dequeue();
-
-            // it's a bit of a burden to allocate heap memories but-
-            // sometimes it needs a sacrifice for the tidy code.
-            int[] adjXs = new int[] { x + 1, x - 1, x * 2 };
-            int[] adjSpentTimes = new int[] { 1, 1, 0 };
-            for (int i = 0; i < adjXs.Length; ++i)
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < citySize; ++col) // max tc = 50
             {
-                int adjX = adjXs[i];
-                if (adjX < 0 || adjX > spentTimes.Length - 1)
-                    continue;
+                int index1D = row * citySize + col;
+                int attribute = tokens[col];
 
-                int oldSpentTime = spentTimes[adjX];
-                int newSpentTime = spentTimes[x] + adjSpentTimes[i];
-                if (oldSpentTime != InvalidSpentTime && oldSpentTime <= newSpentTime)
-                    continue;
+                if (attribute == HomeAttribute)
+                {
+                    homeIndices1D.AddLast(index1D);
+                }
 
-                spentTimes[adjX] = newSpentTime;
-                visitingQueue.Enqueue(adjX);
+                if (attribute == ChickenShopAttribute)
+                {
+                    chickenShopIndices1D.AddLast(index1D);
+                    //chickenShopIndices1D[chickenShopWritingIndex] = index1D;
+                    //++chickenShopWritingIndex;
+                }
             }
         }
-        
-        Console.Write(spentTimes[dst]);
+
+        int[] chickenShopIndex1DArray = new int[chickenShopIndices1D.Count];
+        int writingIndex = 0;
+        for (var node = chickenShopIndices1D.First; node != null; node = node.Next)
+        {
+            chickenShopIndex1DArray[writingIndex] = node.Value;
+            ++writingIndex;
+        }
+
+        // arrays of minimum distances from chicken shop to home
+        int[][] minDistanceArrays = new int[choosableChickenShopCount][];
+        for (int i = 0; i < minDistanceArrays.Length; ++i) // max tc = 13
+        {
+            int chickenShopIndex1D = chickenShopIndex1DArray[i];
+            int chickenShopRow = chickenShopIndex1D / citySize;
+            int chickenShopCol = chickenShopIndex1D % citySize;
+
+            minDistanceArrays[i] = new int[homeIndices1D.Count];
+            int minDistanceArrayWritingIndex = 0;
+            // max tc = maxCitySize * 2 = 50 * 2
+            for (var node = homeIndices1D.First; node != null; node = node.Next)
+            {
+                int homeIndex1D = node.Value;
+                int homeRow = homeIndex1D / citySize;
+                int homeCol = homeIndex1D % citySize;
+
+                minDistanceArrays[i][minDistanceArrayWritingIndex] = Math.Abs(homeRow - chickenShopRow) + Math.Abs(homeCol - chickenShopCol);
+                ++minDistanceArrayWritingIndex;
+            }
+        }
+
+        LinkedList<int[]> combinations = new();
+        // should put in n instead of chickenShopIndex1DArray
+        Combinating(combinations, chickenShopIndex1DArray, choosableChickenShopCount, new(), 0);
+
+        const int InvalidChickenDistanceSum = -1;
+        int minimumChickenDistanceSum = InvalidChickenDistanceSum;
+        // max tc = 13C7 = 1716
+        for (var node = combinations.First; node != null; node = node.Next)
+        {
+            int[] combination = node.Value;
+
+
+        }
+    }
+
+    private static void Combinating(LinkedList<int[]> combinations,
+                                    int[] numbers,
+                                    int r,
+                                    LinkedList<int> history,
+                                    int beginIndex)
+    {
+        for (int i = beginIndex; i < numbers.Length; ++i)
+        {
+            history.AddLast(numbers[i]);
+
+            if (history.Count < r)
+            {
+                int remainNumberCount = numbers.Length - (i + 1);
+                int remainChoiceCount = r - history.Count;
+                if (remainNumberCount >= remainChoiceCount)
+                {
+                    Combinating(combinations, numbers, r, history, i + 1);
+                }
+            }
+            else
+            {
+                int[] combination = new int[r];
+                int combinationWritingIndex = 0;
+                for (var node = history.First; node != null; node = node.Next) // max tc = 13
+                {
+                    combination[combinationWritingIndex] = node.Value;
+                    ++combinationWritingIndex;
+                }
+                combinations.AddLast(combination);
+            }
+
+            history.RemoveLast();
+        }
     }
 }
