@@ -18,12 +18,10 @@
 
         int[] distance = new int[map.Length];
         SortedSet<char> passedCharacters = new();
-        Stack<int> visitingStack = new();
 
         int srcIndex1D = 0;
         distance[srcIndex1D] = 1;
         passedCharacters.Add(map[srcIndex1D]);
-        visitingStack.Push(srcIndex1D);
 
         int[] rowOffsets = new int[] { -1, 1, 0, 0 };
         int[] colOffsets = new int[] { 0, 0, -1, 1 };
@@ -69,15 +67,15 @@
             if (passedCharacters.Contains(adjCharacter))
                 continue;
 
-            //int oldDistance = distance[adjIndex1D];
             int newDistance = distance[index1D] + 1;
-            //if (newDistance <= oldDistance)
-            //    continue;
 
             distance[adjIndex1D] = newDistance;
             passedCharacters.Add(adjCharacter);
 
             maxDistance = Math.Max(maxDistance, newDistance);
+
+            if (maxDistance > 'Z' - 'A')
+                break;
 
             Recursion(ref maxDistance,
                       map,
@@ -88,6 +86,9 @@
                       rowOffsets,
                       colOffsets,
                       adjIndex1D);
+
+            if (maxDistance > 'Z' - 'A')
+                break;
         }
 
         passedCharacters.Remove(map[index1D]);
