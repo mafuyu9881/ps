@@ -2,122 +2,94 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int peopleCount = tokens[0]; // [1, 50]
-        int partyCount = tokens[1]; // [1, 50]
+        int[] characterTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = characterTokens[0]; // [1..20]
+        int width = characterTokens[1]; // [1..20]
 
-        DisjointSet ds = new(peopleCount);
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // [1, 50]
-        LinkedList<int> witnesses = new();
-        for (int i = 1; i < tokens.Length; ++i)
+        char[] map = new char[width * height];
+        for (int row = 0; row < height; ++row)
         {
-            int witness = tokens[i];
-            ds.Union(tokens[1], witness);
-            witnesses.AddLast(witness);
-        }
-
-        LinkedList<LinkedList<int>> parties = new();
-        for (int i = 0; i < partyCount; ++i)
-        {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // [2, 50]
-            LinkedList<int> party = new();
-            for (int j = 1; j < tokens.Length; ++j)
+            string stringToken = Console.ReadLine()!;
+            for (int col = 0; col < width; ++col)
             {
-                int member = tokens[j];
-                ds.Union(tokens[1], member);
-                party.AddLast(member);
-            }
-            parties.AddLast(party);
-        }
-
-        int output = 0;
-        for (var partyNode = parties.First; partyNode != null; partyNode = partyNode.Next)
-        {
-            if (CanParticipate(ds, witnesses, partyNode.Value))
-            {
-                ++output;
+                map[row * width + col] = stringToken[col];
             }
         }
-        Console.Write(output);
+
+        int[] distance = new int[map.Length];
+        SortedSet<char> passedCharacters = new();
+        Stack<int> visitingStack = new();
+
+        int srcIndex1D = 0;
+        distance[srcIndex1D] = 1;
+        passedCharacters.Add(map[srcIndex1D]);
+        visitingStack.Push(srcIndex1D);
+
+        int[] rowOffsets = new int[] { -1, 1, 0, 0 };
+        int[] colOffsets = new int[] { 0, 0, -1, 1 };
+
+        int maxDistance = 0;
+        Recursion(ref maxDistance,
+                  map,
+                  width,
+                  height,
+                  distance,
+                  passedCharacters,
+                  rowOffsets,
+                  colOffsets,
+                  srcIndex1D);
+        Console.Write(maxDistance);
     }
 
-    private static bool CanParticipate(DisjointSet ds, LinkedList<int> witnesses, LinkedList<int> party)
+    private static void Recursion(ref int maxDistance,
+                                  char[] map,
+                                  int width,
+                                  int height,
+                                  int[] distance,
+                                  SortedSet<char> passedCharacters,
+                                  int[] rowOffsets,
+                                  int[] colOffsets,
+                                  int index1D)
     {
-        if (witnesses.Count < 1)
-            return true;
+        int row = index1D / width;
+        int col = index1D % width;
 
-        int witness = witnesses.First!.Value;
-
-        for (var node = party.First; node != null; node = node.Next)
+        for (int i = 0; i < rowOffsets.Length; ++i)
         {
-            if (ds.Find(witness) == ds.Find(node.Value))
-            {
-                return false;
-            }
+            int adjRow = row + rowOffsets[i];
+            if (adjRow < 0 || adjRow > height - 1)
+                continue;
+
+            int adjCol = col + colOffsets[i];
+            if (adjCol < 0 || adjCol > width - 1)
+                continue;
+
+            int adjIndex1D = adjRow * width + adjCol;
+            char adjCharacter = map[adjIndex1D];
+            if (passedCharacters.Contains(adjCharacter))
+                continue;
+
+            //int oldDistance = distance[adjIndex1D];
+            int newDistance = distance[index1D] + 1;
+            //if (newDistance <= oldDistance)
+            //    continue;
+
+            distance[adjIndex1D] = newDistance;
+            passedCharacters.Add(adjCharacter);
+
+            maxDistance = Math.Max(maxDistance, newDistance);
+
+            Recursion(ref maxDistance,
+                      map,
+                      width,
+                      height,
+                      distance,
+                      passedCharacters,
+                      rowOffsets,
+                      colOffsets,
+                      adjIndex1D);
         }
 
-        return true;
-    }
-
-    private class DisjointSet
-    {
-        private int[] parents;
-        private int[] ranks;
-        
-        public DisjointSet(int n)
-        {
-            int count = n + 1;
-
-            parents = new int[count];
-            for (int i = 0; i < parents.Length; ++i)
-            {
-                parents[i] = i;
-            }
-
-            ranks = new int[count];
-        }
-
-        // find the representative of the set including x
-        public int Find(int x)
-        {
-            int parent = parents[x];
-
-            if (x != parent)
-            {
-                // return Find(parent); // find without compressing path
-                return parents[x] = Find(parent); // find with compressing path
-            }
-            else
-            {
-                return x;
-            }
-        }
-
-        public void Union(int a, int b)
-        {
-            int aSetRepresentative = Find(a);
-            int bSetRepresentative = Find(b);
-            if (aSetRepresentative == bSetRepresentative)
-                return;
-
-            int aSetRank = ranks[aSetRepresentative];
-            int bSetRank = ranks[bSetRepresentative];
-            if (aSetRank > bSetRank)
-            {
-                parents[bSetRepresentative] = aSetRepresentative;
-            }
-            else if (aSetRank < bSetRank)
-            {
-                parents[aSetRepresentative] = bSetRepresentative;
-            }
-            else
-            {
-                parents[bSetRepresentative] = aSetRepresentative;
-                ++ranks[aSetRepresentative];
-            }
-
-            parents[Find(a)] = Find(b); // compress path
-        }
+        passedCharacters.Remove(map[index1D]);
     }
 }
