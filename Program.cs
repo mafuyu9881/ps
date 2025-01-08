@@ -26,7 +26,7 @@
         int[] rowOffsets = new int[] { -1, 1, 0, 0 };
         int[] colOffsets = new int[] { 0, 0, -1, 1 };
 
-        int maxDistance = 0;
+        int maxDistance = 1;
         Recursion(ref maxDistance,
                   map,
                   width,
