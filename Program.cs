@@ -17,11 +17,11 @@
         }
 
         int[] distance = new int[map.Length];
-        SortedSet<char> passedCharacters = new();
+        bool[] passed = new bool[map.Length];
 
         int srcIndex1D = 0;
         distance[srcIndex1D] = 1;
-        passedCharacters.Add(map[srcIndex1D]);
+        passed[map[srcIndex1D] - 'A'] = true;
 
         int[] rowOffsets = new int[] { -1, 1, 0, 0 };
         int[] colOffsets = new int[] { 0, 0, -1, 1 };
@@ -32,7 +32,7 @@
                   width,
                   height,
                   distance,
-                  passedCharacters,
+                  passed,
                   rowOffsets,
                   colOffsets,
                   srcIndex1D);
@@ -44,7 +44,7 @@
                                   int width,
                                   int height,
                                   int[] distance,
-                                  SortedSet<char> passedCharacters,
+                                  bool[] passed,
                                   int[] rowOffsets,
                                   int[] colOffsets,
                                   int index1D)
@@ -64,13 +64,13 @@
 
             int adjIndex1D = adjRow * width + adjCol;
             char adjCharacter = map[adjIndex1D];
-            if (passedCharacters.Contains(adjCharacter))
+            if (passed[adjCharacter - 'A'])
                 continue;
 
             int newDistance = distance[index1D] + 1;
 
             distance[adjIndex1D] = newDistance;
-            passedCharacters.Add(adjCharacter);
+            passed[adjCharacter - 'A'] = true;
 
             maxDistance = Math.Max(maxDistance, newDistance);
 
@@ -82,7 +82,7 @@
                       width,
                       height,
                       distance,
-                      passedCharacters,
+                      passed,
                       rowOffsets,
                       colOffsets,
                       adjIndex1D);
@@ -91,6 +91,6 @@
                 return;
         }
 
-        passedCharacters.Remove(map[index1D]);
+        passed[map[index1D] - 'A'] = false;
     }
 }
