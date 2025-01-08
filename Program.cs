@@ -2,137 +2,97 @@
 {
     private static void Main(string[] args)
     {
-        const int HomeAttribute = 1;
-        const int ChickenShopAttribute = 2;
+        int gridSize = int.Parse(Console.ReadLine()!);
 
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int citySize = tokens[0]; // [2, 50]
-        int choosableChickenShopCount = tokens[1]; // [1, 13]
-
-        LinkedList<int> homeIndices1D = new(); // [1, citySize*2]
-        LinkedList<int> chickenShopIndices1D = new(); // [1, 13]
-        for (int row = 0; row < citySize; ++row) // max tc = 50
+        int[] map = new int[gridSize * gridSize];
+        for (int row = 0; row < gridSize; ++row)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < citySize; ++col) // max tc = 50
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < gridSize; ++col)
             {
-                int index1D = row * citySize + col;
-                int attribute = tokens[col];
-
-                if (attribute == HomeAttribute)
-                {
-                    homeIndices1D.AddLast(index1D);
-                }
-
-                if (attribute == ChickenShopAttribute)
-                {
-                    chickenShopIndices1D.AddLast(index1D);
-                }
+                map[row * gridSize + col] = tokens[col];
             }
         }
 
-        int homeCount = homeIndices1D.Count;
-        int chickenShopCount = chickenShopIndices1D.Count;
+        int srcTailIndex1D = 0; // 0 * gridSize + 0
+        int srcHeadIndex1D = 1; // 0 * gridSize + 1
 
-        int[] chickenShopIndex1DArray = new int[chickenShopCount];
-        int writingIndex = 0;
-        for (var node = chickenShopIndices1D.First; node != null; node = node.Next)
+        int[] visitedCount = new int[map.Length];
+        // state 0 = horizontal, 1 = diagonal, 2 = vertical
+        Queue<(int state, int headIndex1D)> visitingQueue = new();
+
+        visitedCount[srcTailIndex1D] = 1;
+        visitedCount[srcHeadIndex1D] = 1;
+        visitingQueue.Enqueue(new(0, srcHeadIndex1D));
+
+        int[] rowMovementOffsets = new int[] { 0, 1, 1 };
+        int[] colMovementOffsets = new int[] { 1, 1, 0 };
+
+        // the index of the first dimention means state
+        int[][] rowTestOffsetsBundle = new int[3][];
+        int[][] colTestOffsetsBundle = new int[3][];
+
+        rowTestOffsetsBundle[0] = new int[] { 0 };
+        colTestOffsetsBundle[0] = new int[] { 1 };
+
+        rowTestOffsetsBundle[1] = new int[] { 0, 1, 1 };
+        colTestOffsetsBundle[1] = new int[] { 1, 1, 0 };
+
+        rowTestOffsetsBundle[2] = new int[] { 1 };
+        colTestOffsetsBundle[2] = new int[] { 0 };
+
+        while (visitingQueue.Count > 0)
         {
-            chickenShopIndex1DArray[writingIndex] = node.Value;
-            ++writingIndex;
-        }
+            var dequeuedElement = visitingQueue.Dequeue();
+            int state = dequeuedElement.state;
+            int headIndex1D = dequeuedElement.headIndex1D;
+            int headRow = headIndex1D / gridSize;
+            int headCol = headIndex1D % gridSize;
 
-        // arrays of minimum distances from chicken shop to home
-        int[][] minDistanceArrays = new int[chickenShopCount][];
-        for (int i = 0; i < minDistanceArrays.Length; ++i) // max tc = 13
-        {
-            int chickenShopIndex1D = chickenShopIndex1DArray[i];
-            int chickenShopRow = chickenShopIndex1D / citySize;
-            int chickenShopCol = chickenShopIndex1D % citySize;
+            int minNewState = Math.Max(0, state - 1);
+            int maxNewState = Math.Min(state + 1, 2);
 
-            minDistanceArrays[i] = new int[homeCount];
-            int minDistanceArrayWritingIndex = 0;
-            // max tc = maxCitySize * 2 = 50 * 2
-            for (var node = homeIndices1D.First; node != null; node = node.Next)
+            for (int newState = minNewState; newState <= maxNewState; ++newState)
             {
-                int homeIndex1D = node.Value;
-                int homeRow = homeIndex1D / citySize;
-                int homeCol = homeIndex1D % citySize;
-
-                minDistanceArrays[i][minDistanceArrayWritingIndex] = Math.Abs(homeRow - chickenShopRow) + Math.Abs(homeCol - chickenShopCol);
-                ++minDistanceArrayWritingIndex;
-            }
-        }
-
-        LinkedList<int[]> combinations = new();
-        // should put in n instead of chickenShopIndex1DArray
-        Combinating(combinations, chickenShopCount, choosableChickenShopCount, new(), 0);
-
-        const int InvalidChickenDistance = -1;
-        int minimumChickenDistanceSum = InvalidChickenDistance;
-        // max tc = 13C7 = 1716
-        for (var node = combinations.First; node != null; node = node.Next)
-        {
-            int[] chosenChickenShopIDs = node.Value; // chicken shop ID is same with the index of chickenShopIndex1DArray
-
-            int chickenDistanceSum = 0;
-            for (int i = 0; i < homeCount; ++i)
-            {
-                int minimumChickenDistance = InvalidChickenDistance;
-                for (int j = 0; j < chosenChickenShopIDs.Length; ++j)
+                int[] rowTestOffsets = rowTestOffsetsBundle[newState];
+                int[] colTestOffsets = colTestOffsetsBundle[newState];
+                bool testSucceeded = true;
+                for (int i = 0; i < rowTestOffsets.Length; ++i)
                 {
-                    int chickenDistance = minDistanceArrays[chosenChickenShopIDs[j]][i];
+                    int testingRow = headRow + rowTestOffsets[i];
+                    if (testingRow < 0 || testingRow > gridSize - 1)
+                    {
+                        testSucceeded = false;
+                        break;
+                    }
 
-                    if (minimumChickenDistance != InvalidChickenDistance &&
-                        minimumChickenDistance < chickenDistance)
-                        continue;
-                    
-                    minimumChickenDistance = chickenDistance;
+                    int testingCol = headCol + colTestOffsets[i];
+                    if (testingCol < 0 || testingCol > gridSize - 1)
+                    {
+                        testSucceeded = false;
+                        break;
+                    }
+
+                    int testingIndex1D = testingRow * gridSize + testingCol;
+                    if (map[testingIndex1D] == 1)
+                    {
+                        testSucceeded = false;
+                        break;
+                    }
                 }
-                chickenDistanceSum += minimumChickenDistance;
+
+                if (testSucceeded == false)
+                    continue;
+
+                int newRow = headRow + rowMovementOffsets[newState];
+                int newCol = headCol + colMovementOffsets[newState];
+                int newHeadIndex1D = newRow * gridSize + newCol;
+
+                ++visitedCount[newHeadIndex1D];
+                visitingQueue.Enqueue(new(newState, newHeadIndex1D));
             }
-
-            if (minimumChickenDistanceSum != InvalidChickenDistance &&
-                minimumChickenDistanceSum < chickenDistanceSum)
-                continue;
-
-            minimumChickenDistanceSum = chickenDistanceSum;
         }
-        Console.Write(minimumChickenDistanceSum);
-    }
 
-    private static void Combinating(LinkedList<int[]> combinations,
-                                    int n,
-                                    int r,
-                                    LinkedList<int> history,
-                                    int beginIndex)
-    {
-        for (int i = beginIndex; i < n; ++i)
-        {
-            history.AddLast(i);
-
-            if (history.Count < r)
-            {
-                int remainNumberCount = n - (i + 1);
-                int remainChoiceCount = r - history.Count;
-                if (remainNumberCount >= remainChoiceCount)
-                {
-                    Combinating(combinations, n, r, history, i + 1);
-                }
-            }
-            else
-            {
-                int[] combination = new int[r];
-                int combinationWritingIndex = 0;
-                for (var node = history.First; node != null; node = node.Next) // max tc = 13
-                {
-                    combination[combinationWritingIndex] = node.Value;
-                    ++combinationWritingIndex;
-                }
-                combinations.AddLast(combination);
-            }
-
-            history.RemoveLast();
-        }
+        Console.Write(visitedCount[(gridSize - 1) * gridSize + (gridSize - 1)]);
     }
 }
