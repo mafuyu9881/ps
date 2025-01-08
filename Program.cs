@@ -75,7 +75,7 @@
             maxDistance = Math.Max(maxDistance, newDistance);
 
             if (maxDistance > 'Z' - 'A')
-                break;
+                return;
 
             Recursion(ref maxDistance,
                       map,
@@ -88,7 +88,7 @@
                       adjIndex1D);
 
             if (maxDistance > 'Z' - 'A')
-                break;
+                return;
         }
 
         passedCharacters.Remove(map[index1D]);
