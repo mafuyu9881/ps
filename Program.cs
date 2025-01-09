@@ -6,6 +6,7 @@
     private static bool[]? _lockedCols = null;
     private static bool[]? _lockedSlashDiagonal = null;
     private static bool[]? _lockedBackslashDiagonal = null;
+    private static int _cases = 0;
 
     private static void Main(string[] args)
     {
@@ -18,47 +19,44 @@
         _lockedSlashDiagonal = new bool[_boardSize * 2 - 1];
         _lockedBackslashDiagonal = new bool[_boardSize * 2 - 1];
 
-        int output = 0;
-        Solve(ref output, 0, 0);
-        Console.Write(output);
+        Solve(0);
+        Console.Write(_cases);
     }
 
-    private static void Solve(ref int cases, int beginIndex, int prevPlacedQueens)
+    private static void Solve(int currRow)
     {
-        for (int i = beginIndex; i < _boardSize * _boardSize; ++i)
+        for (int col = 0; col < _boardSize; ++col)
         {
-            int row = i / _boardSize;
-            if (_lockedRows![row])
+            if (_lockedRows![currRow])
                 continue;
 
-            int col = i % _boardSize;
             if (_lockedCols![col])
                 continue;
 
-            int slashDiagonalIndex = col - row + (_boardSize - 1);
+            int slashDiagonalIndex = col + currRow;
             if (_lockedSlashDiagonal![slashDiagonalIndex])
                 continue;
 
-            int backslashDiagonalIndex = col + row;
+            int backslashDiagonalIndex = col - currRow + (_boardSize - 1);
             if (_lockedBackslashDiagonal![backslashDiagonalIndex])
                 continue;
 
-            _lockedRows[row] = true;
+            _lockedRows[currRow] = true;
             _lockedCols[col] = true;
             _lockedSlashDiagonal[slashDiagonalIndex] = true;
             _lockedBackslashDiagonal[backslashDiagonalIndex] = true;
 
-            int currPlacedQueens = prevPlacedQueens + 1;
-            if (currPlacedQueens < _requiredQueens)
+            int nextRow = currRow + 1;
+            if (nextRow < _requiredQueens)
             {
-                Solve(ref cases, i + 1, currPlacedQueens);
+                Solve(nextRow);
             }
             else
             {
-                ++cases;
+                ++_cases;
             }
-            
-            _lockedRows[row] = false;
+
+            _lockedRows[currRow] = false;
             _lockedCols[col] = false;
             _lockedSlashDiagonal[slashDiagonalIndex] = false;
             _lockedBackslashDiagonal[backslashDiagonalIndex] = false;
