@@ -1,123 +1,67 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
+    private static int _boardSize;
+    private static int _requiredQueens;
+    private static bool[]? _lockedRows = null;
+    private static bool[]? _lockedCols = null;
+    private static bool[]? _lockedSlashDiagonal = null;
+    private static bool[]? _lockedBackslashDiagonal = null;
+
     private static void Main(string[] args)
     {
-        Tree tree = new();
+        int n = int.Parse(Console.ReadLine()!);
+        _boardSize = n;
+        _requiredQueens = n;
 
-        string? token;
-        while ((token = Console.ReadLine()) != null)
-        {
-            tree.Add(int.Parse(token));
-        }
+        _lockedRows = new bool[_boardSize];
+        _lockedCols = new bool[_boardSize];
+        _lockedSlashDiagonal = new bool[_boardSize * 2 - 1];
+        _lockedBackslashDiagonal = new bool[_boardSize * 2 - 1];
 
-        StringBuilder output = new();
-        tree.PostOrderTraversal(output);
+        int output = 0;
+        Solve(ref output, 0, 0);
         Console.Write(output);
     }
-    
-    private class Tree
+
+    private static void Solve(ref int cases, int beginIndex, int prevPlacedQueens)
     {
-        public class Node
+        for (int i = beginIndex; i < _boardSize * _boardSize; ++i)
         {
-            private int _data;
-            public int Data => _data;
+            int row = i / _boardSize;
+            if (_lockedRows![row])
+                continue;
 
-            private Node? _parent;
-            public Node? Parent => _parent;
-            private Node? _leftChild;
-            public Node? LeftChild => _leftChild;
-            private Node? _rightChild;
-            public Node? RightChild => _rightChild;
+            int col = i % _boardSize;
+            if (_lockedCols![col])
+                continue;
 
-            public Node(int data)
+            int slashDiagonalIndex = col - row + (_boardSize - 1);
+            if (_lockedSlashDiagonal![slashDiagonalIndex])
+                continue;
+
+            int backslashDiagonalIndex = col + row;
+            if (_lockedBackslashDiagonal![backslashDiagonalIndex])
+                continue;
+
+            _lockedRows[row] = true;
+            _lockedCols[col] = true;
+            _lockedSlashDiagonal[slashDiagonalIndex] = true;
+            _lockedBackslashDiagonal[backslashDiagonalIndex] = true;
+
+            int currPlacedQueens = prevPlacedQueens + 1;
+            if (currPlacedQueens < _requiredQueens)
             {
-                _data = data;
-                _parent = null;
-                _leftChild = null;
-                _rightChild = null;
-            }
-            
-            public void AttachToLeftChild(Node leftChild)
-            {
-                _leftChild = leftChild;
-                _leftChild._parent = this;
-            }
-
-            public void AttachToRightChild(Node rightChild)
-            {
-                _rightChild = rightChild;
-                _rightChild._parent = this;
-            }
-        }
-
-        private Node? _root;
-
-        public Tree()
-        {
-            _root = null;
-        }
-
-        public void Add(int data)
-        {
-            Node node = new(data);
-
-            if (_root == null)
-            {
-                _root = node;
+                Solve(ref cases, i + 1, currPlacedQueens);
             }
             else
             {
-                Node? parent = _root;
-                while (parent != null)
-                {
-                    if (data > parent.Data)
-                    {
-                        if (parent.RightChild == null)
-                        {
-                            parent.AttachToRightChild(node);
-                            parent = null;
-                        }
-                        else
-                        {
-                            parent = parent.RightChild;
-                        }
-                    }
-                    else // if (data < parent.Data) there are no nodes that have the same key
-                    {
-                        if (parent.LeftChild == null)
-                        {
-                            parent.AttachToLeftChild(node);
-                            parent = null;
-                        }
-                        else
-                        {
-                            parent = parent.LeftChild;
-                        }
-                    }
-                }
-            }
-        }
-
-        public void PostOrderTraversal(StringBuilder output)
-        {
-            PostOrderTraversal(output, _root!);
-        }
-
-        private void PostOrderTraversal(StringBuilder output, Node currNode)
-        {
-            if (currNode.LeftChild != null)
-            {
-                PostOrderTraversal(output, currNode.LeftChild);
-            }
-
-            if (currNode.RightChild != null)
-            {
-                PostOrderTraversal(output, currNode.RightChild);
+                ++cases;
             }
             
-            output.AppendLine($"{currNode.Data}");
+            _lockedRows[row] = false;
+            _lockedCols[col] = false;
+            _lockedSlashDiagonal[slashDiagonalIndex] = false;
+            _lockedBackslashDiagonal[backslashDiagonalIndex] = false;
         }
     }
 }
