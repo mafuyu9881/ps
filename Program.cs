@@ -28,8 +28,8 @@
             int ap = tokens[1] - 1; // alighting point [0, 100000 - 1]
             int bt = tokens[2]; // boardable time [0, 1000000000]
 
-            int boardingTime = bt;
-            while (boardingTime < accIntervalTimes[bp])
+            int boardingTime = accIntervalTimes[bp];
+            while (boardingTime < bt)
             {
                 boardingTime += cycleTime;
             }
@@ -42,7 +42,7 @@
                 fromBPToAPTime += cycleTime;
             }
 
-            int alightingTime = bt + fromBPToAPTime;
+            int alightingTime = boardingTime + fromBPToAPTime;
 
             travelTime = Math.Max(travelTime, alightingTime);
         }
