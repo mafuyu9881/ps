@@ -30,16 +30,14 @@
 
             int cyclicClampedBT = bt % cycleTime;
 
-            // rounder is the ceiling or flooring value that rounds boardable time to accumulated interval time
-            int rounder = accIntervalTimes[bp] - cyclicClampedBT;
+            // ceil or floor boardable time to accumulated interval time
+            int boardingTime = bt + (accIntervalTimes[bp] - cyclicClampedBT);
             // if it floored, we need just one more cycle
             // no need more over than one because we used cyclicly clamped boardable time (cyclicClampedBT)
-            if (rounder < 0)
+            if (boardingTime < bt)
             {
-                rounder += cycleTime;
+                boardingTime += cycleTime;
             }
-
-            int boardingTime = bt + rounder;
 
             // It's guaranteed that boarding point and alighting point are not equeal
             int fromBPToAPTime = accIntervalTimes[ap] - accIntervalTimes[bp];
