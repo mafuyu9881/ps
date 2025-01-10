@@ -28,11 +28,18 @@
             int ap = tokens[1] - 1; // alighting point [0, 100000 - 1]
             int bt = tokens[2]; // boardable time [0, 1000000000]
 
-            int boardingTime = accIntervalTimes[bp];
-            while (boardingTime < bt)
+            int cyclicClampedBT = bt % cycleTime;
+
+            // rounder is the ceiling or flooring value that rounds boardable time to accumulated interval time
+            int rounder = accIntervalTimes[bp] - cyclicClampedBT;
+            // if it floored, we need just one more cycle
+            // no need more over than one because we used cyclicly clamped boardable time (cyclicClampedBT)
+            if (rounder < 0)
             {
-                boardingTime += cycleTime;
+                rounder += cycleTime;
             }
+
+            int boardingTime = bt + rounder;
 
             // It's guaranteed that boarding point and alighting point are not equeal
             int fromBPToAPTime = accIntervalTimes[ap] - accIntervalTimes[bp];
