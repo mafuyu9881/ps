@@ -7,93 +7,45 @@
         int soldiers = tokens[1]; // [2, 100000]
 
         // element in [1, 1000]
-        int[] drivingTimes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 1000000
+        int[] intervalTimes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 1000000
 
-        (int bp, int ap)[] bnas = new (int, int)[soldiers];
-        PriorityQueue<int, int> boardingTimes = new();
-        // bp = boarding point
-        // ap = alighting point
-        // bna = boarding and alighting
-        SortedDictionary<int, LinkedList<int>> bnaIndicesMap = new();
+        // SI = station interval
+        int[] accIntervalTimes = new int[intervalTimes.Length + 1];
+        // leave 0 index as zero
+        for (int i = 1; i < accIntervalTimes.Length; ++i)
+        {
+            accIntervalTimes[i] = accIntervalTimes[i - 1] + intervalTimes[i - 1];
+        }
+
+        int cycleTime = accIntervalTimes[accIntervalTimes.Length - 1];
+
+        int travelTime = 0;
         for (int i = 0; i < soldiers; ++i) // max tc = 100000
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
             // points are 1-based
-            int boardingPoint = tokens[0] - 1; // [0, 100000 - 1]
-            int alightingPoint = tokens[1] - 1; // [0, 100000 - 1]
-            int boardingTime = tokens[2]; // [0, 1000000000]
+            int bp = tokens[0] - 1; // boarding point [0, 100000 - 1]
+            int ap = tokens[1] - 1; // alighting point [0, 100000 - 1]
+            int bt = tokens[2]; // boardable time [0, 1000000000]
 
-            bnas[i] = (boardingPoint, alightingPoint);
-
-            boardingTimes.Enqueue(boardingTime, boardingTime);
-
-            if (bnaIndicesMap.ContainsKey(boardingTime) == false)
+            int boardingTime = bt;
+            while (boardingTime < accIntervalTimes[bp])
             {
-                bnaIndicesMap.Add(boardingTime, new());
+                boardingTime += cycleTime;
             }
-            bnaIndicesMap[boardingTime].AddLast(i); // max tc = log2(1000000) = 16.xxx
+
+            // It's guaranteed that boarding point and alighting point are not equeal
+            int fromBPToAPTime = accIntervalTimes[ap] - accIntervalTimes[bp];
+            // if fromBPToAPTime is lower than 0, it means the boarding point is on before the alighting point
+            if (fromBPToAPTime < 0)
+            {
+                fromBPToAPTime += cycleTime;
+            }
+
+            int alightingTime = bt + fromBPToAPTime;
+
+            travelTime = Math.Max(travelTime, alightingTime);
         }
-
-        int currStation = 0;
-        int elapsedTime = 0;
-
-        // index of garrison means boarding point
-        // element in the linked list means alighting point
-        LinkedList<int>[] garrison = new LinkedList<int>[stations];
-        for (int i = 0; i < garrison.Length; ++i) // max tc = 100000
-        {
-            garrison[i] = new();
-        }
-
-        // index means alighting point
-        // element means soldiers waiting for alighting
-        int[] bus = new int[stations]; // max sc = 4B * 100000 = 0.4MB
-        int soldiersOnBus = 0;
-
-        while (soldiersOnBus > 0 || boardingTimes.Count > 0)
-        {
-            while (boardingTimes.Count > 0)
-            {
-                int minBoardingTime = boardingTimes.Peek();
-                if (elapsedTime < minBoardingTime)
-                    break;
-
-                boardingTimes.Dequeue();
-
-                var bnaIndices = bnaIndicesMap[minBoardingTime];
-                for (var node = bnaIndices.First; node != null; node = node.Next)
-                {
-                    int bnaIndex = node.Value;
-
-                    var bna = bnas[bnaIndex];
-
-                    garrison[bna.bp].AddLast(bna.ap);
-                }
-            }
-
-            var aps = garrison[currStation];
-            while (aps.Count > 0)
-            {
-                ++bus[aps.First!.Value];
-                ++soldiersOnBus;
-                aps.RemoveFirst();
-            }
-
-            // times taken for driving from the current station to the next station
-            int timeTaken = drivingTimes[currStation];
-            elapsedTime += timeTaken;
-
-            int nextStation = currStation + 1;
-            if (nextStation > stations - 1)
-            {
-                nextStation = 0;
-            }
-            currStation = nextStation;
-
-            soldiersOnBus -= bus[nextStation];
-            bus[nextStation] = 0;
-        }
-
-        Console.Write(elapsedTime);
+        Console.Write(travelTime);
     }
 }
