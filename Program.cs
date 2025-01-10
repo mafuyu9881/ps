@@ -2,11 +2,12 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 1000000
         int stations = tokens[0]; // [2, 100000]
         int soldiers = tokens[1]; // [2, 100000]
 
-        int[] drivingTimes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        // element in [1, 1000]
+        int[] drivingTimes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 1000000
 
         (int bp, int ap)[] bnas = new (int, int)[soldiers];
         PriorityQueue<int, int> boardingTimes = new();
@@ -18,9 +19,9 @@
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
             // points are 1-based
-            int boardingPoint = tokens[0] - 1;
-            int alightingPoint = tokens[1] - 1;
-            int boardingTime = tokens[2];
+            int boardingPoint = tokens[0] - 1; // [0, 100000 - 1]
+            int alightingPoint = tokens[1] - 1; // [0, 100000 - 1]
+            int boardingTime = tokens[2]; // [0, 1000000000]
 
             bnas[i] = (boardingPoint, alightingPoint);
 
@@ -30,7 +31,7 @@
             {
                 bnaIndicesMap.Add(boardingTime, new());
             }
-            bnaIndicesMap[boardingTime].AddLast(i);
+            bnaIndicesMap[boardingTime].AddLast(i); // max tc = log2(1000000) = 16.xxx
         }
 
         int currStation = 0;
