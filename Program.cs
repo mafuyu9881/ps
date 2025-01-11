@@ -1,78 +1,67 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
-    private static int _nodes;
-    private static LinkedList<(int v, int weight)>[] _adjList = null!;
-
     private static void Main(string[] args)
     {
-        int queries = int.Parse(Console.ReadLine()!); // [1, 200'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int boardSize = tokens[0];
+        int coins = tokens[1];
 
-        _nodes = queries + 1;
 
-        // max sc = nB * 200'000 = 0.2nMB (n = linked list size)
-        _adjList = new LinkedList<(int, int)>[_nodes];
-
-        StringBuilder output = new();
-        for (int i = 0; i < queries; ++i) // max tc = 200'000
-        {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int qi = tokens[0] - 1; // [0, i]
-            int wi = tokens[1]; // [0, 1'000'000'000]
-
-            if (_adjList[qi] == null) _adjList[qi] = new();
-            if (_adjList[i + 1] == null) _adjList[i + 1] = new();
-
-            _adjList[qi].AddLast((i + 1, wi));
-            _adjList[i + 1].AddLast((qi, wi));
-
-            var farthest0 = GetFarthest(qi);
-            var farthest1 = GetFarthest(farthest0.v);
-            output.AppendLine($"{farthest1.distance}");
-        }
-        Console.WriteLine(output);
     }
 
-    private static (int v, long distance) GetFarthest(int startV)
+    private static int[]? Solve(int baseIndex, int boardSize, int coins)
     {
-        const int InvalidV = -1;
-        int farthestV = InvalidV;
+        int[]? output = null;
 
-        bool[] visited = new bool[_nodes];
-        long[] distances = new long[_nodes];
-        Stack<int> visitingStack = new();
+        int cells = boardSize * boardSize;
 
-        visited[startV] = true;
-        distances[startV] = 0;
-        visitingStack.Push(startV);
-
-        while (visitingStack.Count > 0)
+        // board size is even
+        if (boardSize % 2 == 0)
         {
-            int v = visitingStack.Pop();
+            int blacks = cells / 2;
+            int whites = blacks;
 
-            var adjs = _adjList[v];
-            for (var node = adjs.First; node != null; node = node.Next)
+            if (coins < blacks)
+                return output;
+
+            coins -= blacks;
+            if (coins % 2 == 1)
+                return output;
+
+            output = new int[2];
+            output[0] = blacks + coins / 2;
+            output[1] = coins / 2;
+            return output;
+        }
+        else
+        {
+            int blacks = cells / 2 + 1;
+            int whites = cells / 2 + 0;
+
+            int[] squaresArr = new int[] { blacks, whites };
+
+            for (int color0 = 0; color0 < squaresArr.Length; ++color0)
             {
-                var adj = node.Value;
-                int adjV = adj.v;
-                int adjWeight = adj.weight;
+                int color1 = color0 == 0 ? 1 : 0;
 
-                if (visited[adjV])
+                int color0Squares = squaresArr[color0];
+
+                if (coins < color0Squares)
                     continue;
 
-                long adjVDistance = distances[v] + adjWeight;
-                if (farthestV == InvalidV || distances[farthestV] < adjVDistance)
-                {
-                    farthestV = adjV;
-                }
+                int remainCoins = coins - color0Squares;
+                if ((remainCoins % cells) == 1)
+                    continue;
 
-                visited[adjV] = true;
-                distances[adjV] = adjVDistance;
-                visitingStack.Push(adjV);
+                // base coins + 
+                output[color0] += color0Squares; // base coins
+                // piled up coins
+                // remain coins
+                 + remainCoins - (remainCoins % (cells * 2));
+                break;
             }
         }
 
-        return (farthestV, distances[farthestV]);
+        // board size is odd
     }
 }
