@@ -11,7 +11,7 @@ internal class Program
         int nDigitCount = (int)Math.Log10(n) + 1; // [1, 9]
         int kNumberDigitCount = 1; // digit count of the number which includes kth digit [1, 9]
 
-        int arrLength = nDigitCount + 1;
+        int arrLength = 9 + 1;
         // start number among the same digit numbers
         long[] starts = new long[arrLength];
         // counts of the same digit numbers
@@ -29,19 +29,17 @@ internal class Program
             }
         }
 
-        string output;
-        if (accCounts[accCounts.Length - 1] < k)
+        long clampedK = k - accCounts[kNumberDigitCount - 1]; // [1, ?)
+        long placedNumberCount = (clampedK - 1) / kNumberDigitCount;
+        long kNumber = starts[kNumberDigitCount] + placedNumberCount;
+        if (n < kNumber)
         {
-            output = "-1";
+            Console.Write(-1);
         }
         else
         {
-            long clampedK = k - accCounts[kNumberDigitCount - 1]; // [1, ?)
-            long placedNumberCount = (clampedK - 1) / kNumberDigitCount;
-            long kNumber = starts[kNumberDigitCount] + placedNumberCount;
-            output = $"{$"{kNumber}"[(int)((clampedK - 1) % kNumberDigitCount)]}";
+            Console.Write($"{kNumber}"[(int)((clampedK - 1) % kNumberDigitCount)]);
         }
-        Console.Write(output);
     }
 
     private static int ExponentiationBySquaringIteratively(int basis, int exponent)
