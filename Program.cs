@@ -13,7 +13,7 @@ internal class Program
 
         int arrLength = nDigitCount + 1;
         // start number among the same digit numbers
-        int[] starts = new int[arrLength];
+        long[] starts = new long[arrLength];
         // counts of the same digit numbers
         long[] counts = new long[arrLength];
         long[] accCounts = new long[arrLength]; // max sc = 8B * (9 + 1) = 80B
