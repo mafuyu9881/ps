@@ -1,30 +1,78 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
+    private static int _nodes;
+    private static LinkedList<(int v, int weight)>[] _adjList = null!;
+
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 100`000`000]
-        int k = tokens[1]; // [1, 1`000`000`000]
+        int queries = int.Parse(Console.ReadLine()!); // [1, 200'000]
 
-        int[] arr = new int[]; // max sc = 9 + 1 = 10
-        for (int i = 1; i < arr.Length; ++i) // max tc = 10
+        _nodes = queries + 1;
+
+        // max sc = nB * 200'000 = 0.2nMB (n = linked list size)
+        _adjList = new LinkedList<(int, int)>[_nodes];
+
+        StringBuilder output = new();
+        for (int i = 0; i < queries; ++i) // max tc = 200'000
         {
-            arr[i] = arr[i - 1] + i * 9 * ExponentiationBySquaringIteratively(10, (i - 1));
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int qi = tokens[0] - 1; // [0, i]
+            int wi = tokens[1]; // [0, 1'000'000'000]
+
+            if (_adjList[qi] == null) _adjList[qi] = new();
+            if (_adjList[i + 1] == null) _adjList[i + 1] = new();
+
+            _adjList[qi].AddLast((i + 1, wi));
+            _adjList[i + 1].AddLast((qi, wi));
+
+            var farthest0 = GetFarthest(qi);
+            var farthest1 = GetFarthest(farthest0.v);
+            output.AppendLine($"{farthest1.distance}");
         }
+        Console.WriteLine(output);
     }
 
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
+    private static (int v, long distance) GetFarthest(int startV)
     {
-        int output = 1;
-        while (exponent > 0)
+        const int InvalidV = -1;
+        int farthestV = InvalidV;
+
+        bool[] visited = new bool[_nodes];
+        long[] distances = new long[_nodes];
+        Stack<int> visitingStack = new();
+
+        visited[startV] = true;
+        distances[startV] = 0;
+        visitingStack.Push(startV);
+
+        while (visitingStack.Count > 0)
         {
-            if ((exponent & 1) == 1)
+            int v = visitingStack.Pop();
+
+            var adjs = _adjList[v];
+            for (var node = adjs.First; node != null; node = node.Next)
             {
-                output *= basis;
+                var adj = node.Value;
+                int adjV = adj.v;
+                int adjWeight = adj.weight;
+
+                if (visited[adjV])
+                    continue;
+
+                long adjVDistance = distances[v] + adjWeight;
+                if (farthestV == InvalidV || distances[farthestV] < adjVDistance)
+                {
+                    farthestV = adjV;
+                }
+
+                visited[adjV] = true;
+                distances[adjV] = adjVDistance;
+                visitingStack.Push(adjV);
             }
-            basis *= basis;
-            exponent >>= 1;
         }
-        return output;
+
+        return (farthestV, distances[farthestV]);
     }
 }
