@@ -29,10 +29,19 @@ internal class Program
             }
         }
 
-        long clampedK = k - accCounts[kNumberDigitCount - 1]; // [1, ?)
-        long placedNumberCount = (clampedK - 1) / kNumberDigitCount;
-        long kNumber = starts[kNumberDigitCount] + placedNumberCount;
-        Console.Write($"{kNumber}"[(int)((clampedK - 1) % kNumberDigitCount)]);
+        string output;
+        if (accCounts[accCounts.Length - 1] < k)
+        {
+            output = "-1";
+        }
+        else
+        {
+            long clampedK = k - accCounts[kNumberDigitCount - 1]; // [1, ?)
+            long placedNumberCount = (clampedK - 1) / kNumberDigitCount;
+            long kNumber = starts[kNumberDigitCount] + placedNumberCount;
+            output = $"{$"{kNumber}"[(int)((clampedK - 1) % kNumberDigitCount)]}";
+        }
+        Console.Write(output);
     }
 
     private static int ExponentiationBySquaringIteratively(int basis, int exponent)
