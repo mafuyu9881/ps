@@ -27,7 +27,7 @@
         {
             // in this implementation, row is 0-based
             // so we should add '1' on row
-            for (int closed = 0; closed <= Math.Min(k, row + 1); ++closed)
+            for (int closed = 0; closed <= k; ++closed)
             {
                 if (closed > 0)
                 {
