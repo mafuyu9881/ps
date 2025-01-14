@@ -19,7 +19,7 @@
         // 0: both galleries in the same row are available
         // 1: left gallery is only available
         // 2: right gallery is only available
-        int[,,] dp = new int[n, k + 1, 3];
+        int[,,] dp = new int[n, Math.Max(2, k + 1), 3];
         dp[0, 0, 0] = galleries[0, 0] + galleries[0, 1];
         dp[0, 1, 1] = galleries[0, 0];
         dp[0, 1, 2] = galleries[0, 1];
