@@ -55,7 +55,7 @@
                     dp[row, closed, 1] = rightGalleryValue + Max(new int[] { dp[row - 1, closed - 1, 1], dp[row - 1, closed - 1, 2] });
                 }
 
-                if (closed < n)
+                if (closed < row + 1)
                 {
                     dp[row, closed, 2] = leftGalleryValue + rightGalleryValue + Max(new int[] { dp[row - 1, closed, 0], dp[row - 1, closed, 1], dp[row - 1, closed, 2] });
                 }
