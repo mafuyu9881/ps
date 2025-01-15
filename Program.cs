@@ -47,7 +47,7 @@
                 int leftGalleryValue = museum[row, 0];
                 int rightGalleryValue = museum[row, 1];
 
-                if (closed > 0)
+                if (closed > 0 && closed <= row + 1)
                 {
                     dp[row, closed, 0] = leftGalleryValue + Max(new int[] { dp[row - 1, closed - 1, 0], dp[row - 1, closed - 1, 2] });
                     dp[row, closed, 1] = rightGalleryValue + Max(new int[] { dp[row - 1, closed - 1, 1], dp[row - 1, closed - 1, 2] });
