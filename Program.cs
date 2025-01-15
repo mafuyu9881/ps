@@ -15,6 +15,8 @@
             museum[i, 0] = tokens[0]; // [0, 100]
             museum[i, 1] = tokens[1]; // [0, 100]
         }
+        
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
         // the element on third dimension means state
         // state consists of these following things
