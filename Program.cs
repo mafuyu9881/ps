@@ -2,50 +2,37 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 100]
+        const char GeunNumber = '2';
 
-        string[] strings = new string[n];
-        for (int i = 0; i < n; ++i)
+        int n = int.Parse(Console.ReadLine()!);
+        
+        string s = Console.ReadLine()!;
+
+        int[] wholeNumberPrefixSum = new int[1000001]; // max sc = 4B * 1'000'001 = about 4MB
+        for (int i = 1; i < wholeNumberPrefixSum.Length; ++i) // tc = 1'000'000
         {
-            strings[i] = Console.ReadLine()!;
+            wholeNumberPrefixSum[i] = wholeNumberPrefixSum[i - 1] + i;
         }
 
-        bool[,] duplicated = new bool[n, n]; // max sc = 10'000
+        int[] geunNumberScores = new int[1000001];
+        for (int i = 1; i < geunNumberScores.Length; ++i) // tc = 1'000'000
+        {
+            geunNumberScores[i] = geunNumberScores[i - 1] + wholeNumberPrefixSum[i];
+        }
 
         int output = 0;
-        for (int i = 0; i < n; ++i) // max tc = 100
+        int geunNumberCombo = 0;
+        for (int i = 0; i < s.Length; ++i)
         {
-            for (int j = 0; j < n; ++j) // max tc = 100
+            if (s[i] == GeunNumber)
             {
-                if (i == j)
-                    continue;
+                ++geunNumberCombo;
+            }
 
-                if (duplicated[i, j])
-                    continue;
-
-                string s0 = strings[i];
-                string s1 = strings[j];
-                for (int k = 0; k < Math.Min(s0.Length, s1.Length); ++k) // max tc = 20
-                {
-                    // compare the rear of s0 and the head of s1
-                    bool localDuplicated = true;
-                    for (int l = 0; l <= k; ++l) // max tc = 20
-                    {
-                        if (s0[s0.Length - 1 - k + l] == s1[l])
-                            continue;
-
-                        localDuplicated = false;
-                        break;
-                    }
-
-                    if (localDuplicated == false)
-                        continue;
-
-                    duplicated[i, j] = true;
-                    duplicated[j, i] = true;
-                    ++output;
-                    break;
-                }
+            if (i >= s.Length - 1 || s[i + 1] != GeunNumber)
+            {
+                output += geunNumberScores[geunNumberCombo];
+                geunNumberCombo = 0;
             }
         }
         Console.Write(output);
