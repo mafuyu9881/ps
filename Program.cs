@@ -8,19 +8,19 @@
         
         string s = Console.ReadLine()!;
 
-        int[] wholeNumberPrefixSum = new int[1000001]; // max sc = 4B * 1'000'001 = about 4MB
+        long[] wholeNumberPrefixSum = new long[1000001]; // max sc = 4B * 1'000'001 = about 4MB
         for (int i = 1; i < wholeNumberPrefixSum.Length; ++i) // tc = 1'000'000
         {
             wholeNumberPrefixSum[i] = wholeNumberPrefixSum[i - 1] + i;
         }
 
-        int[] geunNumberScores = new int[1000001];
+        long[] geunNumberScores = new long[1000001];
         for (int i = 1; i < geunNumberScores.Length; ++i) // tc = 1'000'000
         {
             geunNumberScores[i] = geunNumberScores[i - 1] + wholeNumberPrefixSum[i];
         }
 
-        int output = 0;
+        long output = 0;
         int geunNumberCombo = 0;
         for (int i = 0; i < s.Length; ++i)
         {
