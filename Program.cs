@@ -2,39 +2,29 @@
 {
     private static void Main(string[] args)
     {
-        const char GeunNumber = '2';
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 1'000]
+        int tapeLength = tokens[1]; // [1, 1'000]
 
-        int n = int.Parse(Console.ReadLine()!);
+        // element = [1, 1'000]
+        int[] leakPoints = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(leakPoints);
+
+        const int InvalidIndex = -1;
+
+        int output = 0;
+
+        int beginIndex = InvalidIndex;
+        for (int i = 0; i < leakPoints.Length; ++i)
+        {
+            if (beginIndex == InvalidIndex ||
+                leakPoints[i] - leakPoints[beginIndex] > tapeLength - 1)
+            {
+                beginIndex = i;
+                ++output;
+            }
+        }
         
-        string s = Console.ReadLine()!;
-
-        long[] wholeNumberPrefixSum = new long[1000001]; // max sc = 4B * 1'000'001 = about 4MB
-        for (int i = 1; i < wholeNumberPrefixSum.Length; ++i) // tc = 1'000'000
-        {
-            wholeNumberPrefixSum[i] = wholeNumberPrefixSum[i - 1] + i;
-        }
-
-        long[] geunNumberScores = new long[1000001];
-        for (int i = 1; i < geunNumberScores.Length; ++i) // tc = 1'000'000
-        {
-            geunNumberScores[i] = geunNumberScores[i - 1] + wholeNumberPrefixSum[i];
-        }
-
-        long output = 0;
-        int geunNumberCombo = 0;
-        for (int i = 0; i < s.Length; ++i)
-        {
-            if (s[i] == GeunNumber)
-            {
-                ++geunNumberCombo;
-            }
-
-            if (i >= s.Length - 1 || s[i + 1] != GeunNumber)
-            {
-                output += geunNumberScores[geunNumberCombo];
-                geunNumberCombo = 0;
-            }
-        }
         Console.Write(output);
     }
 }
