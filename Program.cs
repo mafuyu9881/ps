@@ -1,30 +1,48 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 1'000]
-        int tapeLength = tokens[1]; // [1, 1'000]
+        int n = int.Parse(Console.ReadLine()!); // [1, 1'000]
 
-        // element = [1, 1'000]
-        int[] leakPoints = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(leakPoints);
-
-        const int InvalidIndex = -1;
-
-        int output = 0;
-
-        int beginIndex = InvalidIndex;
-        for (int i = 0; i < leakPoints.Length; ++i)
+        StringBuilder output = new();
+        for (int i = 0; i < n; ++i) // max tc = 1'000
         {
-            if (beginIndex == InvalidIndex ||
-                leakPoints[i] - leakPoints[beginIndex] > tapeLength - 1)
+            string s = Console.ReadLine()!;
+
+            int deepestDepth = 0;
+            int depth = 0; // the depth is start from zero
+            for (int j = 0; j < s.Length; ++j) // max tc = 150
             {
-                beginIndex = i;
-                ++output;
+                char c = s[j];
+                if (c == '[') 
+                {
+                    ++depth;
+                }
+                else
+                {
+                    --depth;
+                }
+                deepestDepth = Math.Max(deepestDepth, depth);
             }
+            output.AppendLine($"{ExponentiationBySquaringIteratively(2, deepestDepth)}");
         }
-        
         Console.Write(output);
+    }
+
+    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
+    {
+        int output = 1;
+        while (exponent > 0)
+        {
+            if ((exponent & 1) == 1)
+            {
+                output *= basis;
+            }
+            basis *= basis;
+            exponent >>= 1;
+        }
+        return output;
     }
 }
