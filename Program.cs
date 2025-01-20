@@ -4,45 +4,42 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 1'000]
+        int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
 
-        StringBuilder output = new();
-        for (int i = 0; i < n; ++i) // max tc = 1'000
+        // maybe we can treat the node number as if 1 is added to it
+        // to avoid setting all parents' elements
+        // with -1 in a large iteration
+        // but not in this time
+        const int InvalidParent = -1;
+
+        int[] parents = new int[200000];
+        for (int i = 0; i < parents.Length; ++i) // tc = 200'000
         {
-            string s = Console.ReadLine()!;
+            parents[i] = InvalidParent;
+        }
+        
+        int vertices = 1;
+        int[] path = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        for (int i = 1; i < path.Length; ++i) // max tc = 200'000
+        {
+            int v = path[i];
 
-            int deepestDepth = 0;
-            int depth = 0; // the depth is start from zero
-            for (int j = 0; j < s.Length; ++j) // max tc = 150
-            {
-                char c = s[j];
-                if (c == '[') 
-                {
-                    ++depth;
-                }
-                else
-                {
-                    --depth;
-                }
-                deepestDepth = Math.Max(deepestDepth, depth);
-            }
-            output.AppendLine($"{ExponentiationBySquaringIteratively(2, deepestDepth)}");
+            if (v == path[0])
+                continue;
+
+            if (parents[v] != InvalidParent)
+                continue;
+
+            parents[v] = path[i - 1];
+            ++vertices;
+        }
+        
+        StringBuilder output = new();
+        output.AppendLine($"{vertices}");
+        for (int i = 0; i < vertices; ++i) // max tc = 200'000
+        {
+            output.Append($"{parents[i]} ");
         }
         Console.Write(output);
-    }
-
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
-    {
-        int output = 1;
-        while (exponent > 0)
-        {
-            if ((exponent & 1) == 1)
-            {
-                output *= basis;
-            }
-            basis *= basis;
-            exponent >>= 1;
-        }
-        return output;
     }
 }
