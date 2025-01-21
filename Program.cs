@@ -46,37 +46,21 @@
         {
             for (int col = 0; col < _width - 1; ++col)
             {
-                if (Placeable(_aOffsets, row, col))
+                void Repeated(ref int maxSolidities, ref int solidities, (int, int)[] offsets)
                 {
-                    solidities += Write(_aOffsets, row, col, Occupied);
+                    if (Placeable(offsets, row, col) == false)
+                        return;
+
+                    solidities += Write(offsets, row, col, Occupied);
                     maxSolidities = Math.Max(maxSolidities, solidities);
                     Solve(ref maxSolidities, ref solidities);
-                    solidities -= Write(_aOffsets, row, col, Vacated);
+                    solidities -= Write(offsets, row, col, Vacated);
                 }
 
-                if (Placeable(_bOffsets, row, col))
-                {
-                    solidities += Write(_bOffsets, row, col, Occupied);
-                    maxSolidities = Math.Max(maxSolidities, solidities);
-                    Solve(ref maxSolidities, ref solidities);
-                    solidities -= Write(_bOffsets, row, col, Vacated);
-                }
-
-                if (Placeable(_cOffsets, row, col))
-                {
-                    solidities += Write(_cOffsets, row, col, Occupied);
-                    maxSolidities = Math.Max(maxSolidities, solidities);
-                    Solve(ref maxSolidities, ref solidities);
-                    solidities -= Write(_cOffsets, row, col, Vacated);
-                }
-
-                if (Placeable(_dOffsets, row, col))
-                {
-                    solidities += Write(_dOffsets, row, col, Occupied);
-                    maxSolidities = Math.Max(maxSolidities, solidities);
-                    Solve(ref maxSolidities, ref solidities);
-                    solidities -= Write(_dOffsets, row, col, Vacated);
-                }
+                Repeated(ref maxSolidities, ref solidities, _aOffsets);
+                Repeated(ref maxSolidities, ref solidities, _bOffsets);
+                Repeated(ref maxSolidities, ref solidities, _cOffsets);
+                Repeated(ref maxSolidities, ref solidities, _dOffsets);
             }
         }
     }
