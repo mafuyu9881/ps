@@ -4,42 +4,66 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = tokens[0]; // [1, 1'000]
+        int width = tokens[1]; // [1, 1'000]
 
-        // maybe we can treat the node number as if 1 is added to it
-        // to avoid setting all parents' elements
-        // with -1 in a large iteration
-        // but not in this time
-        const int InvalidParent = -1;
+        int subjects = int.Parse(Console.ReadLine()!);
 
-        int[] parents = new int[200000];
-        for (int i = 0; i < parents.Length; ++i) // tc = 200'000
+        int[,] jungles = new int[height, width];
+        int[,] oceans = new int[height, width];
+        int[,] ices = new int[height, width];
+
+        for (int row = 0; row < height; ++row) // max tc = 1'000
         {
-            parents[i] = InvalidParent;
+            string line = Console.ReadLine()!;
+            for (int col = 0; col < width; ++col) // max tc = 1'000
+            {
+                char biome = line[col];
+                Accumulate(jungles, row, col, biome == 'J');
+                Accumulate(oceans, row, col, biome == 'O');
+                Accumulate(ices, row, col, biome == 'I');
+            }
         }
-        
-        int vertices = 1;
-        int[] path = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        for (int i = 1; i < path.Length; ++i) // max tc = 200'000
-        {
-            int v = path[i];
 
-            if (v == path[0])
-                continue;
-
-            if (parents[v] != InvalidParent)
-                continue;
-
-            parents[v] = path[i - 1];
-            ++vertices;
-        }
-        
         StringBuilder output = new();
-        output.AppendLine($"{vertices}");
-        for (int i = 0; i < vertices; ++i) // max tc = 200'000
+        for (int i = 0; i < subjects; ++i)
         {
-            output.Append($"{parents[i]} ");
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int x0 = tokens[0] - 1;
+            int y0 = tokens[1] - 1;
+            int x1 = tokens[2] - 1;
+            int y1 = tokens[3] - 1;
+
+            Research(output, jungles, x0, y0, x1, y1);
+            Research(output, oceans, x0, y0, x1, y1);
+            Research(output, ices, x0, y0, x1, y1);
+            output.AppendLine();
         }
         Console.Write(output);
+    }
+
+    private static void Accumulate(int[,] arr, int row, int col, bool detected)
+    {
+        bool leftUnavailable = (col - 1) < 0;
+        bool upUnavailable = (row - 1) < 0;
+
+        int fromLeft = leftUnavailable ? 0 : arr[row, col - 1];
+        int fromUp = upUnavailable ? 0 : arr[row - 1, col];
+        int duplicated = (leftUnavailable || upUnavailable) ? 0 : arr[row - 1, col - 1];
+        
+        arr[row, col] = fromLeft + fromUp + (detected ? 1 : 0) - duplicated;
+    }
+
+    private static void Research(StringBuilder output, int[,] arr, int x0, int y0, int x1, int y1)
+    {
+        bool leftUnavailable = (x0 - 1) < 0;
+        bool upUnavailable = (y0 - 1) < 0;
+
+        int fromLeft = leftUnavailable ? 0 : arr[x0 - 1, y1];
+        int fromUp = upUnavailable ? 0 : arr[x1, y0 - 1];
+        int duplicated = (leftUnavailable || upUnavailable) ? 0 : arr[x0 - 1, y0 - 1];
+
+        output.Append($"{arr[x1, y1] - fromUp - fromLeft + duplicated} ");
     }
 }
