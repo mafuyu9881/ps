@@ -24,7 +24,7 @@
         }
 
         int output = 0;
-        int low = 1 - 1;
+        int low = 0 - 1;
         int high = 1000000000 + 1;
         while (low < high - 1)
         {
