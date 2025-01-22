@@ -1,20 +1,17 @@
 ﻿internal class Program
 {
-    private const int Vacated = 0;
-    private const int Occupied = 1;
-
     private static int _height;
     private static int _width;
 
-    private static int[,] _map = null!;
+    private static bool[,] _occupied = null!;
 
     private static int[,] _solidity = null!;
     
-    // type a = ┓, b = ┛, c = ┗, d = ┏
-    private static (int row, int col)[] _aOffsets = new (int, int)[] { (0, 0), (0, 1), (1, 1) };
-    private static (int row, int col)[] _bOffsets = new (int, int)[] { (1, 0), (1, 1), (0, 1) };
-    private static (int row, int col)[] _cOffsets = new (int, int)[] { (0, 0), (1, 0), (1, 1) };
-    private static (int row, int col)[] _dOffsets = new (int, int)[] { (1, 0), (0, 0), (0, 1) };
+    // a = ┓, b = ┛, c = ┗, d = ┏
+    private static (int row, int col)[] _compA = new (int, int)[] { (0, 0), (0, 1), (1, 1) };
+    private static (int row, int col)[] _compB = new (int, int)[] { (1, 0), (1, 1), (0, 1) };
+    private static (int row, int col)[] _compC = new (int, int)[] { (0, 0), (1, 0), (1, 1) };
+    private static (int row, int col)[] _compD = new (int, int)[] { (1, 0), (0, 0), (0, 1) };
 
     private static void Main(string[] args)
     {
@@ -22,7 +19,7 @@
         _height = tokens[0];
         _width = tokens[1];
 
-        _map = new int[_height, _width];
+        _occupied = new bool[_height, _width];
 
         _solidity = new int[_height, _width];
         for (int row = 0; row < _height; ++row)
@@ -36,71 +33,83 @@
 
         int maxSolidities = 0;
         int solidities = 0;
-        Solve(ref maxSolidities, ref solidities);
+        Place(ref maxSolidities, ref solidities, 0, 0);
         Console.Write(maxSolidities);
     }
 
-    private static void Solve(ref int maxSolidities, ref int solidities)
+    private static void Place(ref int maxSolidities, ref int solidities, int row, int col)
     {
-        for (int row = 0; row < _height - 1; ++row)
+        if (col >= _height - 1) // no need to check the last col
         {
-            for (int col = 0; col < _width - 1; ++col)
-            {
-                void Repeated(ref int maxSolidities, ref int solidities, (int, int)[] offsets)
-                {
-                    if (Placeable(offsets, row, col) == false)
-                        return;
-
-                    solidities += Write(offsets, row, col, Occupied);
-                    maxSolidities = Math.Max(maxSolidities, solidities);
-                    Solve(ref maxSolidities, ref solidities);
-                    solidities -= Write(offsets, row, col, Vacated);
-                }
-
-                Repeated(ref maxSolidities, ref solidities, _aOffsets);
-                Repeated(ref maxSolidities, ref solidities, _bOffsets);
-                Repeated(ref maxSolidities, ref solidities, _cOffsets);
-                Repeated(ref maxSolidities, ref solidities, _dOffsets);
-            }
+            ++row;
+            col = 0;
         }
-    }
-    
-    private static bool Placeable((int row, int col)[] offsets, int basisRow, int basisCol)
-    {
-        for (int i = 0; i < offsets.Length; ++i)
-        {
-            var offset = offsets[i];
 
-            int row = basisRow + offset.row;
+        if (row >= _height - 1) // also no need to check the last row
+            return;
+
+        void TryPlace(ref int maxSolidities, ref int solidities, (int row, int col)[] comp)
+        {
+            if (Placeable(comp, row, col) == false)
+                return;
+
+            solidities += Occupy(comp, row, col);
+            maxSolidities = Math.Max(maxSolidities, solidities);
+            Place(ref maxSolidities, ref solidities, row, col + 1);
+            solidities -= Vacate(comp, row, col);
+        }
+
+        TryPlace(ref maxSolidities, ref solidities, _compA);
+        TryPlace(ref maxSolidities, ref solidities, _compB);
+        TryPlace(ref maxSolidities, ref solidities, _compC);
+        TryPlace(ref maxSolidities, ref solidities, _compD);
+
+        Place(ref maxSolidities, ref solidities, row, col + 1);
+    }
+
+    private static bool Placeable((int row, int col)[] comp, int basisRow, int basisCol)
+    {
+        for (int i = 0; i < comp.Length; ++i)
+        {
+            var part = comp[i];
+
+            int row = basisRow + part.row;
             if (row > _height - 1)
                 return false;
 
-            int col = basisCol + offset.col;
+            int col = basisCol + part.col;
             if (col > _width - 1)
                 return false;
 
-            if (_map[row, col] == Occupied)
+            if (_occupied[row, col])
                 return false;
         }
 
         return true;
     }
 
-    private static int Write((int row, int col)[] offsets, int basisRow, int basisCol, int state)
+    private static int Occupy((int row, int col)[] comp, int basisRow, int basisCol)
+    {
+        return Write(comp, basisRow, basisCol, true);
+    }
+    private static int Vacate((int row, int col)[] comp, int basisRow, int basisCol)
+    {
+        return Write(comp, basisRow, basisCol, false);
+    }
+    private static int Write((int row, int col)[] comp, int basisRow, int basisCol, bool state)
     {
         int solidities = 0;
 
-        for (int i = 0; i < offsets.Length; ++i)
+        for (int i = 0; i < comp.Length; ++i)
         {
-            var offset = offsets[i];
+            var part = comp[i];
 
-            // it is guaranteed that row and col are valid here
-            int row = basisRow + offset.row;
-            int col = basisCol + offset.col;
+            // it's guaranteed that row and col are valid here
+            int row = basisRow + part.row;
+            int col = basisCol + part.col;
 
-            _map[row, col] = state;
-
-            solidities += _solidity[row, col] * ((i != 1) ? 1 : 2);
+            _occupied[row, col] = state;
+            solidities += _solidity[row, col] * ((i == 1) ? 2 : 1);
         }
 
         return solidities;
