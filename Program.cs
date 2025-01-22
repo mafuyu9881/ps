@@ -1,84 +1,118 @@
 ﻿internal class Program
 {
+    private static int _height;
+    private static int _width;
+
+    private static bool[,] _occupied = null!;
+
+    private static int[,] _solidity = null!;
+
+    // a = ┓, b = ┛, c = ┗, d = ┏
+    private static (int row, int col)[] _compA = new (int, int)[] { (0, 0), (0, 1), (1, 1) };
+    private static (int row, int col)[] _compB = new (int, int)[] { (1, 0), (1, 1), (0, 1) };
+    private static (int row, int col)[] _compC = new (int, int)[] { (0, 0), (1, 0), (1, 1) };
+    private static (int row, int col)[] _compD = new (int, int)[] { (1, 0), (0, 0), (0, 1) };
+
+    private static int _maxSolidities = 0;
+
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 50'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        _height = tokens[0];
+        _width = tokens[1];
 
-        // x = [0, 1'000'000'000]
-        // id = [0, 1'000'000'000]
-        PriorityQueue<(int x, int id), int> pqX = new();
-        SortedSet<int> ids = new();
-        for (int i = 0; i < n; ++i) // max tc = 50'000
+        _occupied = new bool[_height, _width];
+
+        _solidity = new int[_height, _width];
+        for (int row = 0; row < _height; ++row)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int x = tokens[0];
-            int id = tokens[1];
-            pqX.Enqueue((x, id), x); // max tc = log2(50'000) = 15.xxxx
-            ids.Add(id);
-        }
-
-        LinkedList<(int x, int id)> cows = new();
-        while (pqX.Count > 0) // max tc = 50'000
-        {
-            cows.AddLast(pqX.Dequeue());
-        }
-
-        int output = 0;
-        int low = 0 - 1;
-        int high = 1000000000 + 1;
-        while (low < high - 1)
-        {
-            int mid = (low + high) / 2; // [1, 1'000'000'000]
-
-            SortedDictionary<int, int> takenIDs = new();
-            LinkedListNode<(int x, int id)> beginCowNode = cows.First!;
-            LinkedListNode<(int x, int id)> endCowNode = cows.First!;
-            while (true)
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < _width; ++col)
             {
-                var endCow = endCowNode.Value;
-                int endCowID = endCow.id;
-                int endCowX = endCow.x;
-
-                if (takenIDs.ContainsKey(endCowID) == false)
-                {
-                    takenIDs.Add(endCowID, 0);
-                }
-                ++takenIDs[endCowID];
-
-                while (endCowX - beginCowNode.Value.x > mid)
-                {
-                    var beginCow = beginCowNode.Value;
-                    int beginCowID = beginCow.id;
-
-                    --takenIDs[beginCowID];
-                    if (takenIDs[beginCowID] < 1)
-                    {
-                        takenIDs.Remove(beginCowID);
-                    }
-
-                    beginCowNode = beginCowNode.Next!;
-                }
-
-                if (takenIDs.Count == ids.Count || endCowNode == cows.Last!)
-                {
-                    break;
-                }
-                else
-                {
-                    endCowNode = endCowNode.Next!;
-                }
-            }
-
-            if (takenIDs.Count == ids.Count)
-            {
-                high = mid;
-                output = mid;
-            }
-            else
-            {
-                low = mid;
+                _solidity[row, col] = tokens[col];
             }
         }
-        Console.Write(output);
+
+        Place(0, 0, 0);
+        Console.Write(_maxSolidities);
+    }
+
+    private static void Place(int solidities, int row, int col)
+    {
+        _maxSolidities = Math.Max(_maxSolidities, solidities);
+
+        if (col >= _width - 1) // no need to check the last col
+        {
+            ++row;
+            col = 0;
+        }
+
+        if (row >= _height - 1) // also no need to check the last row
+            return;
+
+        void TryPlace((int row, int col)[] comp)
+        {
+            if (Placeable(comp, row, col) == false)
+                return;
+
+            solidities += Occupy(comp, row, col);
+            Place(solidities, row, col + 1);
+            solidities -= Vacate(comp, row, col);
+        }
+
+        TryPlace(_compA);
+        TryPlace(_compB);
+        TryPlace(_compC);
+        TryPlace(_compD);
+
+        Place(solidities, row, col + 1);
+    }
+
+    private static bool Placeable((int row, int col)[] comp, int basisRow, int basisCol)
+    {
+        for (int i = 0; i < comp.Length; ++i)
+        {
+            var part = comp[i];
+
+            int row = basisRow + part.row;
+            if (row > _height - 1)
+                return false;
+
+            int col = basisCol + part.col;
+            if (col > _width - 1)
+                return false;
+
+            if (_occupied[row, col])
+                return false;
+        }
+
+        return true;
+    }
+
+    private static int Occupy((int row, int col)[] comp, int basisRow, int basisCol)
+    {
+        return Write(comp, basisRow, basisCol, true);
+    }
+    private static int Vacate((int row, int col)[] comp, int basisRow, int basisCol)
+    {
+        return Write(comp, basisRow, basisCol, false);
+    }
+    private static int Write((int row, int col)[] comp, int basisRow, int basisCol, bool state)
+    {
+        int solidities = 0;
+
+        for (int i = 0; i < comp.Length; ++i)
+        {
+            var part = comp[i];
+
+            // it's guaranteed that row and col are valid here
+            int row = basisRow + part.row;
+            int col = basisCol + part.col;
+
+            _occupied[row, col] = state;
+            solidities += _solidity[row, col] * ((i == 1) ? 2 : 1);
+        }
+
+        return solidities;
     }
 }
