@@ -8,10 +8,14 @@
     private static int[,] _solidity = null!;
     
     // a = ┓, b = ┛, c = ┗, d = ┏
-    private static (int row, int col)[] _compA = new (int, int)[] { (0, 0), (0, 1), (1, 1) };
-    private static (int row, int col)[] _compB = new (int, int)[] { (1, 0), (1, 1), (0, 1) };
-    private static (int row, int col)[] _compC = new (int, int)[] { (0, 0), (1, 0), (1, 1) };
-    private static (int row, int col)[] _compD = new (int, int)[] { (1, 0), (0, 0), (0, 1) };
+    //private static (int row, int col)[] _compA = new (int, int)[] { (0, 0), (0, 1), (1, 1) };
+    //private static (int row, int col)[] _compB = new (int, int)[] { (1, 0), (1, 1), (0, 1) };
+    //private static (int row, int col)[] _compC = new (int, int)[] { (0, 0), (1, 0), (1, 1) };
+    //private static (int row, int col)[] _compD = new (int, int)[] { (1, 0), (0, 0), (0, 1) };
+    private static (int row, int col)[] _compA = new (int, int)[] { (0, -1), (0, 0), (1, 0) };
+    private static (int row, int col)[] _compB = new (int, int)[] { (0, -1), (0, 0), (-1, 0) };
+    private static (int row, int col)[] _compC = new (int, int)[] { (0, 1), (0, 0), (-1, 0) };
+    private static (int row, int col)[] _compD = new (int, int)[] { (0, 1), (0, 0), (1, 0) };
 
     private static int _maxSolidities = 0;
 
@@ -41,13 +45,13 @@
     {
         _maxSolidities = Math.Max(_maxSolidities, solidities);
 
-        if (col >= _height - 1) // no need to check the last col
+        if (col > _height - 1)
         {
             ++row;
             col = 0;
         }
 
-        if (row >= _height - 1) // also no need to check the last row
+        if (row > _height - 1)
             return;
 
         void TryPlace((int row, int col)[] comp)
@@ -75,11 +79,11 @@
             var part = comp[i];
 
             int row = basisRow + part.row;
-            if (row > _height - 1)
+            if (row < 0 || row > _height - 1)
                 return false;
 
             int col = basisCol + part.col;
-            if (col > _width - 1)
+            if (col < 0 || col > _width - 1)
                 return false;
 
             if (_occupied[row, col])
