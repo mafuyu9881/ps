@@ -13,6 +13,8 @@
     private static (int row, int col)[] _compC = new (int, int)[] { (0, 0), (1, 0), (1, 1) };
     private static (int row, int col)[] _compD = new (int, int)[] { (1, 0), (0, 0), (0, 1) };
 
+    private static int _maxSolidities = 0;
+
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -31,14 +33,14 @@
             }
         }
 
-        int maxSolidities = 0;
-        int solidities = 0;
-        Place(ref maxSolidities, ref solidities, 0, 0);
-        Console.Write(maxSolidities);
+        Place(0, 0, 0);
+        Console.Write(_maxSolidities);
     }
 
-    private static void Place(ref int maxSolidities, ref int solidities, int row, int col)
+    private static void Place(int solidities, int row, int col)
     {
+        _maxSolidities = Math.Max(_maxSolidities, solidities);
+
         if (col >= _height - 1) // no need to check the last col
         {
             ++row;
@@ -48,23 +50,22 @@
         if (row >= _height - 1) // also no need to check the last row
             return;
 
-        void TryPlace(ref int maxSolidities, ref int solidities, (int row, int col)[] comp)
+        void TryPlace((int row, int col)[] comp)
         {
             if (Placeable(comp, row, col) == false)
                 return;
 
             solidities += Occupy(comp, row, col);
-            maxSolidities = Math.Max(maxSolidities, solidities);
-            Place(ref maxSolidities, ref solidities, row, col + 1);
+            Place(solidities, row, col + 1);
             solidities -= Vacate(comp, row, col);
         }
 
-        TryPlace(ref maxSolidities, ref solidities, _compA);
-        TryPlace(ref maxSolidities, ref solidities, _compB);
-        TryPlace(ref maxSolidities, ref solidities, _compC);
-        TryPlace(ref maxSolidities, ref solidities, _compD);
+        TryPlace(_compA);
+        TryPlace(_compB);
+        TryPlace(_compC);
+        TryPlace(_compD);
 
-        Place(ref maxSolidities, ref solidities, row, col + 1);
+        Place(solidities, row, col + 1);
     }
 
     private static bool Placeable((int row, int col)[] comp, int basisRow, int basisCol)
