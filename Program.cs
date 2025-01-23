@@ -1,44 +1,35 @@
-﻿internal class Program
-{
-    private static int[] _singleDigitMatches = new int[] { 6, 2, 5, 5, 4, 5, 6, 3, 7, 6 };
-    private static int[] _doubleDigitMatches = new int[100];
+﻿using System.Text;
 
+internal class Program
+{
     private static void Main(string[] args)
     {
-        for (int i = 0; i < _doubleDigitMatches.Length; ++i) // tc = 100
+        int t = int.Parse(Console.ReadLine()!); // [1, 200'000]
+        StringBuilder output = new();
+        for (int i = 0; i < t; ++i) // max tc = 200'000
         {
-            _doubleDigitMatches[i] = ComputeDoubleDigitMatches(i);
-        }
+            int squares = int.Parse(Console.ReadLine()!); // [1, 1'000'000'000]
 
-        int n = int.Parse(Console.ReadLine()!); // n = [1, 50]
-
-        n -= 4; // matches used in plus and equal signs
-
-        string output = "impossible";
-        for (int rhs = 0; rhs < 100; ++rhs) // tc = 100
-        {
-            for (int lhsl = 0; lhsl <= rhs / 2; ++lhsl) // max tc = 50 [0, 49]
+            int low = 2 - 1;
+            int high = 31623 * 2 + 1; // sqrt(1'000'000'000) = 31622.xxx
+            while (low < high - 1)
             {
-                int lhsr = rhs - lhsl; // left-hand side's right
+                int mid = (low + high) / 2;
 
-                if (n != _doubleDigitMatches[lhsl] + _doubleDigitMatches[lhsr] + _doubleDigitMatches[rhs])
-                    continue;
+                int side0 = mid / 2;
+                int side1 = (mid + 1) / 2;
 
-                output = $"{PrintInDoubleDigit(lhsl)}+{PrintInDoubleDigit(lhsr)}={PrintInDoubleDigit(rhs)}";
-                goto Print;
+                if (side0 * side1 < squares)
+                {
+                    low = mid;
+                }
+                else
+                {
+                    high = mid;
+                }
             }
+            output.AppendLine($"{high * 2}");
         }
-Print:  Console.Write(output);
-    }
-
-    private static int ComputeDoubleDigitMatches(int number)
-    {
-        // number = [0, 99]
-        return _singleDigitMatches[number / 10] + _singleDigitMatches[number % 10];
-    }
-
-    private static string PrintInDoubleDigit(int number)
-    {
-        return (number < 10) ? ("0" + number) : $"{number}";
+        Console.Write(output);
     }
 }
