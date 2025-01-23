@@ -21,7 +21,7 @@
             {
                 int lhsr = rhs - lhsl; // left-hand side's right
 
-                if (n < _doubleDigitMatches[lhsl] + _doubleDigitMatches[lhsr] + _doubleDigitMatches[rhs])
+                if (n != _doubleDigitMatches[lhsl] + _doubleDigitMatches[lhsr] + _doubleDigitMatches[rhs])
                     continue;
 
                 output = $"{PrintInDoubleDigit(lhsl)}+{PrintInDoubleDigit(lhsr)}={PrintInDoubleDigit(rhs)}";
