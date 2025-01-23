@@ -1,118 +1,60 @@
 ﻿internal class Program
 {
-    private static int _height;
-    private static int _width;
+    private const int InvalidPlayerID = 0;
 
-    private static bool[,] _occupied = null!;
+    private static int[,] _board = new int[3, 3];
 
-    private static int[,] _solidity = null!;
-
-    // a = ┓, b = ┛, c = ┗, d = ┏
-    private static (int row, int col)[] _compA = new (int, int)[] { (0, 0), (0, 1), (1, 1) };
-    private static (int row, int col)[] _compB = new (int, int)[] { (1, 0), (1, 1), (0, 1) };
-    private static (int row, int col)[] _compC = new (int, int)[] { (0, 0), (1, 0), (1, 1) };
-    private static (int row, int col)[] _compD = new (int, int)[] { (1, 0), (0, 0), (0, 1) };
-
-    private static int _maxSolidities = 0;
+    private static (int row, int col)[][] _lines = new (int, int)[8][]
+    {
+        new (int, int)[] { (0, 0), (0, 1), (0, 2) },
+        new (int, int)[] { (1, 0), (1, 1), (1, 2) },
+        new (int, int)[] { (2, 0), (2, 1), (2, 2) },
+        new (int, int)[] { (0, 0), (1, 0), (2, 0) },
+        new (int, int)[] { (0, 1), (1, 1), (2, 1) },
+        new (int, int)[] { (0, 2), (1, 2), (2, 2) },
+        new (int, int)[] { (0, 0), (1, 1), (2, 2) },
+        new (int, int)[] { (0, 2), (1, 1), (2, 0) },
+    };
 
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        _height = tokens[0];
-        _width = tokens[1];
+        int firstPlayerID = int.Parse(Console.ReadLine()!); // [1, 2]
+        int secondPlayerID = (firstPlayerID == 2) ? 1 : 2; // [1, 2]
 
-        _occupied = new bool[_height, _width];
-
-        _solidity = new int[_height, _width];
-        for (int row = 0; row < _height; ++row)
+        int winnerPlayerID = InvalidPlayerID;
+        for (int i = 0; i < 9; ++i) // tc = 9
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < _width; ++col)
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int row = tokens[0] - 1;
+            int col = tokens[1] - 1;
+
+            int currPlayerID = (i % 2 == 0) ? firstPlayerID : secondPlayerID;
+            
+            _board[row, col] = currPlayerID;
+
+            for (int j = 0; j < _lines.Length; ++j) // tc = 8
             {
-                _solidity[row, col] = tokens[col];
+                (int row, int col)[] line = _lines[j];
+
+                int row0 = line[0].row;
+                int col0 = line[0].col;
+                int row1 = line[1].row;
+                int col1 = line[1].col;
+                if (_board[row0, col0] != _board[row1, col1])
+                    continue;
+
+                int row2 = line[2].row;
+                int col2 = line[2].col;
+                if (_board[row1, col1] != _board[row2, col2])
+                    continue;
+
+                winnerPlayerID = _board[row0, col0];
+                break;
             }
+
+            if (winnerPlayerID != InvalidPlayerID)
+                break;
         }
-
-        Place(0, 0, 0);
-        Console.Write(_maxSolidities);
-    }
-
-    private static void Place(int solidities, int row, int col)
-    {
-        _maxSolidities = Math.Max(_maxSolidities, solidities);
-
-        if (col >= _width - 1) // no need to check the last col
-        {
-            ++row;
-            col = 0;
-        }
-
-        if (row >= _height - 1) // also no need to check the last row
-            return;
-
-        void TryPlace((int row, int col)[] comp)
-        {
-            if (Placeable(comp, row, col) == false)
-                return;
-
-            solidities += Occupy(comp, row, col);
-            Place(solidities, row, col + 1);
-            solidities -= Vacate(comp, row, col);
-        }
-
-        TryPlace(_compA);
-        TryPlace(_compB);
-        TryPlace(_compC);
-        TryPlace(_compD);
-
-        Place(solidities, row, col + 1);
-    }
-
-    private static bool Placeable((int row, int col)[] comp, int basisRow, int basisCol)
-    {
-        for (int i = 0; i < comp.Length; ++i)
-        {
-            var part = comp[i];
-
-            int row = basisRow + part.row;
-            if (row > _height - 1)
-                return false;
-
-            int col = basisCol + part.col;
-            if (col > _width - 1)
-                return false;
-
-            if (_occupied[row, col])
-                return false;
-        }
-
-        return true;
-    }
-
-    private static int Occupy((int row, int col)[] comp, int basisRow, int basisCol)
-    {
-        return Write(comp, basisRow, basisCol, true);
-    }
-    private static int Vacate((int row, int col)[] comp, int basisRow, int basisCol)
-    {
-        return Write(comp, basisRow, basisCol, false);
-    }
-    private static int Write((int row, int col)[] comp, int basisRow, int basisCol, bool state)
-    {
-        int solidities = 0;
-
-        for (int i = 0; i < comp.Length; ++i)
-        {
-            var part = comp[i];
-
-            // it's guaranteed that row and col are valid here
-            int row = basisRow + part.row;
-            int col = basisCol + part.col;
-
-            _occupied[row, col] = state;
-            solidities += _solidity[row, col] * ((i == 1) ? 2 : 1);
-        }
-
-        return solidities;
+        Console.Write(winnerPlayerID);
     }
 }
