@@ -1,35 +1,34 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!); // [1, 200'000]
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i) // max tc = 200'000
+        int m = int.Parse(Console.ReadLine()!);
+
+        int[] cups = new int[] { 1, 2, 3 };
+        for (int i = 0; i < m; ++i)
         {
-            int squares = int.Parse(Console.ReadLine()!); // [1, 1'000'000'000]
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int x = tokens[0];
+            int y = tokens[1];
 
-            int low = 2 - 1;
-            int high = 31623 * 2 + 1; // sqrt(1'000'000'000) = 31622.xxx
-            while (low < high - 1)
+            int xIndex = 0;
+            int yIndex = 0;
+            for (int j = 0; j < cups.Length; ++j)
             {
-                int mid = (low + high) / 2;
-
-                int side0 = mid / 2;
-                int side1 = (mid + 1) / 2;
-
-                if (side0 * side1 < squares)
+                if (cups[j] == x)
                 {
-                    low = mid;
+                    xIndex = j;
                 }
-                else
+
+                if (cups[j] == y)
                 {
-                    high = mid;
+                    yIndex = j;
                 }
             }
-            output.AppendLine($"{high * 2}");
+
+            cups[xIndex] = y;
+            cups[yIndex] = x;
         }
-        Console.Write(output);
+        Console.Write(cups[0]);
     }
 }
