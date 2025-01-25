@@ -10,10 +10,10 @@ internal class Program
 
         int[] map = new int[w * h];
         LinkedList<int> candidates = new();
-        for (int r = 0; r < h; ++r)
+        for (int r = 0; r < h; ++r) // max tc = 500
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int c = 0; c < w; ++c)
+            for (int c = 0; c < w; ++c) // max tc = 500
             {
                 int idx = r * w + c;
                 map[idx] = tokens[c];
