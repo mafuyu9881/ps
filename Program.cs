@@ -9,7 +9,7 @@ internal class Program
         int w = tokens[1]; // [1, 500]
 
         int[] map = new int[w * h];
-        LinkedList<int> objectives = new();
+        LinkedList<int> candidates = new();
         for (int r = 0; r < h; ++r)
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -17,43 +17,50 @@ internal class Program
             {
                 int idx = r * w + c;
                 map[idx] = tokens[c];
-                objectives.AddLast(idx);
+                candidates.AddLast(idx);
             }
         }
 
-        Stack<int> s = new();
+        Queue<int> q = new();
         bool[] visited = new bool[map.Length];
         LinkedList<LinkedList<int>> pictures = new();
-        LinkedList<int> maxPicture = null!;
+        LinkedList<int> maxPicture = new();
         LinkedList<int> picture = new();
 
         while (true) // max tc = 250'000
         {
-            while (objectives.Count > 0)
+            while (q.Count < 1 && candidates.Count > 0)
             {
-                var node = objectives.First!;
-                s.Push(node.Value);
-                objectives.Remove(node);
+                var node = candidates.First!;
+                int candidateIdx = node.Value;
+                candidates.Remove(node);
+
+                if (visited[candidateIdx])
+                    continue;
+
+                if (map[candidateIdx] == 0)
+                    continue;
+
+                picture = new();
+                pictures.AddLast(picture);
+                visited[candidateIdx] = true;
+                q.Enqueue(node.Value);
                 break;
             }
             
-            if (s.Count < 1)
+            if (q.Count < 1)
                 break;
 
-            int idx = s.Pop();
-            if (visited[idx])
-                continue;
-
-            visited[idx] = true;
-            if (map[idx] == 0)
-                continue;
-
-            picture.AddLast(idx);
-            
+            int idx = q.Dequeue();
             int r = idx / w;
             int c = idx % w;
+
+            picture.AddLast(idx);
+            if (picture.Count > maxPicture.Count)
+            {
+                maxPicture = picture;
+            }
             
-            bool isolated = true;
             (int r, int c)[] offsets = new (int, int)[] { (-1, 0), (1, 0), (0, -1), (0, 1) };
             for (int i = 0; i < offsets.Length; ++i)
             {
@@ -74,20 +81,13 @@ internal class Program
                 if (map[adjIdx] == 0)
                     continue;
 
-                s.Push(adjIdx);
-                isolated = false;
-            }
-
-            if (isolated)
-            {
-                pictures.AddLast(picture);
-                if (maxPicture == null || picture.Count > maxPicture.Count)
-                {
-                    maxPicture = picture;
-                }
-                picture = new();
+                visited[adjIdx] = true;
+                q.Enqueue(adjIdx);
             }
         }
+
+        // in line 46 and 84, we have to code them in both places rather than line 57
+        // if we code it on line 57, we will face duplicated elements in q
 
         StringBuilder output = new();
         output.AppendLine($"{pictures.Count}");
