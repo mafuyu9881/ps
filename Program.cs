@@ -1,75 +1,47 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
-    private static int[,] _shape = new int[,]
-    {
-        { 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0 },
-        { 1, 1, 1, 1, 1 },
-        { 0, 1, 1, 1, 0 },
-        { 0, 1, 0, 1, 0 },
-    };
-    
+    private static int _n = 0;
+    private static int _sols = 0;
+
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [0, 5]
+        _n = int.Parse(Console.ReadLine()!); // [2, 100]
 
-        int w = ExponentiationBySquaringIteratively(5, n);
-        
-        StringBuilder output = new();
-        if (n > 0)
-        {
-            for (int r = 0; r < w; ++r) // max tc = 5 ^ 5 = 3'125
-            {
-                for (int c = 0; c < w; ++c) // max tc = 3'125
-                {
-                    output.Append(Evaluate(r, c, n - 1) ? "*" : " ");
-                }
-                output.AppendLine();
-            }
-        }
-        else
-        {
-            output.Append("*");
-        }
-        Console.Write(output);
+        Solve(1, 1, 1); // row and col are 1-based
+
+        Console.Write(_sols);
     }
 
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
+    private static void Solve(int r, int c0, int c1)
     {
-        int output = 1;
-        while (exponent > 0)
+        if (r == _n)
         {
-            if (exponent % 2 == 1)
-            {
-                output *= basis;
-            }
-            basis *= basis;
-            exponent >>= 1;
+            _sols = (_sols + 2) % 10007;
+            return;
         }
-        return output;
-    }
 
-    private static bool Evaluate(int r, int c, int n)
-    {
-        int powN = ExponentiationBySquaringIteratively(5, n);
-
-        int rowSec = r / powN;
-        int colSec = c / powN;
-
-        if (_shape[rowSec, colSec] == 0)
-            return false;
-
-        if (n > 0)
+        // down, down
+        if (c0 < c1)
         {
-            int nextR = r - rowSec * powN;
-            int nextC = c - colSec * powN;
-            return Evaluate(nextR, nextC, n - 1);
+            Solve(r + 1, c0, c1);
         }
-        else
+
+        // down, diagonal
+        // if (c1 < _n) // it's guaranteed
         {
-            return true;
+            Solve(r + 1, c0, c1 + 1);
+        }
+
+        // diagonal, down
+        if (c1 - c0 > 1)
+        {
+            Solve(r + 1, c0 + 1, c1);
+        }
+
+        // diagonal, diagonal
+        if (c0 < c1)
+        {
+            Solve(r + 1, c0 + 1, c1 + 1);
         }
     }
 }
