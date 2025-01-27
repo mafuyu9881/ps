@@ -1,47 +1,27 @@
 ﻿internal class Program
 {
-    private static int _n = 0;
-    private static int _sols = 0;
-
     private static void Main(string[] args)
     {
-        _n = int.Parse(Console.ReadLine()!); // [2, 100]
+        int n = int.Parse(Console.ReadLine()!); // [2, 100]
 
-        Solve(1, 1, 1); // row and col are 1-based
+        // dp[r, d] = all possible ways to place them in row 'r', at distance 'd'
+        int[,] dp = new int[n + 1, n + 1];
+        dp[2, 1] = 2;
 
-        Console.Write(_sols);
-    }
-
-    private static void Solve(int r, int c0, int c1)
-    {
-        if (r == _n)
+        int output = 0;
+        for (int r = 3; r <= n; ++r)
         {
-            _sols = (_sols + 2) % 10007;
-            return;
-        }
+            for (int d = 1; d < r; ++d)
+            {
+                // rhs = down/down + diagonal/diagonal + down/diagonal + diagonal/down
+                dp[r, d] = dp[r - 1, d] + dp[r - 1, d] + dp[r - 1, d - 1] + dp[r - 1, d + 1];
 
-        // down, down
-        if (c0 < c1)
-        {
-            Solve(r + 1, c0, c1);
+                if (r == n)
+                {
+                    output = (output + dp[r, d]) % 10007;
+                }
+            }
         }
-
-        // down, diagonal
-        // if (c1 < _n) // it's guaranteed
-        {
-            Solve(r + 1, c0, c1 + 1);
-        }
-
-        // diagonal, down
-        if (c1 - c0 > 1)
-        {
-            Solve(r + 1, c0 + 1, c1);
-        }
-
-        // diagonal, diagonal
-        if (c0 < c1)
-        {
-            Solve(r + 1, c0 + 1, c1 + 1);
-        }
+        Console.Write(output);
     }
 }
