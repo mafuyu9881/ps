@@ -27,26 +27,33 @@
 
         const int InvalidMoves = -1;
         
-        Queue<int> waitings = new();
-        (int moves, int usedK)[] cost = new (int, int)[width * height];
-        for (int i = 0; i < cost.Length; ++i) // max tc = 40'000
+        Queue<(int index, int usedK)> waitings = new();
+        int[][] dp = new int[width * height][]; // the second dimension represents the count of horse-like moves
+        for (int i = 0; i < dp.Length; ++i) // max tc = 40'000
         {
-            cost[i] = (InvalidMoves, 0);
+            dp[i] = new int[k + 1];
+            for (int j = 0; j < dp[i].Length; ++j) // max tc = 31
+            {
+                dp[i][j] = InvalidMoves;
+            }
         }
 
         int srcIndex = 0;
-        waitings.Enqueue(srcIndex);
-        cost[srcIndex] = (0, 0);
+        waitings.Enqueue((srcIndex, 0));
+        for (int i = 0; i < dp[srcIndex].Length; ++i)
+        {
+            dp[srcIndex][i] = 0;
+        }
 
         // it's is better to get more k count when both have same distance
         while (waitings.Count > 0)
         {
-            int index = waitings.Dequeue();
+            var element = waitings.Dequeue();
+            int index = element.index;
             int row = index / width;
             int col = index % width;
-
-            int newMoves = cost[index].moves + 1;
-            int newUsedK = cost[index].usedK;
+            int usedK = element.usedK;
+            int newMoves = dp[index][usedK] + 1;
 
             for (int i = 0; i < AdjOffsets; ++i)
             {
@@ -59,26 +66,20 @@
                     continue;
 
                 int adjIndex = adjRow * width + adjCol;
-                if (adjIndex == srcIndex)
-                    continue;
-
                 if (map[adjIndex] == 1)
                     continue;
 
-                int oldMoves = cost[adjIndex].moves;
-                int oldUsedK = cost[adjIndex].usedK;
-                if ((oldMoves != InvalidMoves) &&
-                    ((oldMoves < newMoves) || 
-                     (oldMoves == newMoves && oldUsedK <= newUsedK)))
+                int oldMoves = dp[adjIndex][usedK];
+                if (oldMoves != InvalidMoves && oldMoves <= newMoves)
                     continue;
 
-                cost[adjIndex] = (newMoves, newUsedK);
-                waitings.Enqueue(adjIndex);
+                dp[adjIndex][usedK] = newMoves;
+                waitings.Enqueue((adjIndex, usedK));
             }
 
-            if (newUsedK < k)
+            if (usedK < k)
             {
-                ++newUsedK;
+                ++usedK;
 
                 for (int i = 0; i < HorseOffsets; ++i)
                 {
@@ -91,25 +92,32 @@
                         continue;
 
                     int horseIndex = horseRow * width + horseCol;
-                    if (horseIndex == 0)
-                        continue;
-
                     if (map[horseIndex] == 1)
                         continue;
 
-                    int oldMoves = cost[horseIndex].moves;
-                    int oldUsedK = cost[horseIndex].usedK;
-                    if ((oldMoves != InvalidMoves) &&
-                        ((oldMoves < newMoves) ||
-                         (oldMoves == newMoves && oldUsedK <= newUsedK)))
+                    int oldMoves = dp[horseIndex][usedK];
+                    if (oldMoves != InvalidMoves && oldMoves <= newMoves)
                         continue;
 
-                    cost[horseIndex] = (newMoves, newUsedK);
-                    waitings.Enqueue(horseIndex);
+                    dp[horseIndex][usedK] = newMoves;
+                    waitings.Enqueue((horseIndex, usedK));
                 }
             }
         }
 
-        Console.Write(cost[cost.Length - 1].moves);
+        int minMoves = InvalidMoves;
+        int[] dstDP = dp[dp.Length - 1];
+        for (int i = 0; i < dstDP.Length; ++i)
+        {
+            int moves = dstDP[i];
+            if (moves == InvalidMoves)
+                continue;
+
+            if (minMoves != InvalidMoves && minMoves <= moves)
+                continue;
+
+            minMoves = moves;
+        }
+        Console.Write(minMoves);
     }
 }
