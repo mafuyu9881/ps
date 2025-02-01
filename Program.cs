@@ -1,63 +1,54 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int width = tokens[0]; // [?, 100]
-        int height = tokens[1]; // [?, 100]
+        int x = tokens[0]; // [1, 100]
+        int y = tokens[1]; // [1, 100]
+        
+        int lcm = LCM(x, y);
 
-        int cuts = int.Parse(Console.ReadLine()!);
-        LinkedList<int> horizontalCuttingPointLL = new();
-        LinkedList<int> verticalCuttingPointLL = new();
-        for (int i = 0; i < cuts; ++i) // max tc = 99 + 99 = 198
+        StringBuilder output = new();
+        for (int i = 1; i <= lcm; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            bool left = i % (lcm / x) == 0;
+            bool right = i % (lcm / y) == 0;
 
-            LinkedList<int> cuttingPointLL = null!;
-            if (tokens[0] == 0)
+            if (left && right)
             {
-                cuttingPointLL = horizontalCuttingPointLL;
+                output.Append('3');
             }
-            else
+            else if (left)
             {
-                cuttingPointLL = verticalCuttingPointLL;
+                output.Append('1');
             }
-            cuttingPointLL.AddLast(tokens[1]);
-        }
-        horizontalCuttingPointLL.AddFirst(0);
-        horizontalCuttingPointLL.AddLast(height);
-        verticalCuttingPointLL.AddFirst(0);
-        verticalCuttingPointLL.AddLast(width);
-
-        int[] horizontalCuttingPointArr = horizontalCuttingPointLL.ToArray(); // max tc = 101
-        int[] verticalCuttingPointArr = verticalCuttingPointLL.ToArray(); // max tc = 101
-        Array.Sort(horizontalCuttingPointArr);
-        Array.Sort(verticalCuttingPointArr);
-
-        int[] horizontalLengthArr = CuttingPointsToLengths(horizontalCuttingPointArr); // max tc = 100
-        int[] verticalLengthArr = CuttingPointsToLengths(verticalCuttingPointArr); // max tc = 100
-
-        int output = 0;
-        for (int i = 0; i < horizontalLengthArr.Length; ++i) // max tc = 100
-        {
-            for (int j = 0; j < verticalLengthArr.Length; ++j) // max tc = 100
+            else if (right)
             {
-                output = Math.Max(output, horizontalLengthArr[i] * verticalLengthArr[j]);
+                output.Append('2');
             }
         }
         Console.Write(output);
     }
 
-    private static int[] CuttingPointsToLengths(int[] cuttingPoints) // tc = cuttingPoints.Length - 1
+    private static int GCD(int a, int b)
     {
-        int cuttingPointsLength = cuttingPoints.Length;
+        int bigger = Math.Max(a, b);
+        int smaller = Math.Min(a, b);
 
-        int[] lengths = new int[cuttingPointsLength - 1];
-        for (int i = 0; i < cuttingPointsLength - 1; ++i)
+        while (smaller > 0)
         {
-            lengths[i] = cuttingPoints[i + 1] - cuttingPoints[i];
+            int temp = bigger % smaller;
+            bigger = smaller;
+            smaller = temp;
         }
 
-        return lengths;
+        return bigger;
+    }
+    
+    private static int LCM(int a, int b)
+    {
+        return a * b * GCD(a, b);
     }
 }
