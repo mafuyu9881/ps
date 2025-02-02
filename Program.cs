@@ -4,51 +4,65 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int x = tokens[0]; // [1, 100]
-        int y = tokens[1]; // [1, 100]
+        int n = int.Parse(Console.ReadLine()!); // [2, 100'000]
         
-        int lcm = LCM(x, y);
-
-        StringBuilder output = new();
-        for (int i = 1; i <= lcm; ++i)
+        (int x, int y)[] coords = new (int, int)[n];
+        float[] slopes = new float[n - 1];
+        for (int i = 0; i < n; ++i)
         {
-            bool left = i % (lcm / x) == 0;
-            bool right = i % (lcm / y) == 0;
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            coords[i] = (tokens[0], tokens[1]); // tokens' element = [-10^9, 10^9]
 
-            if (left && right)
+            if (i > 0)
             {
-                output.Append('3');
-            }
-            else if (left)
-            {
-                output.Append('1');
-            }
-            else if (right)
-            {
-                output.Append('2');
+                var prevCoord = coords[i - 1];
+                var currCoord = coords[i];
+
+                slopes[i - 1] = (currCoord.y - prevCoord.y) / (float)(currCoord.x - prevCoord.x);
             }
         }
-        Console.Write(output);
-    }
 
-    private static int GCD(int a, int b)
-    {
-        int bigger = Math.Max(a, b);
-        int smaller = Math.Min(a, b);
+        int q = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
-        while (smaller > 0)
+        StringBuilder sb = new();
+        for (int i = 0; i < q; ++i)
         {
-            int temp = bigger % smaller;
-            bigger = smaller;
-            smaller = temp;
-        }
+            float k = float.Parse(Console.ReadLine()!); // (-10^9, 10^9)
 
-        return bigger;
-    }
-    
-    private static int LCM(int a, int b)
-    {
-        return a * b * GCD(a, b);
+            int lo = 0 - 1;
+            int hi = coords.Length - 1; // the last candidate is '(coords' last index) - 1'
+            while (lo < hi - 1)
+            {
+                int m = (lo + hi) / 2;
+
+                if (k < coords[m].x)
+                {
+                    hi = m;
+                }
+                else if (k > coords[m + 1].x)
+                {
+                    lo = m;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            float slope = slopes[(lo + hi) / 2];
+            if (slope > 0)
+            {
+                sb.AppendLine("1");
+            }
+            else if (slope < 0)
+            {
+                sb.AppendLine("-1");
+            }
+            else
+            {
+                sb.AppendLine("0");
+            }
+        }
+        Console.Write(sb);
     }
 }
