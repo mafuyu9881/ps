@@ -1,68 +1,52 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
+    private static bool[] _s = new bool[1001];
+
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [2, 100'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 1'000]
+        int m = tokens[1]; // [0, 50]
 
-        (int x, int y)[] coords = new (int, int)[n];
-        float[] slopes = new float[n - 1];
-        for (int i = 0; i < n; ++i)
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // element = [1, 1'000]
+        for (int i = 0; i < tokens.Length; ++i) // max tc = 50
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            coords[i] = (tokens[0], tokens[1]); // tokens' element = [-10^9, 10^9]
-
-            if (i > 0)
-            {
-                var prevCoord = coords[i - 1];
-                var currCoord = coords[i];
-
-                slopes[i - 1] = (currCoord.y - prevCoord.y) / (float)(currCoord.x - prevCoord.x);
-            }
+            _s[tokens[i]] = true;
         }
 
-        int q = int.Parse(Console.ReadLine()!); // [1, 100'000]
-
-        StringBuilder sb = new();
-        for (int i = 0; i < q; ++i)
+        int diff = 0;
+        int[] directions = new int[] { 1, -1 };
+        while (true)
         {
-            double k = double.Parse(Console.ReadLine()!); // (-10^9, 10^9)
-
-            int lo = 0 - 1;
-            int hi = coords.Length - 1; // the last candidate is '(coords' last index) - 1'
-            while (lo < hi - 1)
+            for (int i = 0; i < directions.Length; ++i)
             {
-                int m = (lo + hi) / 2;
+                int objective = n + diff * directions[i];
 
-                if (k < coords[m].x)
-                {
-                    hi = m;
-                }
-                else if (k > coords[m + 1].x)
-                {
-                    lo = m;
-                }
-                else
-                {
-                    break;
-                }
+                if (objective < 1)
+                    continue;
+
+                if (Validation(1, objective) == false)
+                    continue;
+
+                goto End;
             }
 
-            float slope = slopes[(lo + hi) / 2];
-            if (slope > 0)
-            {
-                sb.AppendLine("1");
-            }
-            else if (slope < 0)
-            {
-                sb.AppendLine("-1");
-            }
-            else
-            {
-                sb.AppendLine("0");
-            }
+            ++diff;
         }
-        Console.Write(sb);
+End:
+        Console.Write(diff);
+    }
+
+    private static bool Validation(int factor, int n)
+    {
+        while (_s[factor] || (n % factor != 0))
+        {
+            ++factor;
+        }
+
+        //if (factor > n)
+        //    return false;
+
+        
     }
 }
