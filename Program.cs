@@ -1,6 +1,7 @@
 ﻿internal class Program
 {
-    private static bool[] _s = new bool[1001];
+    private static int MAX = 1001;
+    private static bool[] _s = new bool[MAX + 1];
 
     private static void Main(string[] args)
     {
@@ -14,39 +15,31 @@
             _s[tokens[i]] = true;
         }
 
-        int diff = 0;
-        int[] directions = new int[] { 1, -1 };
-        while (true)
+        const int InvalidDiff = -1;
+        int diff = InvalidDiff;
+        for (int x = 1; x <= MAX; ++x)
         {
-            for (int i = 0; i < directions.Length; ++i)
+            if (_s[x])
+                continue;
+
+            for (int y = 1; y <= MAX; ++y)
             {
-                int objective = n + diff * directions[i];
-
-                if (objective < 1)
+                if (_s[y])
                     continue;
 
-                if (Validation(1, objective) == false)
-                    continue;
+                for (int z = 1; z <= MAX; ++z)
+                {
+                    if (_s[z])
+                        continue;
 
-                goto End;
+                    int newDiff = Math.Abs(n - x * y * z);
+                    if (diff != InvalidDiff && diff <= newDiff)
+                        continue;
+
+                    diff = newDiff;
+                }
             }
-
-            ++diff;
         }
-End:
         Console.Write(diff);
-    }
-
-    private static bool Validation(int factor, int n)
-    {
-        while (_s[factor] || (n % factor != 0))
-        {
-            ++factor;
-        }
-
-        //if (factor > n)
-        //    return false;
-
-        
     }
 }
