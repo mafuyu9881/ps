@@ -5,9 +5,9 @@ internal class Program
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!); // [2, 100'000]
-        
+
         (int x, int y)[] coords = new (int, int)[n];
-        int[] states = new int[n - 1];
+        float[] slopes = new float[n - 1];
         for (int i = 0; i < n; ++i)
         {
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -18,23 +18,7 @@ internal class Program
                 var prevCoord = coords[i - 1];
                 var currCoord = coords[i];
 
-                int dy = currCoord.y - prevCoord.y;
-                int dx = currCoord.x - prevCoord.x;
-                
-                int state;
-                if (dy == 0)
-                {
-                    state = 0;
-                }
-                else if (dy / (double)dx > 0)
-                {
-                    state = 1;
-                }
-                else
-                {
-                    state = -1;
-                }
-                states[i - 1] =  state;
+                slopes[i - 1] = (currCoord.y - prevCoord.y) / (float)(currCoord.x - prevCoord.x);
             }
         }
 
@@ -65,7 +49,19 @@ internal class Program
                 }
             }
 
-            sb.AppendLine($"{states[(lo + hi) / 2]}");
+            float slope = slopes[(lo + hi) / 2];
+            if (slope > 0)
+            {
+                sb.AppendLine("1");
+            }
+            else if (slope < 0)
+            {
+                sb.AppendLine("-1");
+            }
+            else
+            {
+                sb.AppendLine("0");
+            }
         }
         Console.Write(sb);
     }
