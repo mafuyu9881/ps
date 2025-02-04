@@ -17,7 +17,7 @@ internal class Program
         {
             for (int k = 2; k < 1001; ++k) // tc = 999
             {
-                dp[j, k] = dp[j - 1, k - 1] + dp[j - 2, k - 1] + dp[j - 3, k - 1];
+                dp[j, k] = (dp[j - 1, k - 1] + dp[j - 2, k - 1] + dp[j - 3, k - 1]) % 1000000009;
             }
         }
 
