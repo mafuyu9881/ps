@@ -4,6 +4,8 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        const int Threshold = 1000000009;
+
         int t = int.Parse(Console.ReadLine()!); // [?, ?]
 
         int[,] dp = new int[1001, 1001];
@@ -17,7 +19,8 @@ internal class Program
         {
             for (int k = 2; k < 1001; ++k) // tc = 999
             {
-                dp[j, k] = (dp[j - 1, k - 1] + dp[j - 2, k - 1] + dp[j - 3, k - 1]) % 1000000009;
+                dp[j, k] += (dp[j - 1, k - 1] + dp[j - 2, k - 1]) % Threshold;
+                dp[j, k] = (dp[j, k] + dp[j - 3, k - 1]) % Threshold;
             }
         }
 
