@@ -17,7 +17,7 @@ internal class Program
         dp[3, 3] = 1;
         for (int j = 4; j < 1001; ++j) // tc = 997
         {
-            for (int k = 2; k < 1001; ++k) // tc = 999
+            for (int k = 2; k <= j; ++k) // tc = 999
             {
                 dp[j, k] += (dp[j - 1, k - 1] + dp[j - 2, k - 1]) % Threshold;
                 dp[j, k] = (dp[j, k] + dp[j - 3, k - 1]) % Threshold;
