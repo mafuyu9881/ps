@@ -1,45 +1,34 @@
-﻿internal class Program
-{
-    private const int MAX = 1001;
-    private const int InvalidDiff = -1;
-    private static bool[] _s = new bool[MAX + 1];
+﻿using System.Text;
 
+internal class Program
+{
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), int.Parse);
-        int n = tokens[0]; // [1, 1'000]
-        int m = tokens[1]; // [0, 50]
+        int t = int.Parse(Console.ReadLine()!); // [?, ?]
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), int.Parse); // element = [1, 1'000]
-        for (int i = 0; i < tokens.Length; ++i) // max tc = 50
+        int[,] dp = new int[1001, 1001];
+        dp[1, 1] = 1;
+        dp[2, 1] = 1;
+        dp[2, 2] = 1;
+        dp[3, 1] = 1;
+        dp[3, 2] = 2;
+        dp[3, 3] = 1;
+        for (int j = 4; j < 1001; ++j) // tc = 997
         {
-            _s[tokens[i]] = true;
-        }
-
-        int diff = InvalidDiff;
-        for (int x = 1; x <= MAX; ++x)
-        {
-            if (_s[x])
-                continue;
-
-            for (int y = 1; y <= MAX; ++y)
+            for (int k = 2; k < 1001; ++k) // tc = 999
             {
-                if (_s[y])
-                    continue;
-
-                for (int z = 1; z <= MAX; ++z)
-                {
-                    if (_s[z])
-                        continue;
-
-                    int newDiff = Math.Abs(n - x * y * z);
-                    if (diff != InvalidDiff && diff <= newDiff)
-                        continue;
-
-                    diff = newDiff;
-                }
+                dp[j, k] = dp[j - 1, k - 1] + dp[j - 2, k - 1] + dp[j - 3, k - 1];
             }
         }
-        Console.Write(diff);
+
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
+        {
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int n = tokens[0]; // [1, 1'000]
+            int m = tokens[1]; // [1, n]
+            sb.AppendLine($"{dp[n, m]}");
+        }
+        Console.Write(sb);
     }
 }
