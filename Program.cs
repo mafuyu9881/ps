@@ -1,71 +1,49 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
+    // _dp[78] = 14'472'334'024'676'221 > 10 ^ 16
+    private static long[] _dp = new long[78]; // so, we don't need to search above 78
+
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = tokens[0]; // [5, 100]
-        int width = tokens[1]; // [5, 100]
-
-        char[,] map = new char[height, width];
-        (int row, int col) lt = (height - 1, width - 1);
-        (int row, int col) rb = (0, 0);
-        for (int row = 0; row < height; ++row) // max tc = 100
+        _dp[0] = 1;
+        _dp[1] = 1;
+        for (int i = 2; i < _dp.Length; ++i)
         {
-            string s = Console.ReadLine()!;
-            for (int col = 0; col < width; ++col) // max tc = 100
-            {
-                map[row, col] = s[col];
-
-                if (map[row, col] == '#')
-                {
-                    if (row < lt.row)
-                    {
-                        lt.row = row;
-                    }
-
-                    if (row > rb.row)
-                    {
-                        rb.row = row;
-                    }
-
-                    if (col < lt.col)
-                    {
-                        lt.col = col;
-                    }
-
-                    if (col > rb.col)
-                    {
-                        rb.col = col;
-                    }
-                }
-            }
+            _dp[i] = _dp[i - 1] + _dp[i - 2];
         }
 
-        string[] sides = new string[] { "UP", "RIGHT", "DOWN", "LEFT" };
-        (int row, int col)[] vertices = new (int, int)[]
-        {
-            lt,
-            (lt.row, rb.col),
-            rb,
-            (rb.row, lt.col)
-        };
-        int currIndex = 3;
-        int nextIndex = 0;
-        while (nextIndex < 4)
-        {
-            var currVertex = vertices[currIndex];
-            var nextVertex = vertices[nextIndex];
+        int t = int.Parse(Console.ReadLine()!); // [1, 100]
 
-            int row = (currVertex.row + nextVertex.row) / 2;
-            int col = (currVertex.col + nextVertex.col) / 2;
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
+        {
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int k = tokens[0]; // [1, 3]
+            long x = tokens[1]; // [1, 10^16]
+            sb.AppendLine(Solve(k, x, 0, 0) ? "YES" : "NO");
+        }
+        Console.Write(sb);
+    }
 
-            if (map[row, col] == '.')
+    private static bool Solve(int k, long x, long sum, int depth)
+    {
+        if (depth == k)
+        {
+            return sum == x;
+        }
+        else
+        {
+            for (int i = 0; i < _dp.Length; ++i) // tc = 78
             {
-                Console.Write(sides[currIndex]);
-                break;
+                if (Solve(k , x, sum + _dp[i], depth + 1))
+                {
+                    return true;
+                }
             }
 
-            currIndex = nextIndex++;
+            return false;
         }
     }
 }
