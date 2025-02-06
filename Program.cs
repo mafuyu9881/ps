@@ -19,15 +19,15 @@ internal class Program
         StringBuilder sb = new();
         for (int i = 0; i < t; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int k = tokens[0]; // [1, 3]
+            long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+            long k = tokens[0]; // [1, 3]
             long x = tokens[1]; // [1, 10^16]
             sb.AppendLine(Solve(k, x, 0, 0) ? "YES" : "NO");
         }
         Console.Write(sb);
     }
 
-    private static bool Solve(int k, long x, long sum, int depth)
+    private static bool Solve(long k, long x, long sum, int depth)
     {
         if (depth == k)
         {
@@ -37,7 +37,7 @@ internal class Program
         {
             for (int i = 0; i < _dp.Length; ++i) // tc = 78
             {
-                if (Solve(k , x, sum + _dp[i], depth + 1))
+                if (Solve(k, x, sum + _dp[i], depth + 1))
                 {
                     return true;
                 }
