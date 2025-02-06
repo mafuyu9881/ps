@@ -1,36 +1,71 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = tokens[0]; // [5, 100]
+        int width = tokens[1]; // [5, 100]
 
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i) // max tc = 1'000
+        char[,] map = new char[height, width];
+        (int row, int col) lt = (height - 1, width - 1);
+        (int row, int col) rb = (0, 0);
+        for (int row = 0; row < height; ++row) // max tc = 100
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int j = tokens[0]; // [1, 1'000]
-            int n = tokens[1]; // [1, 1'000]
+            string s = Console.ReadLine()!;
+            for (int col = 0; col < width; ++col) // max tc = 100
+            {
+                map[row, col] = s[col];
 
-            PriorityQueue<int, int> boxes = new();
-            for (int k = 0; k < n; ++k) // max tc = 1'000
-            {
-                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int v = tokens[0]; // [1, 10'000]
-                int h = tokens[1]; // [1, 10'000]
-                int a = v * h;
-                boxes.Enqueue(a, -a);
+                if (map[row, col] == '#')
+                {
+                    if (row < lt.row)
+                    {
+                        lt.row = row;
+                    }
+
+                    if (row > rb.row)
+                    {
+                        rb.row = row;
+                    }
+
+                    if (col < lt.col)
+                    {
+                        lt.col = col;
+                    }
+
+                    if (col > rb.col)
+                    {
+                        rb.col = col;
+                    }
+                }
             }
-            
-            int usage = 0;
-            while (j > 0)
-            {
-                j -= boxes.Dequeue();
-                ++usage;
-            }
-            sb.AppendLine($"{usage}");
         }
-        Console.Write(sb);
+
+        string[] sides = new string[] { "UP", "RIGHT", "DOWN", "LEFT" };
+        (int row, int col)[] vertices = new (int, int)[]
+        {
+            lt,
+            (lt.row, rb.col),
+            rb,
+            (rb.row, lt.col)
+        };
+        int currIndex = 3;
+        int nextIndex = 0;
+        while (nextIndex < 4)
+        {
+            var currVertex = vertices[currIndex];
+            var nextVertex = vertices[nextIndex];
+
+            int row = (currVertex.row + nextVertex.row) / 2;
+            int col = (currVertex.col + nextVertex.col) / 2;
+
+            if (map[row, col] == '.')
+            {
+                Console.Write(sides[currIndex]);
+                break;
+            }
+
+            currIndex = nextIndex++;
+        }
     }
 }
