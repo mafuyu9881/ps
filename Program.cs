@@ -10,25 +10,25 @@
 
         // element = [0, 1'440)
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int breakfastS = tokens[0];
-        int breakfastE = tokens[1];
-        int lunchS = tokens[2];
-        int lunchE = tokens[3];
-        int dinnerS = tokens[4];
-        int dinnerE = tokens[5];
+        int breakfastBegin = tokens[0];
+        int breakfastEnd = tokens[1];
+        int lunchBegin = tokens[2];
+        int lunchEnd = tokens[3];
+        int dinnerBegin = tokens[4];
+        int dinnerEnd = tokens[5];
 
-        (int s, int e)[] ses = new (int, int)[]
+        (int s, int e)[] bes = new (int, int)[]
         {
-            (breakfastS, breakfastE),
-            (lunchS, lunchE),
-            (dinnerS, dinnerE),
+            (breakfastBegin, breakfastEnd),
+            (lunchBegin, lunchEnd),
+            (dinnerBegin, dinnerEnd),
         };
 
         bool[] availables = new bool[DayMinutes];
-        for (int i = 0; i < ses.Length; ++i) // tc = 3
+        for (int i = 0; i < bes.Length; ++i) // tc = 3
         {
-            int s = ses[i].s;
-            int e = ses[i].e;
+            int s = bes[i].s;
+            int e = bes[i].e;
             for (int j = s; j <= e; ++j) // max tc = 1438
             {
                 availables[j] = true;
@@ -36,27 +36,38 @@
         }
 
         bool continuous = false;
-        for (int i = breakfastS; i <= breakfastE; ++i) // max tc = 1438
+        for (int i = breakfastBegin; i <= breakfastEnd; ++i) // max tc = 1438
         {
-            int afterBreakfast = (i + k) % DayMinutes;
-            //if (i == afterBreakfast)
-            //{
-            //    continuous = true;
-            //    break;
-            //}
-            if (availables[afterBreakfast] == false)
-                continue;
-            
-            int afterLunch = (i + (2 * k)) % DayMinutes;
-            if (availables[afterLunch] == false)
-                continue;
+            int breakfastDrugEnd = i + k;
 
-            int afterDinner = (i + (3 * k)) % DayMinutes;
-            if ((n == 1) && ((i + (3 * k)) >= 1439))
-                continue;
+            for (int j = lunchBegin; j <= lunchEnd; ++j)
+            {
+                if (j > breakfastDrugEnd)
+                    continue;
 
-            //if ((n > 1) && )
-            //    continue;
+                int lunchDrugEnd = j + k;
+
+                for (int l = dinnerBegin; l <= dinnerEnd; ++l)
+                {
+                    if (l > lunchDrugEnd)
+                        continue;
+
+                    int dinnerDrugEnd = l + k;
+
+                    if ((n == 1) && (dinnerDrugEnd < (DayMinutes - 1)))
+                        continue;
+
+                    if ((n > 1) &&
+                        ((dinnerDrugEnd < DayMinutes) || ((dinnerDrugEnd % DayMinutes) < breakfastBegin)))
+                        continue;
+
+                    continuous = true;
+                    goto Print;
+                }
+            }
         }
+
+Print:
+        Console.Write(continuous ? "YES" : "NO");
     }
 }
