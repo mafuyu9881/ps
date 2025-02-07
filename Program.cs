@@ -57,8 +57,7 @@
                     if ((n == 1) && (dinnerDrugEnd < (DayMinutes - 1)))
                         continue;
 
-                    if ((n > 1) &&
-                        ((dinnerDrugEnd < DayMinutes) || ((dinnerDrugEnd % DayMinutes) < breakfastBegin)))
+                    if ((n > 1) && (dinnerDrugEnd < (DayMinutes + breakfastBegin)))
                         continue;
 
                     continuous = true;
