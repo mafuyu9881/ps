@@ -1,49 +1,42 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
-    // _dp[78] = 14'472'334'024'676'221 > 10 ^ 16
-    private static long[] _dp = new long[78]; // so, we don't need to search above 78
-
     private static void Main(string[] args)
     {
-        _dp[0] = 1;
-        _dp[1] = 1;
-        for (int i = 2; i < _dp.Length; ++i)
-        {
-            _dp[i] = _dp[i - 1] + _dp[i - 2];
-        }
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 100'000]
+        int k = tokens[1]; // [1, 1'440]
+        
+        const int DayMinutes = 1440;
 
-        int t = int.Parse(Console.ReadLine()!); // [1, 100]
+        bool[] breakfastAvailables = new bool[DayMinutes];
+        bool[] lunchAvailables = new bool[DayMinutes];
+        bool[] dinnerAvailables = new bool[DayMinutes];
 
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
-        {
-            long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
-            long k = tokens[0]; // [1, 3]
-            long x = tokens[1]; // [1, 10^16]
-            sb.AppendLine(Solve(k, x, 0, 0) ? "YES" : "NO");
-        }
-        Console.Write(sb);
-    }
+        // element = [0, 1'440)
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int breakfastS = tokens[0];
+        int breakfastE = tokens[1];
+        int lunchS = tokens[2];
+        int lunchE = tokens[3];
+        int dinnerS = tokens[4];
+        int dinnerE = tokens[5];
 
-    private static bool Solve(long k, long x, long sum, int depth)
-    {
-        if (depth == k)
+        bool[][] allAvailables = new bool[][]
         {
-            return sum == x;
-        }
-        else
+            breakfastAvailables,
+            lunchAvailables,
+            dinnerAvailables
+        };
+        for (int i = 0; i < tokens.Length; i += 2) // tc = 3
         {
-            for (int i = 0; i < _dp.Length; ++i) // tc = 78
+            bool[] availables = allAvailables[i / 2];
+            int mealStart = tokens[i];
+            int mealEnd = tokens[i + 1];
+
+            for (int j = mealStart; j <= mealEnd; ++j)
             {
-                if (Solve(k, x, sum + _dp[i], depth + 1))
-                {
-                    return true;
-                }
+                availables[j] = true;
             }
-
-            return false;
         }
     }
 }
