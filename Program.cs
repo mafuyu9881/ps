@@ -17,22 +17,46 @@
         int dinnerS = tokens[4];
         int dinnerE = tokens[5];
 
-        (int s, int e)[] fromSEs = new (int, int)[]
+        (int s, int e)[] ses = new (int, int)[]
         {
-            (tokens[0], tokens[1]),
-            (tokens[2], tokens[3]),
-            (tokens[4], tokens[5]),
+            (breakfastS, breakfastE),
+            (lunchS, lunchE),
+            (dinnerS, dinnerE),
         };
 
-        //int veryEnd = (fromSEs[2].s + fromSEs[0].s, fromSEs[2].e + fromSEs[0].e), 1339;
-
-        (int s, int e)[] toSEs = new (int, int)[]
+        bool[] availables = new bool[DayMinutes];
+        for (int i = 0; i < ses.Length; ++i) // tc = 3
         {
-            fromSEs[1],
-            fromSEs[2],
-            (fromSEs[2].s + fromSEs[0].s, fromSEs[2].e + fromSEs[0].e),
-        };
+            int s = ses[i].s;
+            int e = ses[i].e;
+            for (int j = s; j <= e; ++j) // max tc = 1438
+            {
+                availables[j] = true;
+            }
+        }
 
+        bool continuous = false;
+        for (int i = breakfastS; i <= breakfastE; ++i) // max tc = 1438
+        {
+            int afterBreakfast = (i + k) % DayMinutes;
+            //if (i == afterBreakfast)
+            //{
+            //    continuous = true;
+            //    break;
+            //}
+            if (availables[afterBreakfast] == false)
+                continue;
+            
+            int afterLunch = (i + (2 * k)) % DayMinutes;
+            if (availables[afterLunch] == false)
+                continue;
 
+            int afterDinner = (i + (3 * k)) % DayMinutes;
+            if ((n == 1) && ((i + (3 * k)) >= 1439))
+                continue;
+
+            //if ((n > 1) && )
+            //    continue;
+        }
     }
 }
