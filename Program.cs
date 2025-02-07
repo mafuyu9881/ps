@@ -8,10 +8,6 @@
         
         const int DayMinutes = 1440;
 
-        bool[] breakfastAvailables = new bool[DayMinutes];
-        bool[] lunchAvailables = new bool[DayMinutes];
-        bool[] dinnerAvailables = new bool[DayMinutes];
-
         // element = [0, 1'440)
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
         int breakfastS = tokens[0];
@@ -21,22 +17,22 @@
         int dinnerS = tokens[4];
         int dinnerE = tokens[5];
 
-        bool[][] allAvailables = new bool[][]
+        (int s, int e)[] fromSEs = new (int, int)[]
         {
-            breakfastAvailables,
-            lunchAvailables,
-            dinnerAvailables
+            (tokens[0], tokens[1]),
+            (tokens[2], tokens[3]),
+            (tokens[4], tokens[5]),
         };
-        for (int i = 0; i < tokens.Length; i += 2) // tc = 3
-        {
-            bool[] availables = allAvailables[i / 2];
-            int mealStart = tokens[i];
-            int mealEnd = tokens[i + 1];
 
-            for (int j = mealStart; j <= mealEnd; ++j)
-            {
-                availables[j] = true;
-            }
-        }
+        //int veryEnd = (fromSEs[2].s + fromSEs[0].s, fromSEs[2].e + fromSEs[0].e), 1339;
+
+        (int s, int e)[] toSEs = new (int, int)[]
+        {
+            fromSEs[1],
+            fromSEs[2],
+            (fromSEs[2].s + fromSEs[0].s, fromSEs[2].e + fromSEs[0].e),
+        };
+
+
     }
 }
