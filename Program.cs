@@ -5,7 +5,7 @@
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
         int n = tokens[0]; // [1, 100'000]
         int k = tokens[1]; // [1, 1'440]
-        
+
         const int DayMinutes = 1440;
 
         // element = [0, 1'440)
@@ -38,29 +38,23 @@
         bool continuous = false;
         for (int i = breakfastBegin; i <= breakfastEnd; ++i) // max tc = 1438
         {
-            int breakfastDrugEnd = i + k - 1;
+            int breakfastDrugEnd = i + k;
 
             for (int j = lunchBegin; j <= lunchEnd; ++j)
             {
-                if (breakfastDrugEnd < j - 1)
+                if (breakfastDrugEnd < j)
                     continue;
 
-                int lunchDrugEnd = j + k - 1;
+                int lunchDrugEnd = j + k;
 
                 for (int l = dinnerBegin; l <= dinnerEnd; ++l)
                 {
-                    if (lunchDrugEnd < l - 1)
+                    if (lunchDrugEnd < l)
                         continue;
 
-                    int dinnerDrugEnd = l + k - 1;
-
-                    int objectiveMinutes;
-                    if (n > 1)
-                        objectiveMinutes = DayMinutes + breakfastBegin;
-                    else
-                        objectiveMinutes = DayMinutes - 1;
-
-                    if (dinnerDrugEnd < objectiveMinutes - 1)
+                    int dinnerDrugEnd = l + k;
+                    int objectiveMinutes = (n > 1) ? DayMinutes + breakfastBegin : DayMinutes;
+                    if (dinnerDrugEnd < objectiveMinutes)
                         continue;
 
                     continuous = true;
@@ -69,7 +63,7 @@
             }
         }
 
-Print:
+    Print:
         Console.Write(continuous ? "YES" : "NO");
     }
 }
