@@ -38,26 +38,29 @@
         bool continuous = false;
         for (int i = breakfastBegin; i <= breakfastEnd; ++i) // max tc = 1438
         {
-            int breakfastDrugEnd = i + k;
+            int breakfastDrugEnd = i + k - 1;
 
             for (int j = lunchBegin; j <= lunchEnd; ++j)
             {
-                if (j > breakfastDrugEnd)
+                if (breakfastDrugEnd < j - 1)
                     continue;
 
-                int lunchDrugEnd = j + k;
+                int lunchDrugEnd = j + k - 1;
 
                 for (int l = dinnerBegin; l <= dinnerEnd; ++l)
                 {
-                    if (l > lunchDrugEnd)
+                    if (lunchDrugEnd < l - 1)
                         continue;
 
-                    int dinnerDrugEnd = l + k;
+                    int dinnerDrugEnd = l + k - 1;
 
-                    if ((n == 1) && (dinnerDrugEnd < (DayMinutes - 1)))
-                        continue;
+                    int objectiveMinutes;
+                    if (n > 1)
+                        objectiveMinutes = DayMinutes + breakfastBegin;
+                    else
+                        objectiveMinutes = DayMinutes - 1;
 
-                    if ((n > 1) && (dinnerDrugEnd < (DayMinutes + breakfastBegin)))
+                    if (dinnerDrugEnd < objectiveMinutes - 1)
                         continue;
 
                     continuous = true;
