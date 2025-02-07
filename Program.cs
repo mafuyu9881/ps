@@ -17,53 +17,24 @@
         int dinnerBegin = tokens[4];
         int dinnerEnd = tokens[5];
 
-        (int s, int e)[] bes = new (int, int)[]
-        {
-            (breakfastBegin, breakfastEnd),
-            (lunchBegin, lunchEnd),
-            (dinnerBegin, dinnerEnd),
-        };
-
-        bool[] availables = new bool[DayMinutes];
-        for (int i = 0; i < bes.Length; ++i) // tc = 3
-        {
-            int s = bes[i].s;
-            int e = bes[i].e;
-            for (int j = s; j <= e; ++j) // max tc = 1438
-            {
-                availables[j] = true;
-            }
-        }
-
         bool continuous = false;
-        for (int i = breakfastBegin; i <= breakfastEnd; ++i) // max tc = 1438
-        {
-            int breakfastDrugEnd = i + k;
 
-            for (int j = lunchBegin; j <= lunchEnd; ++j)
-            {
-                if (breakfastDrugEnd < j)
-                    continue;
+        int breakfastDrugEnd = breakfastEnd + k;
+        if (breakfastDrugEnd < lunchBegin)
+            goto Print;
 
-                int lunchDrugEnd = j + k;
+        int lunchDrugEnd = Math.Min(breakfastDrugEnd, lunchEnd) + k;
+        if (lunchDrugEnd < dinnerBegin)
+            goto Print;
 
-                for (int l = dinnerBegin; l <= dinnerEnd; ++l)
-                {
-                    if (lunchDrugEnd < l)
-                        continue;
+        int dinnerDrugEnd = Math.Min(lunchDrugEnd, dinnerEnd) + k;
+        int objectiveMinutes = (n > 1) ? DayMinutes + breakfastBegin : DayMinutes;
+        if (dinnerDrugEnd < objectiveMinutes)
+            goto Print;
 
-                    int dinnerDrugEnd = l + k;
-                    int objectiveMinutes = (n > 1) ? DayMinutes + breakfastBegin : DayMinutes;
-                    if (dinnerDrugEnd < objectiveMinutes)
-                        continue;
-
-                    continuous = true;
-                    goto Print;
-                }
-            }
-        }
-
-    Print:
+        continuous = true;
+        
+Print:
         Console.Write(continuous ? "YES" : "NO");
     }
 }
