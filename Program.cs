@@ -17,6 +17,9 @@
         const char X = 'X';
         const int InvalidIndex = -1;
 
+        const int Infinity = -1;
+        int obstacles = 0;
+        
         LinkedList<(int st0, int st1)> horizontals = new();
         for (int row = 0; row < n; ++row) // max tc = 6
         {
@@ -31,7 +34,16 @@
                     continue;
 
                 if (lastSTIndex != InvalidIndex && currCharacter != map[lastSTIndex])
+                {
                     horizontals.AddLast((lastSTIndex, currIndex));
+
+                    int lastSTCol = lastSTIndex % n;
+                    int currCol = currIndex % n;
+                    if (currCol - lastSTCol < 2)
+                    {
+                        obstacles = Infinity;
+                    }
+                }
 
                 lastSTIndex = currIndex;
             }
@@ -51,14 +63,22 @@
                     continue;
 
                 if (lastSTIndex != InvalidIndex && currCharacter != map[lastSTIndex])
+                {
                     verticals.AddLast((lastSTIndex, currIndex));
+
+                    int lastSTRow = lastSTIndex / n;
+                    int currRow = currIndex / n;
+                    if (currRow - lastSTRow < 2)
+                    {
+                        obstacles = Infinity;
+                    }
+                }
 
                 lastSTIndex = currIndex;
             }
         }
         
-        int obstacles = 0;
-        while (true)
+        while (obstacles != Infinity)
         {
             LinkedListNode<(int st0, int st1)>? selfNode = null;
             LinkedList<(int st0, int st1)>? opponents = null;
@@ -126,6 +146,6 @@
             ++obstacles;
         }
 
-        Console.Write((obstacles > 3) ? "NO" : "YES");
+        Console.Write((obstacles == Infinity || obstacles > 3) ? "NO" : "YES");
     }
 }
