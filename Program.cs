@@ -1,6 +1,4 @@
-﻿using STLine = (int st0, int st1);
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
@@ -19,7 +17,7 @@ internal class Program
         const char X = 'X';
         const int InvalidIndex = -1;
 
-        LinkedList<STLine> horizontals = new();
+        LinkedList<(int st0, int st1)> horizontals = new();
         for (int row = 0; row < n; ++row) // max tc = 6
         {
             int lastSTIndex = InvalidIndex;
@@ -39,7 +37,7 @@ internal class Program
             }
         }
 
-        LinkedList<STLine> verticals = new();
+        LinkedList<(int st0, int st1)> verticals = new();
         for (int col = 0; col < n; ++col) // max tc = 6
         {
             int lastSTIndex = InvalidIndex;
@@ -62,8 +60,8 @@ internal class Program
         int obstacles = 0;
         while (true)
         {
-            LinkedListNode<STLine>? selfNode = null;
-            LinkedList<STLine>? opponents = null;
+            LinkedListNode<(int st0, int st1)>? selfNode = null;
+            LinkedList<(int st0, int st1)>? opponents = null;
             if (horizontals.Count > 0)
             {
                 selfNode = horizontals.First;
