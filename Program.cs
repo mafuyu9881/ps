@@ -22,6 +22,13 @@ internal class Program
         int[] rowOffsets = new int[Offsets] { -1, 1, 0, 0, -1, 1, -1, 1 };
         int[] colOffsets = new int[Offsets] { 0, 0, -1, 1, -1, -1, 1, 1 };
 
+        const int InvalidArrival = -1;
+        int[] arrivalIndices = new int[map.Length];
+        for (int i = 0; i < arrivalIndices.Length; ++i) // max tc = 25'000
+        {
+            arrivalIndices[i] = InvalidArrival;
+        }
+
         const int InvalidIndex = -1;
 
         int[] result = new int[map.Length];
@@ -29,42 +36,58 @@ internal class Program
         {
             for (int col = 0; col < width; ++col) // max tc = 500
             {
-                int currIndex = row * width + col;
+                int marbleIndex = row * width + col;
 
-                while (true)
+                LinkedList<int> visitedIndices = new();
+                while (true) // total tc = 25'000
                 {
-                    int currRow = currIndex / width;
-                    int currCol = currIndex % width;
-                    
-                    int nextIndex = InvalidIndex;
-
-                    for (int i = 0; i < Offsets; ++i) // tc = 4
+                    if (arrivalIndices[marbleIndex] != InvalidArrival)
                     {
-                        int adjRow = currRow + rowOffsets[i];
-                        if (adjRow < 0 || adjRow > height - 1)
-                            continue;
-
-                        int adjCol = currCol + colOffsets[i];
-                        if (adjCol < 0 || adjCol > width - 1)
-                            continue;
-
-                        int adjIndex = adjRow * width + adjCol;
-                        if (map[adjIndex] > map[currIndex])
-                            continue;
-
-                        if (nextIndex != InvalidIndex && map[adjIndex] > map[nextIndex])
-                            continue;
-
-                        nextIndex = adjIndex;
-                    }
-
-                    if (nextIndex == InvalidIndex)
+                        marbleIndex = arrivalIndices[marbleIndex];
                         break;
+                    }
+                    else
+                    {
+                        visitedIndices.AddLast(marbleIndex);
+                        
+                        int currRow = marbleIndex / width;
+                        int currCol = marbleIndex % width;
 
-                    currIndex = nextIndex;
+                        int movableIndex = InvalidIndex;
+
+                        for (int i = 0; i < Offsets; ++i) // tc = 8
+                        {
+                            int adjRow = currRow + rowOffsets[i];
+                            if (adjRow < 0 || adjRow > height - 1)
+                                continue;
+
+                            int adjCol = currCol + colOffsets[i];
+                            if (adjCol < 0 || adjCol > width - 1)
+                                continue;
+
+                            int adjIndex = adjRow * width + adjCol;
+                            if (map[adjIndex] > map[marbleIndex])
+                                continue;
+
+                            if (movableIndex != InvalidIndex && map[adjIndex] > map[movableIndex])
+                                continue;
+
+                            movableIndex = adjIndex;
+                        }
+
+                        if (movableIndex == InvalidIndex)
+                            break;
+
+                        marbleIndex = movableIndex;
+                    }
                 }
 
-                ++result[currIndex];
+                for (var node = visitedIndices.First; node != null; node = node.Next) // total tc = 25'000
+                {
+                    arrivalIndices[node.Value] = marbleIndex;
+                }
+
+                ++result[marbleIndex];
             }
         }
 
