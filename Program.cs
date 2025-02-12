@@ -2,150 +2,101 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [3, 6]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = tokens[0]; // [2, 1'000]
+        int width = tokens[1]; // [2, 1'000]
 
-        char[] map = new char[n * n];
-        for (int row = 0; row < n; ++row) // max tc = 6
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int departureRow = tokens[0] - 1; // [1, 1'000]
+        int departureCol = tokens[1] - 1; // [1, 1'000]
+        int departureIndex = departureRow * width + departureCol;
+
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int arrivalRow = tokens[0] - 1; // [1, 1'000]
+        int arrivalCol = tokens[1] - 1; // [1, 1'000]
+        int arrivalIndex = arrivalRow * width + arrivalCol;
+
+        const int Wall = 1;
+
+        int[] map = new int[height * width];
+        for (int row = 0; row < height; ++row)
         {
-            char[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), char.Parse); // max tc = 6
-            for (int col = 0; col < n; ++col) // max tc = 6
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < width; ++col)
             {
-                map[row * n + col] = tokens[col];
+                map[row * width + col] = tokens[col];
             }
         }
 
-        const char X = 'X';
-        const int InvalidIndex = -1;
-
-        const int Infinity = -1;
-        int obstacles = 0;
-        
-        LinkedList<(int st0, int st1)> horizontals = new();
-        for (int row = 0; row < n; ++row) // max tc = 6
+        const int InvalidDistance = -1;
+        const int InitialWands = 1;
+        int[][] d = new int[map.Length][];
+        for (int i = 0; i < d.Length; ++i)
         {
-            int lastSTIndex = InvalidIndex;
-
-            for (int col = 0; col < n; ++col) // max tc = 6
+            d[i] = new int[InitialWands + 1];
+            for (int j = 0; j < d[i].Length; ++j)
             {
-                int currIndex = row * n + col;
+                d[i][j] = InvalidDistance;
+            }
+        }
 
-                char currCharacter = map[currIndex];
-                if (currCharacter == X)
+        const int Offsets = 4;
+        int[] rowOffsets = new int[Offsets] { -1, 1, 0, 0 };
+        int[] colOffsets = new int[Offsets] { 0, 0, -1, 1 };
+
+        Queue<(int index, int remainWands)> frontier = new();
+
+        d[departureIndex][InitialWands] = 0;
+        frontier.Enqueue((departureIndex, InitialWands));
+        while (frontier.Count > 0)
+        {
+            var elem = frontier.Dequeue();
+            int index = elem.index;
+            int row = index / width;
+            int col = index % width;
+            int remainWands = elem.remainWands;
+
+            for (int i = 0; i < Offsets; ++i)
+            {
+                int adjRow = row + rowOffsets[i];
+                if (adjRow < 0 || adjRow > height - 1)
                     continue;
 
-                if (lastSTIndex != InvalidIndex && currCharacter != map[lastSTIndex])
-                {
-                    horizontals.AddLast((lastSTIndex, currIndex));
-
-                    int lastSTCol = lastSTIndex % n;
-                    int currCol = currIndex % n;
-                    if (currCol - lastSTCol < 2)
-                    {
-                        obstacles = Infinity;
-                    }
-                }
-
-                lastSTIndex = currIndex;
-            }
-        }
-
-        LinkedList<(int st0, int st1)> verticals = new();
-        for (int col = 0; col < n; ++col) // max tc = 6
-        {
-            int lastSTIndex = InvalidIndex;
-
-            for (int row = 0; row < n; ++row) // max tc = 6
-            {
-                int currIndex = row * n + col;
-
-                char currCharacter = map[currIndex];
-                if (currCharacter == X)
+                int adjCol = col + colOffsets[i];
+                if (adjCol < 0 || adjCol > width - 1)
                     continue;
 
-                if (lastSTIndex != InvalidIndex && currCharacter != map[lastSTIndex])
-                {
-                    verticals.AddLast((lastSTIndex, currIndex));
+                int adjIndex = adjRow * width + adjCol;
+                int adjRemainWands = remainWands;
+                if (map[adjIndex] == Wall)
+                    --adjRemainWands;
 
-                    int lastSTRow = lastSTIndex / n;
-                    int currRow = currIndex / n;
-                    if (currRow - lastSTRow < 2)
-                    {
-                        obstacles = Infinity;
-                    }
-                }
+                if (adjRemainWands < 0)
+                    continue;
 
-                lastSTIndex = currIndex;
+                int oldDistance = d[adjIndex][adjRemainWands];
+                int newDistance = d[index][remainWands] + 1;
+                if (oldDistance != InvalidDistance && oldDistance <= newDistance)
+                    continue;
+
+                d[adjIndex][adjRemainWands] = newDistance;
+                frontier.Enqueue((adjIndex, adjRemainWands));
             }
         }
-        
-        while (obstacles != Infinity)
+
+        int minDistance = InvalidDistance;
+        for (int i = 0; i < d[arrivalIndex].Length; ++i)
         {
-            LinkedListNode<(int st0, int st1)>? selfNode = null;
-            LinkedList<(int st0, int st1)>? opponents = null;
-            if (horizontals.Count > 0)
-            {
-                selfNode = horizontals.First;
-                opponents = verticals;
-            }
-            else if (verticals.Count > 0)
-            {
-                selfNode = verticals.First;
-                opponents = horizontals;
-            }
-            
-            if (selfNode == null || opponents == null) // check opponents too to avoid compiler's warning
-                break;
+            int distance = d[arrivalIndex][i];
+            if (distance == InvalidDistance)
+                continue;
 
-            int selfST0Index = selfNode.Value.st0;
-            int selfST0Row = selfST0Index / n;
-            int selfST0Col = selfST0Index % n;
-            int selfST1Index = selfNode.Value.st1;
-            int selfST1Row = selfST1Index / n;
-            int selfST1Col = selfST1Index % n;
+            if (minDistance != InvalidDistance &&
+                minDistance <= distance)
+                continue;
 
-            for (var opponentNode = opponents.First; opponentNode != null; opponentNode = opponentNode.Next)
-            {
-                int oppoST0Index = opponentNode.Value.st0;
-                int oppoST1Index = opponentNode.Value.st1;
-
-                if (opponents == verticals)
-                {
-                    int oppoCol = oppoST0Index % n;
-                    if (oppoCol <= selfST0Col || oppoCol >= selfST1Col)
-                        continue;
-
-                    int selfRow = selfST0Index / n;
-                    int oppoST0Row = oppoST0Index / n;
-                    int oppoST1Row = oppoST1Index / n;
-                    if (selfRow <= oppoST0Row || selfRow >= oppoST1Row)
-                        continue;
-
-                    opponents.Remove(opponentNode);
-                    break;
-                }
-                else
-                {
-                    int oppoRow = oppoST0Index / n;
-                    if (oppoRow <= selfST0Row || oppoRow >= selfST1Row)
-                        continue;
-
-                    int selfCol = selfST0Index % n;
-                    int oppoST0Col = oppoST0Index % n;
-                    int oppoST1Col = oppoST1Index % n;
-                    if (selfCol <= oppoST0Col || selfCol >= oppoST1Col)
-                        continue;
-
-                    opponents.Remove(opponentNode);
-                    break;
-                }
-            }
-
-            var selves = selfNode.List!;
-            selves.Remove(selfNode);
-
-            ++obstacles;
+            minDistance = distance;
         }
-
-        Console.Write((obstacles == Infinity || obstacles > 3) ? "NO" : "YES");
+        Console.Write(minDistance);
     }
 }
