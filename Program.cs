@@ -76,7 +76,7 @@
 
                 int oldDistance = d[adjIndex][adjRemainWands];
                 int newDistance = d[index][remainWands] + 1;
-                if (oldDistance != InvalidDistance && oldDistance <= newDistance)
+                if (oldDistance != InvalidDistance && oldDistance < newDistance)
                     continue;
 
                 d[adjIndex][adjRemainWands] = newDistance;
