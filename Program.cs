@@ -1,102 +1,82 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = tokens[0]; // [2, 1'000]
-        int width = tokens[1]; // [2, 1'000]
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int departureRow = tokens[0] - 1; // [1, 1'000]
-        int departureCol = tokens[1] - 1; // [1, 1'000]
-        int departureIndex = departureRow * width + departureCol;
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int arrivalRow = tokens[0] - 1; // [1, 1'000]
-        int arrivalCol = tokens[1] - 1; // [1, 1'000]
-        int arrivalIndex = arrivalRow * width + arrivalCol;
-
-        const int Wall = 1;
+        int height = tokens[0]; // [1, 500]
+        int width = tokens[1]; // [1, 500]
 
         int[] map = new int[height * width];
-        for (int row = 0; row < height; ++row)
+        for (int row = 0; row < height; ++row) // max tc = 500
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < width; ++col)
+            for (int col = 0; col < width; ++col) // max tc = 500
             {
                 map[row * width + col] = tokens[col];
             }
         }
 
-        const int InvalidDistance = -1;
-        const int InitialWands = 1;
-        int[][] d = new int[map.Length][];
-        for (int i = 0; i < d.Length; ++i)
+        const int Offsets = 8;
+        int[] rowOffsets = new int[Offsets] { -1, 1, 0, 0, -1, 1, -1, 1 };
+        int[] colOffsets = new int[Offsets] { 0, 0, -1, 1, -1, -1, 1, 1 };
+
+        const int InvalidIndex = -1;
+
+        int[] result = new int[map.Length];
+        for (int row = 0; row < height; ++row) // max tc = 500
         {
-            d[i] = new int[InitialWands + 1];
-            for (int j = 0; j < d[i].Length; ++j)
+            for (int col = 0; col < width; ++col) // max tc = 500
             {
-                d[i][j] = InvalidDistance;
+                int currIndex = row * width + col;
+
+                while (true)
+                {
+                    int currRow = currIndex / width;
+                    int currCol = currIndex % width;
+                    
+                    int nextIndex = InvalidIndex;
+
+                    for (int i = 0; i < Offsets; ++i) // tc = 4
+                    {
+                        int adjRow = currRow + rowOffsets[i];
+                        if (adjRow < 0 || adjRow > height - 1)
+                            continue;
+
+                        int adjCol = currCol + colOffsets[i];
+                        if (adjCol < 0 || adjCol > width - 1)
+                            continue;
+
+                        int adjIndex = adjRow * width + adjCol;
+                        if (map[adjIndex] > map[currIndex])
+                            continue;
+
+                        if (nextIndex != InvalidIndex && map[adjIndex] > map[nextIndex])
+                            continue;
+
+                        nextIndex = adjIndex;
+                    }
+
+                    if (nextIndex == InvalidIndex)
+                        break;
+
+                    currIndex = nextIndex;
+                }
+
+                ++result[currIndex];
             }
         }
 
-        const int Offsets = 4;
-        int[] rowOffsets = new int[Offsets] { -1, 1, 0, 0 };
-        int[] colOffsets = new int[Offsets] { 0, 0, -1, 1 };
-
-        Queue<(int index, int remainWands)> frontier = new();
-
-        d[departureIndex][InitialWands] = 0;
-        frontier.Enqueue((departureIndex, InitialWands));
-        while (frontier.Count > 0)
+        StringBuilder sb = new();
+        for (int row = 0; row < height; ++row)
         {
-            var elem = frontier.Dequeue();
-            int index = elem.index;
-            int row = index / width;
-            int col = index % width;
-            int remainWands = elem.remainWands;
-
-            for (int i = 0; i < Offsets; ++i)
+            for (int col = 0; col < width; ++col)
             {
-                int adjRow = row + rowOffsets[i];
-                if (adjRow < 0 || adjRow > height - 1)
-                    continue;
-
-                int adjCol = col + colOffsets[i];
-                if (adjCol < 0 || adjCol > width - 1)
-                    continue;
-
-                int adjIndex = adjRow * width + adjCol;
-                int adjRemainWands = remainWands;
-                if (map[adjIndex] == Wall)
-                    --adjRemainWands;
-
-                if (adjRemainWands < 0)
-                    continue;
-
-                int oldDistance = d[adjIndex][adjRemainWands];
-                int newDistance = d[index][remainWands] + 1;
-                if (oldDistance != InvalidDistance && oldDistance < newDistance)
-                    continue;
-
-                d[adjIndex][adjRemainWands] = newDistance;
-                frontier.Enqueue((adjIndex, adjRemainWands));
+                sb.Append($"{result[row * width + col]} ");
             }
+            sb.AppendLine();
         }
-
-        int minDistance = InvalidDistance;
-        for (int i = 0; i < d[arrivalIndex].Length; ++i)
-        {
-            int distance = d[arrivalIndex][i];
-            if (distance == InvalidDistance)
-                continue;
-
-            if (minDistance != InvalidDistance &&
-                minDistance <= distance)
-                continue;
-
-            minDistance = distance;
-        }
-        Console.Write(minDistance);
+        Console.Write(sb);
     }
 }
