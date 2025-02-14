@@ -40,7 +40,7 @@ internal class Program
 
     private static Node _root = new(0);
     private static Node[] _nodes = null!;
-    private static PriorityQueue<string, int> _bounds = new();
+    private static LinkedList<string> _bounds = new();
 
     private static void Main(string[] args)
     {
@@ -78,9 +78,9 @@ internal class Program
         else
         {
             sb.AppendLine("S");
-            while (_bounds.Count > 0)
+            for (var lln = _bounds.First; lln != null; lln = lln.Next)
             {
-                sb.AppendLine(_bounds.Dequeue());
+                sb.AppendLine(lln.Value);
             }
         }
         Console.Write(sb);
@@ -120,16 +120,7 @@ internal class Program
         if (unboundChild.UnboundChildren.Count > 0)
             return false;
 
-        PriorityQueue<int, int> pq = new();
-        pq.Enqueue(grandParent.Data, grandParent.Data);
-        pq.Enqueue(unboundParent.Data, unboundParent.Data);
-        pq.Enqueue(unboundChild.Data, unboundChild.Data);
-
-        int primary = pq.Dequeue();
-        int secondary = pq.Dequeue();
-        int tertiary = pq.Dequeue();
-
-        _bounds.Enqueue($"{primary} {secondary} {tertiary}", primary);
+        _bounds.AddLast($"{grandParent.Data} {unboundParent.Data} {unboundChild.Data}");
 
         return true;
     }
@@ -152,16 +143,7 @@ internal class Program
         if (unboundChild1.UnboundChildren.Count > 0)
             return false;
 
-        PriorityQueue<int, int> pq = new();
-        pq.Enqueue(parent.Data, parent.Data);
-        pq.Enqueue(unboundChild0.Data, unboundChild0.Data);
-        pq.Enqueue(unboundChild1.Data, unboundChild1.Data);
-
-        int primary = pq.Dequeue();
-        int secondary = pq.Dequeue();
-        int tertiary = pq.Dequeue();
-
-        _bounds.Enqueue($"{primary} {secondary} {tertiary}", primary);
+        _bounds.AddLast($"{parent.Data} {unboundChild0.Data} {unboundChild1.Data}");
 
         return true;
     }
