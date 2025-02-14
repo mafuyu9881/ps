@@ -53,13 +53,9 @@ internal class Program
         }
         _nodes[1].SetParent(_root);
 
-        while (true)
+        for (int i = 0; i < n - 1; ++i)
         {
-            string? s = Console.ReadLine();
-            if (string.IsNullOrEmpty(s))
-                break;
-
-            int[] tokens = Array.ConvertAll(s.Split(), int.Parse);
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
             int u = tokens[0];
             int v = tokens[1];
 
