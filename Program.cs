@@ -40,7 +40,7 @@ internal class Program
 
     private static Node _root = new(0);
     private static Node[] _nodes = null!;
-    private static LinkedList<string> _bounds = new();
+    private static PriorityQueue<string, int> _bounds = new();
 
     private static void Main(string[] args)
     {
@@ -71,9 +71,9 @@ internal class Program
         else
         {
             sb.AppendLine("S");
-            for (var lln = _bounds.First; lln != null; lln = lln.Next)
+            while (_bounds.Count > 0)
             {
-                sb.AppendLine(lln.Value);
+                sb.AppendLine(_bounds.Dequeue());
             }
         }
         Console.Write(sb);
@@ -113,7 +113,16 @@ internal class Program
         if (unboundChild.UnboundChildren.Count > 0)
             return false;
 
-        _bounds.AddLast($"{grandParent.Data} {unboundParent.Data} {unboundChild.Data}");
+        PriorityQueue<int, int> pq = new();
+        pq.Enqueue(grandParent.Data, grandParent.Data);
+        pq.Enqueue(unboundParent.Data, unboundParent.Data);
+        pq.Enqueue(unboundChild.Data, unboundChild.Data);
+
+        int primary = pq.Dequeue();
+        int secondary = pq.Dequeue();
+        int tertiary = pq.Dequeue();
+
+        _bounds.Enqueue($"{primary} {secondary} {tertiary}", primary);
 
         return true;
     }
@@ -135,8 +144,17 @@ internal class Program
         var unboundChild1 = unboundChildren.Last!.Value;
         if (unboundChild1.UnboundChildren.Count > 0)
             return false;
-            
-        _bounds.AddLast($"{parent.Data} {unboundChild0.Data} {unboundChild1.Data}");
+
+        PriorityQueue<int, int> pq = new();
+        pq.Enqueue(parent.Data, parent.Data);
+        pq.Enqueue(unboundChild0.Data, unboundChild0.Data);
+        pq.Enqueue(unboundChild1.Data, unboundChild1.Data);
+
+        int primary = pq.Dequeue();
+        int secondary = pq.Dequeue();
+        int tertiary = pq.Dequeue();
+
+        _bounds.Enqueue($"{primary} {secondary} {tertiary}", primary);
 
         return true;
     }
