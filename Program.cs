@@ -51,17 +51,24 @@ internal class Program
         {
             _nodes[i] = new(i);
         }
-        _nodes[1].SetParent(_root);
 
-        for (int i = 0; i < n - 1; ++i)
+        int primaryData = 1;
+        for (int i = 0; i < n - 1; ++i) // min tc = 2
         {
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
             int u = tokens[0];
             int v = tokens[1];
+
+            if (i == 0)
+            {
+                primaryData = u;
+            }
+
             _nodes[v].SetParent(_nodes[u]);
         }
+        _nodes[primaryData].SetParent(_root);
 
-        TryBind(_nodes[1]);
+        TryBind(_nodes[primaryData]);
 
         StringBuilder sb = new();
         if (_root.UnboundChildren.Count > 0)
