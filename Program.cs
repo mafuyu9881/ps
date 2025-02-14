@@ -34,7 +34,7 @@ internal class Program
         {
             // just indicate that the child is bound from now on
             // don't remove from the actual list (_children)
-            _parent!._unboundChildren.Remove(this);
+            _parent!._unboundChildren.Remove(this); // max tc = 333'333
         }
     }
 
