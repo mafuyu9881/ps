@@ -58,7 +58,6 @@ internal class Program
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
             int u = tokens[0];
             int v = tokens[1];
-
             _nodes[v].SetParent(_nodes[u]);
         }
 
