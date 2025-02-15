@@ -2,149 +2,213 @@
 
 internal class Program
 {
-    private class Node
-    {
-        private int _data;
-        public int Data => _data;
-        private Node? _parent;
-        private LinkedList<Node> _children;
-        public LinkedList<Node> Children => _children;
-        private LinkedList<Node> _unboundChildren;
-        public LinkedList<Node> UnboundChildren => _unboundChildren;
-
-        public Node(int data)
-        {
-            _data = data;
-            _parent = null;
-            _children = new();
-            _unboundChildren = new();
-        }
-
-        public void SetParent(Node parent)
-        {
-            // update child's data
-            _parent = parent;
-
-            // update parent's data
-            parent._children.AddLast(this);
-            parent._unboundChildren.AddLast(this);
-        }
-
-        public void RemoveFromParent()
-        {
-            // just indicate that the child is bound from now on
-            // don't remove from the actual list (_children)
-            _parent!._unboundChildren.Remove(this); // max tc = 333'333
-        }
-    }
-
-    private static Node _root = new(0);
-    private static Node[] _nodes = null!;
-    private static LinkedList<string> _bounds = new();
+    private static int _side;
+    private static int[] _map = null!;
 
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [3, 333'333]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [2, 6]
+        int q = tokens[1]; // [1, 1'000]
 
-        _nodes = new Node[n + 1];
-        for (int i = 1; i < _nodes.Length; ++i)
+        _side = ExponentationBySquaringIteratively(2, n); // [4, 64]
+
+        _map = new int[_side * _side];
+        LinkedList<int> candidates = new();
+        for (int row = 0; row < _side; ++row) // max tc = 64
         {
-            _nodes[i] = new(i);
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < _side; ++col) // max tc = 64
+            {
+                int index = row * _side + col;
+                _map[index] = tokens[col];
+                candidates.AddLast(index);
+            }
         }
 
-        int primaryData = 1;
-        for (int i = 0; i < n - 1; ++i) // min tc = 2
-        {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int u = tokens[0];
-            int v = tokens[1];
+        const int AdjOffsets = 4;
+        int[] adjRowOffsets = new int[AdjOffsets] { -1, 1, 0, 0 };
+        int[] adjColOffsets = new int[AdjOffsets] { 0, 0, -1, 1 };
 
-            if (i == 0)
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        for (int i = 0; i < tokens.Length; ++i) // max tc = 1'000
+        {
+            int l = tokens[i]; // [0, 6]
+            
+            if (l > 0) // may we unify this condition with the logic below?
             {
-                primaryData = u;
+
+                int stride = ExponentationBySquaringIteratively(2, l); // [2, 64]
+
+                // tc
+                // = 32 * 32 * (2 / 2) * (2 / 2) = 1 * 1 * (64 / 2) * (64 / 2)
+                // = 16 * 16 * (4 / 2) * (4 / 2) = ... = 1'024
+                for (int beginRow = 0; beginRow < _side; beginRow += stride)
+                {
+                    for (int beginCol = 0; beginCol < _side; beginCol += stride)
+                    {
+                        for (int rowOffset = 0; rowOffset < stride / 2; ++rowOffset)
+                        {
+                            for (int colOffset = 0; colOffset < stride / 2; ++colOffset)
+                            {
+                                int primaryLocalRow = rowOffset;
+                                int primaryLocalCol = colOffset;
+                                int secondaryLocalRow = primaryLocalCol;
+                                int secondaryLocalCol = Reverse(stride, primaryLocalRow);
+                                int tertiaryLocalRow = secondaryLocalCol;
+                                int tertiaryLocalCol = Reverse(stride, secondaryLocalRow);
+                                int quaternaryLocalRow = tertiaryLocalCol;
+                                int quaternaryLocalCol = Reverse(stride, tertiaryLocalRow);
+
+                                int primaryGlobalRow = beginRow + primaryLocalRow;
+                                int primaryGlobalCol = beginCol + primaryLocalCol;
+                                int primaryGlobalIndex = primaryGlobalRow * _side + primaryGlobalCol;
+                                int secondaryGlobalRow = beginRow + secondaryLocalRow;
+                                int secondaryGlobalCol = beginCol + secondaryLocalCol;
+                                int secondaryGlobalIndex = secondaryGlobalRow * _side + secondaryGlobalCol;
+                                int tertiaryGlobalRow = beginRow + tertiaryLocalRow;
+                                int tertiaryGlobalCol = beginCol + tertiaryLocalCol;
+                                int tertiaryGlobalIndex = tertiaryGlobalRow * _side + tertiaryGlobalCol;
+                                int quaternaryGlobalRow = beginRow + quaternaryLocalRow;
+                                int quaternaryGlobalCol = beginCol + quaternaryLocalCol;
+                                int quaternaryGlobalIndex = quaternaryGlobalRow * _side + quaternaryGlobalCol;
+
+                                int primary = _map[primaryGlobalIndex];
+                                int secondary = _map[secondaryGlobalIndex];
+                                int tertiary = _map[tertiaryGlobalIndex];
+                                int quaternary = _map[quaternaryGlobalIndex];
+
+                                _map[primaryGlobalIndex] = quaternary;
+                                _map[secondaryGlobalIndex] = primary;
+                                _map[tertiaryGlobalIndex] = secondary;
+                                _map[quaternaryGlobalIndex] = tertiary;
+                            }
+                        }
+                    }
+                }
+            }            
+
+            LinkedList<int> meltedIndices = new();
+            for (int row = 0; row < _side; ++row) // max tc = 64
+            {
+                for (int col = 0; col < _side; ++col) // max tc = 64
+                {
+                    int adjIces = 0;
+                    for (int j = 0; j < AdjOffsets; ++j)
+                    {
+                        int adjRow = row + adjRowOffsets[j];
+                        if (adjRow < 0 || adjRow > _side - 1)
+                            continue;
+
+                        int adjCol = col + adjColOffsets[j];
+                        if (adjCol < 0 || adjCol > _side - 1)
+                            continue;
+
+                        int adjIndex = adjRow * _side + adjCol;
+                        if (_map[adjIndex] < 1)
+                            continue;
+
+                        ++adjIces;
+                    }
+
+                    if (adjIces > 2)
+                        continue;
+
+                    meltedIndices.AddLast(row * _side + col);
+                }
             }
 
-            _nodes[v].SetParent(_nodes[u]);
+            for (var lln = meltedIndices.First; lln != null; lln = lln.Next)
+            {
+                _map[lln.Value] = Math.Max(0, _map[lln.Value] - 1);
+            }
         }
-        _nodes[primaryData].SetParent(_root);
 
-        TryBind(_nodes[primaryData]);
+        Queue<int> frontier = new();
+        bool[] visited = new bool[_map.Length];
+        LinkedList<LinkedList<int>> chunks = new(); // not necessary for this time
+        LinkedList<int> maxChunk = new();
+        LinkedList<int> chunk = null!;
+
+        int ices = 0;
+        while (true) // max tc = 4'096
+        {
+            if (frontier.Count < 1)
+            {
+                if (candidates.Count < 1)
+                    break;
+
+                var lln = candidates.First!;
+                int candidateIndex = lln.Value;
+                candidates.Remove(lln);
+                if (visited[candidateIndex])
+                    continue;
+
+                if (_map[candidateIndex] < 1)
+                    continue;
+
+                chunk = new();
+                chunks.AddLast(chunk);
+                visited[candidateIndex] = true;
+                frontier.Enqueue(candidateIndex);
+            }
+
+            int index = frontier.Dequeue();
+            int row = index / _side;
+            int col = index % _side;
+
+            ices += _map[index];
+            chunk.AddLast(index);
+            if (chunk.Count > maxChunk.Count)
+            {
+                maxChunk = chunk;
+            }
+
+            for (int i = 0; i < AdjOffsets; ++i) // tc = 4
+            {
+                int adjRow = row + adjRowOffsets[i];
+                if (adjRow < 0 || adjRow > _side - 1)
+                    continue;
+
+                int adjCol = col + adjColOffsets[i];
+                if (adjCol < 0 || adjCol > _side - 1)
+                    continue;
+
+                int adjIndex = adjRow * _side + adjCol;
+                if (visited[adjIndex])
+                    continue;
+
+                if (_map[adjIndex] < 1)
+                    continue;
+
+                visited[adjIndex] = true;
+                frontier.Enqueue(adjIndex);
+            }
+        }
 
         StringBuilder sb = new();
-        if (_root.UnboundChildren.Count > 0)
-        {
-            sb.AppendLine("U");
-        }
-        else
-        {
-            sb.AppendLine("S");
-            for (var lln = _bounds.First; lln != null; lln = lln.Next)
-            {
-                sb.AppendLine(lln.Value);
-            }
-        }
+        sb.AppendLine($"{ices}");
+        sb.AppendLine($"{maxChunk.Count}");
         Console.Write(sb);
     }
 
-    private static void TryBind(Node node)
+    private static int ExponentationBySquaringIteratively(int basis, int exponent)
     {
-        for (var childLLN = node.Children.First; childLLN != null; childLLN = childLLN.Next)
+        int output = 1;
+        while (exponent > 0)
         {
-            TryBind(childLLN.Value);
+            if (exponent % 2 == 1)
+            {
+                output *= basis;
+            }
+            basis *= basis;
+            exponent >>= 1;
         }
-
-        if (TryBindAsCase1(node) || TryBindAsCase2(node))
-        {
-            node.RemoveFromParent();
-        }
+        return output;
     }
 
-    // case 1
-    // * <- here
-    // |
-    // *
-    // |
-    // *
-    private static bool TryBindAsCase1(Node grandParent)
+    private static int Reverse(int side, int attribute)
     {
-        var unboundParents = grandParent.UnboundChildren;
-        if (unboundParents.Count != 1)
-            return false;
-
-        Node unboundParent = unboundParents.First!.Value;
-        var unboundChildren = unboundParent.UnboundChildren;
-        if (unboundChildren.Count != 1)
-            return false;
-
-        Node unboundChild = unboundChildren.First!.Value;
-        if (unboundChild.UnboundChildren.Count > 0)
-            return false;
-
-        _bounds.AddLast($"{grandParent.Data} {unboundParent.Data} {unboundChild.Data}");
-
-        return true;
-    }
-
-    // case 2
-    //   * <- here
-    //  / \
-    // *   *
-    private static bool TryBindAsCase2(Node parent)
-    {
-        var unboundChildren = parent.UnboundChildren;
-        if (unboundChildren.Count != 2)
-            return false;
-
-        var unboundChild0 = unboundChildren.First!.Value;
-        if (unboundChild0.UnboundChildren.Count > 0)
-            return false;
-
-        var unboundChild1 = unboundChildren.Last!.Value;
-        if (unboundChild1.UnboundChildren.Count > 0)
-            return false;
-
-        _bounds.AddLast($"{parent.Data} {unboundChild0.Data} {unboundChild1.Data}");
-
-        return true;
+        return side - 1 - attribute;
     }
 }
