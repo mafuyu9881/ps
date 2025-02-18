@@ -1,96 +1,45 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 10'000]
-        int l = tokens[1]; // [1, 1'000'000]
+        int k = int.Parse(Console.ReadLine()!); // [1, 10]
 
-        (int s, int e)[] puddles = new (int, int)[n];
-        for (int i = 0; i < n; ++i)
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = [2^1, 2^10] = [2, 1'024]
+
+        LinkedList<int>[] nodes = new LinkedList<int>[k];
+        for (int i = 0; i < nodes.Length; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            puddles[i] = (tokens[0], tokens[1]);
+            nodes[i] = new();
         }
 
-        MergeSort(puddles);
-        
-        int used = 0;
-        int currEnd = 0;
-        for (int i = 0; i < puddles.Length; ++i)
+        Solve(nodes, tokens, 0);
+
+        StringBuilder sb = new();
+        for (int i = 0; i < nodes.Length; ++i)
         {
-            var puddle = puddles[i];
-
-            if (currEnd >= puddles[puddles.Length - 1].e)
-                break;
-
-            if (currEnd < puddle.s)
-                currEnd = puddle.s;
-
-            int lengthToCover = puddle.e - currEnd; // on the end index is not the part of the puddle
-            int required = lengthToCover / l;
-            if (lengthToCover % l > 0)
-                required += 1;
-
-            used += required;
-            currEnd += required * l;
+            for (var lln = nodes[i].First; lln != null; lln = lln.Next)
+            {
+                sb.Append($"{lln.Value} ");
+            }
+            sb.AppendLine();
         }
-
-        Console.Write(used);
+        Console.Write(sb);
     }
 
-    private static void MergeSort(Span<(int s, int e)> span)
+    private static void Solve(LinkedList<int>[] nodes, Span<int> tokens, int currDepth)
     {
-        int spanLength = span.Length;
-        if (spanLength < 2)
+        int tokensLength = tokens.Length;
+        if (tokensLength < 1)
             return;
 
-        int mid = spanLength / 2;
+        int mid = tokensLength / 2;
 
-        MergeSort(span.Slice(0, mid));
-        MergeSort(span.Slice(mid));
-        Merge(span, mid);
-    }
+        nodes[currDepth].AddLast(tokens[mid]);
 
-    private static void Merge(Span<(int s, int e)> span, int mid)
-    {
-        int containerLength = span.Length;
-
-        var backedup = span.ToArray();
-
-        int leftReadIndex = 0;
-        int rightReadIndex = mid;
-        int writtenIndex = 0;
-
-        while (leftReadIndex < mid && rightReadIndex < containerLength)
-        {
-            var leftElement = backedup[leftReadIndex];
-            var rightElement = backedup[rightReadIndex];
-            if (leftElement.s < rightElement.s)
-            {
-                span[writtenIndex] = leftElement;
-                ++leftReadIndex;
-            }
-            else
-            {
-                span[writtenIndex] = rightElement;
-                ++rightReadIndex;
-            }
-            ++writtenIndex;
-        }
-        
-        while (leftReadIndex < mid)
-        {
-            span[writtenIndex] = backedup[leftReadIndex];
-            ++leftReadIndex;
-            ++writtenIndex;
-        }
-
-        while (rightReadIndex < containerLength)
-        {
-            span[writtenIndex] = backedup[rightReadIndex];
-            ++rightReadIndex;
-            ++writtenIndex;
-        }
+        int nextDepth = currDepth + 1;
+        Solve(nodes, tokens.Slice(0, mid), nextDepth);
+        Solve(nodes, tokens.Slice(mid + 1), nextDepth);
     }
 }
