@@ -2,43 +2,95 @@
 {
     private static void Main(string[] args)
     {
-        const int Tries = 18;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 10'000]
+        int l = tokens[1]; // [1, 1'000'000]
 
-        int[][] combination = new int[Tries + 1][];
-        combination[0] = new int[] { 1 };
-        combination[1] = new int[] { 1, 1 };
-        for (int i = 2; i < combination.Length; ++i)
+        (int s, int e)[] puddles = new (int, int)[n];
+        for (int i = 0; i < n; ++i)
         {
-            combination[i] = new int[i + 1];
-            
-            combination[i][0] = 1;
-            combination[i][i] = 1;
-
-            for (int j = 1; j < i; ++j)
-            {
-                combination[i][j] = combination[i - 1][j - 1] + combination[i - 1][j];
-            }
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            puddles[i] = (tokens[0], tokens[1]);
         }
 
-        int[] primes = new int[] { 2, 3, 5, 7, 11, 13, 17 };
-        // int[] composites = new int[] { 0, 1, 4, 6, 8, 9, 10, 12, 14, 15, 16, 18}; // actually, 0 is not contained in the composite number but, let's just let it slide in this time
-
-        double teamAGoalChance = double.Parse(Console.ReadLine()!) / 100; // [0.0, 1.0]
-        double teamBGoalChance = double.Parse(Console.ReadLine()!) / 100; // [0.0, 1.0]
-
-        double teamAPrimeProbability = 0.0;
-        double teamBPrimeProbability = 0.0;
-        for (int i = 0; i < primes.Length; ++i)
+        MergeSort(puddles);
+        
+        int used = 0;
+        int currEnd = 0;
+        for (int i = 0; i < puddles.Length; ++i)
         {
-            int r = primes[i];
-            teamAPrimeProbability += combination[Tries][r] * Math.Pow(teamAGoalChance, r) * Math.Pow(1 - teamAGoalChance, Tries - r);
-            teamBPrimeProbability += combination[Tries][r] * Math.Pow(teamBGoalChance, r) * Math.Pow(1 - teamBGoalChance, Tries - r);
+            var puddle = puddles[i];
+
+            if (currEnd >= puddles[puddles.Length - 1].e)
+                break;
+
+            if (currEnd < puddle.s)
+                currEnd = puddle.s;
+
+            int lengthToCover = puddle.e - currEnd; // on the end index is not the part of the puddle
+            int required = lengthToCover / l;
+            if (lengthToCover % l > 0)
+                required += 1;
+
+            used += required;
+            currEnd += required * l;
+        }
+
+        Console.Write(used);
+    }
+
+    private static void MergeSort(Span<(int s, int e)> span)
+    {
+        int spanLength = span.Length;
+        if (spanLength < 2)
+            return;
+
+        int mid = spanLength / 2;
+
+        MergeSort(span.Slice(0, mid));
+        MergeSort(span.Slice(mid));
+        Merge(span, mid);
+    }
+
+    private static void Merge(Span<(int s, int e)> span, int mid)
+    {
+        int containerLength = span.Length;
+
+        var backedup = span.ToArray();
+
+        int leftReadIndex = 0;
+        int rightReadIndex = mid;
+        int writtenIndex = 0;
+
+        while (leftReadIndex < mid && rightReadIndex < containerLength)
+        {
+            var leftElement = backedup[leftReadIndex];
+            var rightElement = backedup[rightReadIndex];
+            if (leftElement.s < rightElement.s)
+            {
+                span[writtenIndex] = leftElement;
+                ++leftReadIndex;
+            }
+            else
+            {
+                span[writtenIndex] = rightElement;
+                ++rightReadIndex;
+            }
+            ++writtenIndex;
         }
         
-        double output = 0;
-        output += teamAPrimeProbability * teamBPrimeProbability;
-        output += teamAPrimeProbability * (1 - teamBPrimeProbability);
-        output += (1 - teamAPrimeProbability) * teamBPrimeProbability;
-        Console.Write(output == 0 ? "0.0" : output);
+        while (leftReadIndex < mid)
+        {
+            span[writtenIndex] = backedup[leftReadIndex];
+            ++leftReadIndex;
+            ++writtenIndex;
+        }
+
+        while (rightReadIndex < containerLength)
+        {
+            span[writtenIndex] = backedup[rightReadIndex];
+            ++rightReadIndex;
+            ++writtenIndex;
+        }
     }
 }
