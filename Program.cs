@@ -44,6 +44,8 @@ internal class Program
         while (frontier.Count > 0) // max tc = 1'000 * (1'000 - 1) / 2 = 499'500
         {
             int v = frontier.Dequeue();
+            if (v == arrivalV)
+                break;
 
             var adjs = adjList[v];
             if (adjs == null)
