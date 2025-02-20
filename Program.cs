@@ -32,7 +32,7 @@ internal class Program
         
         const int InvalidCost = -1;
         int[] minCosts = new int[n + 1];
-        for (int i = 0; i < minCosts.Length; ++i) // max tc = 1'001
+        for (int i = 1; i < minCosts.Length; ++i) // max tc = 1'000
         {
             minCosts[i] = InvalidCost;
         }
