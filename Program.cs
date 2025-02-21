@@ -2,16 +2,45 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [0, 12]
+        int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
 
-        int[] dp = new int[Math.Max(2, n + 1)];
-        dp[0] = 1;
-        dp[1] = 1;
-        for (int i = 2; i < dp.Length; ++i)
+        bool[] entered = new bool[200000 + 1]; // sc = 200'001 * 4B = about 0.8MB
+        int enteredCount = 0;
+
+        int omitted = 0;
+        for (int i = 0; i < n; ++i)
         {
-            dp[i] = dp[i - 1] * i;
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int a = tokens[0]; // [1, 200'000]
+            int b = tokens[1]; // [0, 1]
+
+            // enter
+            if (b == 1)
+            {
+                if (entered[a])
+                {
+                    ++omitted;
+                }
+                else
+                {
+                    ++enteredCount;
+                    entered[a] = true;
+                }
+            }
+            // exit
+            else
+            {
+                if (entered[a])
+                {
+                    --enteredCount;
+                    entered[a] = false;
+                }
+                else
+                {
+                    ++omitted;
+                }
+            }
         }
-        
-        Console.Write(dp[n]);
+        Console.Write(omitted + enteredCount);
     }
 }
