@@ -1,46 +1,32 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
+        int t = int.Parse(Console.ReadLine()!);
 
-        bool[] entered = new bool[200000 + 1]; // sc = 200'001 * 4B = about 0.8MB
-        int enteredCount = 0;
-
-        int omitted = 0;
-        for (int i = 0; i < n; ++i)
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int a = tokens[0]; // [1, 200'000]
-            int b = tokens[1]; // [0, 1]
+            int n = int.Parse(Console.ReadLine()!); // [1, 1'000'000]
 
-            // enter
-            if (b == 1)
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            SortedSet<int> ss = new();
+            for (int j = 0; j < tokens.Length; ++j) // max tc = 1'000'000
             {
-                if (entered[a])
-                {
-                    ++omitted;
-                }
-                else
-                {
-                    ++enteredCount;
-                    entered[a] = true;
-                }
+                ss.Add(tokens[j]); // max tc = log2(1'000'000) = 19.xxx
             }
-            // exit
-            else
+
+            int m = int.Parse(Console.ReadLine()!); // [1, 1'000'000]
+
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int j = 0; j < tokens.Length; ++j) // max tc = 1'000'000
             {
-                if (entered[a])
-                {
-                    --enteredCount;
-                    entered[a] = false;
-                }
-                else
-                {
-                    ++omitted;
-                }
+                sb.AppendLine(ss.Contains(tokens[j]) ? "1" : "0"); // max tc = 19.xxx
             }
         }
-        Console.Write(omitted + enteredCount);
+        Console.Write(sb);
     }
 }
