@@ -14,6 +14,8 @@
         for (int j = 0; j <= k; ++j) // max tc = 101
         {
             dp[0][j] = sequence[0] % 2 == 0 ? 1 : 0;
+
+            longestLength = Math.Max(longestLength, dp[0][j]);
         }
         for (int i = 1; i < dp.Length; ++i) // max tc = 49'999
         {
