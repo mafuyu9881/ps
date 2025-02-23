@@ -32,9 +32,8 @@
 
             if (oddIndices.Count > k)
             {
-                var lln = oddIndices.First!;
-                s = lln.Value;
-                oddIndices.Remove(lln);
+                s = oddIndices.First!.Value;
+                oddIndices.RemoveFirst();
             }
         }
         Console.Write(longestLength);
