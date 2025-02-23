@@ -13,10 +13,10 @@ internal class Program
             int n = tokens[0]; // [1, 10]
             int m = tokens[1]; // [1, 2'000]
 
-            int[][] dp = new int[n + 1][];
+            long[][] dp = new long[n + 1][];
             for (int j = 0; j < dp.Length; ++j)
             {
-                dp[j] = new int[m + 1];
+                dp[j] = new long[m + 1];
             }
             for (int j = 1; j < dp[1].Length; ++j)
             {
