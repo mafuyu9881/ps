@@ -1,41 +1,51 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 1'000'000]
-        int k = tokens[1]; // [1, 100'000]
-
-        // element = [1, 1'000'000]
-        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        int s = 0;
-        int e = 0;
-
-        int longestLength = 0;
-        LinkedList<int> oddIndices = new();
-        while (true) // max tc = 1'000'000
+        int t = int.Parse(Console.ReadLine()!);
+        
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
         {
-            int newLength = e - s + 1 - oddIndices.Count;
-            if (sequence[s] % 2 == 1)
-                --newLength;
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int n = tokens[0]; // [1, 10]
+            int m = tokens[1]; // [1, 2'000]
 
-            longestLength = Math.Max(longestLength, newLength);
-            
-            ++e;
-
-            if (e > sequence.Length - 1)
-                break;
-
-            if (sequence[e] % 2 == 1)
-                oddIndices.AddLast(e);
-
-            if (oddIndices.Count > k)
+            int[][] dp = new int[n + 1][];
+            for (int j = 0; j < dp.Length; ++j)
             {
-                s = oddIndices.First!.Value;
-                oddIndices.RemoveFirst();
+                dp[j] = new int[m + 1];
             }
+            for (int j = 1; j < dp[1].Length; ++j)
+            {
+                dp[1][j] = j;
+            }
+            for (int j = 2; j < dp.Length; ++j)
+            {
+                for (int k = ExponentiationBySquaringIteratively(2, j - 1); k < dp[j].Length; ++k)
+                {
+                    dp[j][k] = dp[j - 1][k / 2] + dp[j][k - 1];
+                }
+            }
+            sb.AppendLine($"{dp[n][m]}");
         }
-        Console.Write(longestLength);
+        Console.Write(sb);
+    }
+
+    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
+    {
+        int output = 1;
+        while (exponent > 0)
+        {
+            if ((exponent & 1) == 1)
+            {
+                output *= basis;
+            }
+            basis *= basis;
+            exponent >>= 1;
+        }
+        return output;
     }
 }
