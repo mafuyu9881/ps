@@ -16,10 +16,10 @@ internal class Program
         }
 
         int[][] output = new int[basis.Length][];
-        for (int row = 0; row < output.Length; ++row) // max tc = 5
+        for (int i = 0; i < output.Length; ++i) // max tc = 5
         {
-            output[row] = new int[basis[row].Length];
-            output[row][row] = 1;
+            output[i] = new int[basis[i].Length];
+            output[i][i] = 1;
         }
 
         while (b > 0) // max tc = log2(100'000'000'000) = 36.xxx
