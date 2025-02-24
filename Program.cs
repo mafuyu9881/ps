@@ -4,86 +4,64 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        string s = Console.ReadLine()!; // length = [1, 1'000'000]
+        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        long n = tokens[0]; // [2, 5]
+        long b = tokens[1]; // [1, 100'000'000'000]
 
-        string explosive = Console.ReadLine()!; // length = [1, 36]
-
-        LinkedList<int> indices = new();
-        LinkedList<char> actual = new();
-        for (int i = 0; i < s.Length; ++i) // max tc = 1'000'000
+        int[][] basis = new int[n][];
+        for (int row = 0; row < basis.Length; ++row) // max tc = 5
         {
-            int expectedExplosiveCharIndex;
-            if (indices.Count > 0)
+            // element = [0, 1'000]
+            basis[row] = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 5
+        }
+
+        int[][] output = new int[basis.Length][];
+        for (int row = 0; row < output.Length; ++row) // max tc = 5
+        {
+            output[row] = new int[basis[row].Length];
+            output[row][row] = 1;
+        }
+
+        while (b > 0) // max tc = log2(100'000'000'000) = 36.xxx
+        {
+            if ((b & 1) == 1)
             {
-                expectedExplosiveCharIndex = indices.Last!.Value + 1;
-            }
-            else
-            {
-                expectedExplosiveCharIndex = 0;
+                output = Multiply(output, basis);
             }
 
-            char c = s[i];
-            
-            actual.AddLast(c);
-
-            if (Explodable(s, explosive, i)) // max tc = 36
-            {
-                actual.RemoveLast();
-                i += explosive.Length - 1; // since +1 will be applied in the increment expression of the for loop, do -1 here.
-            }
-            else if (c == explosive[expectedExplosiveCharIndex])
-            {
-                indices.AddLast(expectedExplosiveCharIndex);
-
-                if (expectedExplosiveCharIndex == explosive.Length - 1)
-                {
-                    for (int j = 0; j < explosive.Length; ++j) // max tc = 36
-                    {
-                        indices.RemoveLast();
-                        actual.RemoveLast();
-                    }
-                }
-            }
-            else if (c == explosive[0])
-            {
-                indices.AddLast(0);
-            }
-            else
-            {
-                indices.AddLast(-1);
-            }
+            basis = Multiply(basis, basis);
+            b >>= 1;
         }
 
         StringBuilder sb = new();
-        if (actual.Count > 0)
+        for (int row = 0; row < output.Length; ++row)
         {
-            for (var lln = actual.First; lln != null; lln = lln.Next)
+            for (int col = 0; col < output[row].Length; ++col)
             {
-                sb.Append(lln.Value);
+                sb.Append($"{output[row][col]} ");
             }
-        }
-        else
-        {
-            sb.AppendLine("FRULA");
+            sb.AppendLine();
         }
         Console.Write(sb);
     }
 
-    private static bool Explodable(string s, string explosive, int beginIndex)
+    // in this case, we consider a and b as a square matrices
+    private static int[][] Multiply(int[][] a, int[][] b)
     {
-        if (beginIndex + explosive.Length - 1 > s.Length - 1)
-        {
-            return false;
-        }
+        int n = a.Length;
 
-        for (int i = 0; i < explosive.Length; ++i) // max tc = 36
+        int[][] output = new int[n][];
+        for (int i = 0; i < n; ++i) // max tc = 5
         {
-            if (s[beginIndex + i] != explosive[i])
+            output[i] = new int[n];
+            for (int j = 0; j < n; ++j) // max tc = 5
             {
-                return false;
+                for (int k = 0; k < n; ++k) // max tc = 5
+                {
+                    output[i][j] = (output[i][j] + a[i][k] * b[k][j]) % 1000;
+                }
             }
         }
-
-        return true;
+        return output;
     }
 }
