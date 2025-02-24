@@ -1,67 +1,52 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
-        long n = tokens[0]; // [2, 5]
-        long b = tokens[1]; // [1, 100'000'000'000]
+        int n = int.Parse(Console.ReadLine()!); // [1, 1'000]
 
-        int[][] basis = new int[n][];
-        for (int row = 0; row < basis.Length; ++row) // max tc = 5
+        // length = [1, 1'000]
+        // element = [1, 1'000]
+        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        // monotonically increasing
+        int[] dp0 = new int[sequence.Length];
+        for (int i = 0; i < dp0.Length; ++i) // max tc = 1'000
         {
-            // element = [0, 1'000]
-            basis[row] = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 5
+            dp0[i] = 1;
         }
-
-        int[][] output = new int[basis.Length][];
-        for (int i = 0; i < output.Length; ++i) // max tc = 5
+        for (int i = 1; i < sequence.Length; ++i) // max tc = 1'000
         {
-            output[i] = new int[basis[i].Length];
-            output[i][i] = 1;
-        }
-
-        while (b > 0) // max tc = log2(100'000'000'000) = 36.xxx
-        {
-            if ((b & 1) == 1)
+            for (int j = 0; j < i; ++j) // max tc = 1'000
             {
-                output = Multiply(output, basis);
-            }
-
-            basis = Multiply(basis, basis);
-            b >>= 1;
-        }
-
-        StringBuilder sb = new();
-        for (int row = 0; row < output.Length; ++row)
-        {
-            for (int col = 0; col < output[row].Length; ++col)
-            {
-                sb.Append($"{output[row][col]} ");
-            }
-            sb.AppendLine();
-        }
-        Console.Write(sb);
-    }
-
-    // in this case, we consider a and b as a square matrices
-    private static int[][] Multiply(int[][] a, int[][] b)
-    {
-        int n = a.Length;
-
-        int[][] output = new int[n][];
-        for (int i = 0; i < n; ++i) // max tc = 5
-        {
-            output[i] = new int[n];
-            for (int j = 0; j < n; ++j) // max tc = 5
-            {
-                for (int k = 0; k < n; ++k) // max tc = 5
+                if (sequence[i] > sequence[j])
                 {
-                    output[i][j] = (output[i][j] + a[i][k] * b[k][j]) % 1000;
+                    dp0[i] = Math.Max(dp0[i], dp0[j] + 1);
                 }
             }
         }
-        return output;
+
+        // monotonically increasing (reversed)
+        int[] dp1 = new int[sequence.Length];
+        for (int i = 0; i < dp1.Length; ++i) // max tc = 1'000
+        {
+            dp1[i] = 1;
+        }
+        for (int i = sequence.Length - 2; i >= 0; --i) // max tc = 1'000
+        {
+            for (int j = sequence.Length - 1; j > i; --j) // max tc = 1'000
+            {
+                if (sequence[i] > sequence[j])
+                {
+                    dp1[i] = Math.Max(dp1[i], dp1[j] + 1);
+                }
+            }
+        }
+
+        int output = 1;
+        for (int i = 0; i < sequence.Length; ++i)
+        {
+            output = Math.Max(output, dp0[i] + dp1[i] - 1);
+        }
+        Console.Write(output);
     }
 }
