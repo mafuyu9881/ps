@@ -4,48 +4,63 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
-        
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
-        {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int n = tokens[0]; // [1, 10]
-            int m = tokens[1]; // [1, 2'000]
+        string s = Console.ReadLine()!; // length = [1, 1'000'000]
 
-            long[][] dp = new long[n + 1][];
-            for (int j = 0; j < dp.Length; ++j)
+        string explosive = Console.ReadLine()!; // length = [1, 36]
+
+        LinkedList<int> indices = new();
+        LinkedList<char> actual = new();
+        for (int i = 0; i < s.Length; ++i) // max tc = 1'000'000
+        {
+            int expectedExplosiveCharIndex;
+            if (indices.Count > 0)
             {
-                dp[j] = new long[m + 1];
+                expectedExplosiveCharIndex = indices.Last!.Value + 1;
             }
-            for (int j = 1; j < dp[1].Length; ++j)
+            else
             {
-                dp[1][j] = j;
+                expectedExplosiveCharIndex = 0;
             }
-            for (int j = 2; j < dp.Length; ++j)
+
+            char c = s[i];
+            
+            actual.AddLast(c);
+
+            if (c == explosive[expectedExplosiveCharIndex])
             {
-                for (int k = ExponentiationBySquaringIteratively(2, j - 1); k < dp[j].Length; ++k)
+                indices.AddLast(expectedExplosiveCharIndex);
+
+                if (expectedExplosiveCharIndex == explosive.Length - 1)
                 {
-                    dp[j][k] = dp[j - 1][k / 2] + dp[j][k - 1];
+                    for (int j = 0; j < explosive.Length; ++j) // max tc = 36
+                    {
+                        indices.RemoveLast();
+                        actual.RemoveLast();
+                    }
                 }
             }
-            sb.AppendLine($"{dp[n][m]}");
+            else if (c == explosive[0])
+            {
+                indices.AddLast(0);
+            }
+            else
+            {
+                indices.AddLast(-1);
+            }
+        }
+
+        StringBuilder sb = new();
+        if (actual.Count > 0)
+        {
+            for (var lln = actual.First; lln != null; lln = lln.Next)
+            {
+                sb.Append(lln.Value);
+            }
+        }
+        else
+        {
+            sb.AppendLine("FRULA");
         }
         Console.Write(sb);
-    }
-
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
-    {
-        int output = 1;
-        while (exponent > 0)
-        {
-            if ((exponent & 1) == 1)
-            {
-                output *= basis;
-            }
-            basis *= basis;
-            exponent >>= 1;
-        }
-        return output;
     }
 }
