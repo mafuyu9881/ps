@@ -44,10 +44,10 @@ internal class Program
                     }
                 }
             }
-            // else if (c == explosive[0])
-            // {
-            //     indices.AddLast(0);
-            // }
+            else if (c == explosive[0])
+            {
+                indices.AddLast(0);
+            }
             else
             {
                 indices.AddLast(-1);
