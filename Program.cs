@@ -26,7 +26,12 @@ internal class Program
             
             actual.AddLast(c);
 
-            if (c == explosive[expectedExplosiveCharIndex])
+            if (Explodable(s, explosive, i)) // max tc = 36
+            {
+                actual.RemoveLast();
+                i += explosive.Length - 1; // since +1 will be applied in the increment expression of the for loop, do -1 here.
+            }
+            else if (c == explosive[expectedExplosiveCharIndex])
             {
                 indices.AddLast(expectedExplosiveCharIndex);
 
@@ -39,10 +44,10 @@ internal class Program
                     }
                 }
             }
-            else if (c == explosive[0])
-            {
-                indices.AddLast(0);
-            }
+            // else if (c == explosive[0])
+            // {
+            //     indices.AddLast(0);
+            // }
             else
             {
                 indices.AddLast(-1);
@@ -62,5 +67,23 @@ internal class Program
             sb.AppendLine("FRULA");
         }
         Console.Write(sb);
+    }
+
+    private static bool Explodable(string s, string explosive, int beginIndex)
+    {
+        if (beginIndex + explosive.Length - 1 > s.Length - 1)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < explosive.Length; ++i) // max tc = 36
+        {
+            if (s[beginIndex + i] != explosive[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
