@@ -43,7 +43,7 @@
         }
 
         int output = 1;
-        for (int i = 0; i < sequence.Length; ++i)
+        for (int i = 0; i < sequence.Length; ++i) // max tc = 1'000
         {
             output = Math.Max(output, dp0[i] + dp1[i] - 1);
         }
