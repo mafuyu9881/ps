@@ -1,52 +1,75 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 1'000]
+        // element = [0, 100'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0];
+        int k = tokens[1];
 
-        // length = [1, 1'000]
-        // element = [1, 1'000]
-        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        // monotonically increasing
-        int[] dp0 = new int[sequence.Length];
-        for (int i = 0; i < dp0.Length; ++i) // max tc = 1'000
+        const int InvalidCost = -1;
+        (int cost, int visits)[] histories = new (int, int)[100001];
+        for (int i = 0; i < histories.Length; ++i)
         {
-            dp0[i] = 1;
+            histories[i] = (InvalidCost, 0);
         }
-        for (int i = 1; i < sequence.Length; ++i) // max tc = 1'000
+
+        Queue<int> frontier = new();
+
+        histories[n] = (0, 1);
+        frontier.Enqueue(n);
+
+        while (frontier.Count > 0)
         {
-            for (int j = 0; j < i; ++j) // max tc = 1'000
+            int index = frontier.Dequeue();
+
+            var history = histories[index];
+            int cost = history.cost;
+
+            int[] adjIndices = new int[]
             {
-                if (sequence[i] > sequence[j])
+                index - 1,
+                index + 1,
+                index * 2,
+            };
+
+            for (int i = 0; i < adjIndices.Length; ++i)
+            {
+                int adjIndex = adjIndices[i];
+                if (adjIndex < 0)
+                    continue;
+
+                if (adjIndex > histories.Length - 1)
+                    continue;
+
+                int newCost = cost + 1;
+                if (adjIndex > k &&
+                    histories[k].cost != InvalidCost &&
+                    newCost + adjIndex - k > histories[k].cost)
+                    continue;
+
+                int oldCost = histories[adjIndex].cost;
+                if (oldCost != InvalidCost && oldCost < newCost)
+                    continue;
+
+                if (oldCost == newCost)
                 {
-                    dp0[i] = Math.Max(dp0[i], dp0[j] + 1);
+                    ++histories[adjIndex].visits;
                 }
+                else
+                {
+                    histories[adjIndex] = (newCost, 1);
+                }
+
+                frontier.Enqueue(adjIndex);
             }
         }
-
-        // monotonically increasing (reversed)
-        int[] dp1 = new int[sequence.Length];
-        for (int i = 0; i < dp1.Length; ++i) // max tc = 1'000
-        {
-            dp1[i] = 1;
-        }
-        for (int i = sequence.Length - 2; i >= 0; --i) // max tc = 1'000
-        {
-            for (int j = sequence.Length - 1; j > i; --j) // max tc = 1'000
-            {
-                if (sequence[i] > sequence[j])
-                {
-                    dp1[i] = Math.Max(dp1[i], dp1[j] + 1);
-                }
-            }
-        }
-
-        int output = 1;
-        for (int i = 0; i < sequence.Length; ++i) // max tc = 1'000
-        {
-            output = Math.Max(output, dp0[i] + dp1[i] - 1);
-        }
-        Console.Write(output);
+        
+        StringBuilder sb = new();
+        sb.AppendLine($"{histories[k].cost}");
+        sb.AppendLine($"{histories[k].visits}");
+        Console.Write(sb);
     }
 }
