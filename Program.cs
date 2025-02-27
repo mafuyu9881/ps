@@ -4,49 +4,66 @@
     {
         int n = int.Parse(Console.ReadLine()!); // [1, 50]
 
-        int[,] cables = new int[n, n]; // max sc = 50 * 50 * 4B = 10'000B = 10KB
+        LinkedList<(int v, int cost)>[] cables = new LinkedList<(int, int)>[n];
 
         int donated = 0;
-
-        for (int s = 0; s < n; ++s) // max tc = 50
+        
+        for (int v0 = 0; v0 < n; ++v0) // max tc = 50
         {
-            string stringToken = Console.ReadLine()!;
-            for (int e = 0; e < n; ++e) // max tc = 50
-            {
-                char charToken = stringToken[e];
+            cables[v0] = new();
 
-                int newCable = 0;
+            string stringToken = Console.ReadLine()!;
+            for (int v1 = 0; v1 < n; ++v1) // max tc = 50
+            {
+                char charToken = stringToken[v1];
+
+                int cost = 0;
                 if (charToken >= 'a' && charToken <= 'z')
                 {
-                    newCable = charToken - 'a' + 1;
+                    cost = charToken - 'a' + 1;
                 }
                 else if (charToken >= 'A' && charToken <= 'Z')
                 {
-                    newCable = charToken - 'A' + 27;
+                    cost = charToken - 'A' + 27;
                 }
 
-                if (s == e)
-                {
-                    donated += newCable;
-                }
-                else if (s < e)
-                {
-                    cables[s, e] = newCable;
-                    cables[e, s] = newCable;
-                }
-                else
-                {
-                    int oldCable = cables[e, s];
-                    if (oldCable > 0)
-                    {
-                        donated += Math.Max(newCable, oldCable);
-                        newCable = Math.Min(newCable, oldCable);
-                    }
-                
-                    cables[s, e] = newCable;
-                    cables[e, s] = newCable;
-                }
+                donated += cost;
+
+                cables[v0].AddLast((v1, cost));
             }
         }
+
+        bool[] visited = new bool[n];
+
+        PriorityQueue<(int v, int cost), int> frontier = new();
+
+        int s = 0;
+
+        visited[s] = true;
+        for (var lln = cables[s].First; lln != null; lln = lln.Next)
+        {
+            frontier.Enqueue(lln.Value, lln.Value.cost);
+        }
+
+        while (frontier.Count > 0)
+        {
+            var vcost = frontier.Dequeue();
+            int v = vcost.v;
+            int cost = vcost.cost;
+
+            if (visited[v] || cost < 1)
+                continue;
+            
+            visited[v] = true;
+
+            donated -= cost;
+
+            for (var lln = cables[v].First; lln != null; lln = lln.Next)
+            {
+                frontier.Enqueue(lln.Value, lln.Value.cost);
+            }
+        }
+
+        Console.Write(donated);
     }
 }
