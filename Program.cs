@@ -1,13 +1,86 @@
 ﻿internal class Program
 {
+    private class DisjointSet
+    {
+        private int[] _parent = null!;
+        private int[] _rank = null!;
+
+        public DisjointSet(int n)
+        {
+            _parent = new int[n];
+            for (int i = 0; i < _parent.Length; ++i)
+            {
+                _parent[i] = i;
+            }
+
+            _rank = new int[n];
+        }
+        
+        public int Find(int x)
+        {
+            int parent = _parent[x];
+
+            if (x != parent)
+            {
+                // return Find(parent); // find without path compressing
+                return _parent[x] = Find(parent); // find with path compressing
+            }
+            else
+            {
+                return x;
+            }
+        }
+
+        public void Union(int a, int b)
+        {
+            int aSetRepresentative = Find(a);
+            int bSetRepresentative = Find(b);
+            if (aSetRepresentative == bSetRepresentative)
+                return;
+
+            int aSetRank = _rank[aSetRepresentative];
+            int bSetRank = _rank[bSetRepresentative];
+            if (aSetRank > bSetRank)
+            {
+                _parent[bSetRepresentative] = aSetRepresentative;
+            }
+            else if (aSetRank < bSetRank)
+            {
+                _parent[aSetRepresentative] = bSetRepresentative;
+            }
+            else
+            {
+                _parent[bSetRepresentative] = aSetRepresentative;
+                ++_rank[aSetRepresentative];
+            }
+
+            // path compressing
+            Find(a);
+            Find(b);
+        }
+
+        public bool United()
+        {
+            if (_parent.Length < 0)
+                return true; // undefined behaviour
+
+            for (int i = 1; i < _parent.Length; ++i)
+            {
+                if (_parent[i] != _parent[0])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!); // [1, 50]
 
         int donated = 0;
-
-        bool[] visited = new bool[n];
-        int remains = n;
 
         PriorityQueue<(int s, int e, int cost), int> cables = new();
 
@@ -34,6 +107,8 @@
             }
         }
 
+        DisjointSet ds = new(n);
+        
         while (cables.Count > 0) // max tc = 2'500
         {
             var cable = cables.Dequeue();
@@ -41,27 +116,15 @@
             int e = cable.e;
             int cost = cable.cost;
 
-            if ((s == e) ||
-                (visited[s] && visited[e]) ||
-                (cost < 1))
+            if ((ds.Find(s) == ds.Find(e)) || (cost < 1))
                 continue;
 
-            if (visited[s] == false)
-            {
-                visited[s] = true;
-                --remains;
-            }
-            
-            if (visited[e] == false)
-            {
-                visited[e] = true;
-                --remains;
-            }
+            ds.Union(s, e);
 
             donated -= cost;
         }
 
-        if (remains > 0)
+        if (ds.United() == false)
             donated = -1;
 
         Console.Write(donated);
