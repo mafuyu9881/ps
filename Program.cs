@@ -66,7 +66,7 @@
 
             for (int i = 1; i < _parent.Length; ++i)
             {
-                if (_parent[i] != _parent[0])
+                if (Find(i) != Find(0))
                 {
                     return false;
                 }
