@@ -20,7 +20,7 @@
             double computedC = c1 * c2 / (c1 + c2);
             if (Math.Abs(computedC - c) < 1e-6)
             {
-                Console.Write(mid.ToString("F3"));
+                Console.Write(Math.Round(mid, 3, MidpointRounding.AwayFromZero).ToString("F3"));
                 break;
             }
             else if (computedC > c)
