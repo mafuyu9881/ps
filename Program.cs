@@ -20,14 +20,13 @@
         {
             int parent = _parent[x];
 
-            if (x != parent)
+            if (parent != x)
             {
-                // return Find(parent); // find without path compressing
                 return _parent[x] = Find(parent); // find with path compressing
             }
             else
             {
-                return x;
+                return x; // it's a representative
             }
         }
 
@@ -35,11 +34,13 @@
         {
             int aSetRepresentative = Find(a);
             int bSetRepresentative = Find(b);
+
             if (aSetRepresentative == bSetRepresentative)
                 return;
 
             int aSetRank = _rank[aSetRepresentative];
             int bSetRank = _rank[bSetRepresentative];
+
             if (aSetRank > bSetRank)
             {
                 _parent[bSetRepresentative] = aSetRepresentative;
@@ -61,12 +62,12 @@
 
         public bool United()
         {
-            if (_parent.Length < 0)
+            if (_parent.Length < 1)
                 return true; // undefined behaviour
 
-            for (int i = 1; i < _parent.Length; ++i)
+            for (int i = 1; i < _parent.Length; ++i) // max tc = 50
             {
-                if (Find(i) != Find(0))
+                if (_parent[Find(i)] != _parent[Find(0)])
                 {
                     return false;
                 }
@@ -80,53 +81,55 @@
     {
         int n = int.Parse(Console.ReadLine()!); // [1, 50]
 
-        int donated = 0;
+        PriorityQueue<(int s, int e, int cost), int> frontier = new();
 
-        PriorityQueue<(int s, int e, int cost), int> cables = new();
+        int donatable = 0;
 
-        for (int s = 0; s < n; ++s) // max tc = 50
+        for (int s = 0; s < n; ++s)
         {
             string stringToken = Console.ReadLine()!;
-            for (int e = 0; e < n; ++e) // max tc = 50
+            for (int e = 0; e < n; ++e)
             {
                 char charToken = stringToken[e];
 
-                int cost = 0;
-                if (charToken >= 'a' && charToken <= 'z')
+                if (charToken != '0')
                 {
-                    cost = charToken - 'a' + 1;
-                }
-                else if (charToken >= 'A' && charToken <= 'Z')
-                {
-                    cost = charToken - 'A' + 27;
-                }
+                    int cost;
+                    if (charToken >= 'a' && charToken <= 'z')
+                    {
+                        cost = charToken - 'a' + 1;
+                    }
+                    else
+                    {
+                        cost = charToken - 'A' + 27;
+                    }
 
-                donated += cost;
+                    frontier.Enqueue((s, e, cost), cost);
 
-                cables.Enqueue((s, e, cost), cost);
+                    donatable += cost;
+                }
             }
         }
 
         DisjointSet ds = new(n);
-        
-        while (cables.Count > 0) // max tc = 2'500
-        {
-            var cable = cables.Dequeue();
-            int s = cable.s;
-            int e = cable.e;
-            int cost = cable.cost;
 
-            if ((ds.Find(s) == ds.Find(e)) || (cost < 1))
+        while (frontier.Count > 0)
+        {
+            var secost = frontier.Dequeue();
+            int s = secost.s;
+            int e = secost.e;
+
+            if (ds.Find(s) == ds.Find(e))
                 continue;
 
             ds.Union(s, e);
 
-            donated -= cost;
+            donatable -= secost.cost;
         }
 
         if (ds.United() == false)
-            donated = -1;
-
-        Console.Write(donated);
+            donatable = -1;
+            
+        Console.Write(donatable);
     }
 }
