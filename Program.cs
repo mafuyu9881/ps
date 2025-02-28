@@ -10,7 +10,7 @@
 
         double lo = 0.0;
         double hi = Math.Min(x, y);
-        while (hi - lo > 1e-6) // max tc = log2(3'000'000'000) = 31.xxx
+        while (true) // max tc = log2(3'000'000'000) = 31.xxx
         {
             double mid = (lo + hi) / 2;
 
