@@ -2,34 +2,31 @@
 {
     private static void Main(string[] args)
     {
-        // element = (0, 3'000'000'000]
-        double[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), double.Parse);
-        double x = tokens[0];
-        double y = tokens[1];
-        double c = tokens[2];
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 200'000]
+        int m = tokens[1]; // [1, 1'000'000'000]
 
-        double lo = 0.0;
-        double hi = Math.Min(x, y);
+        // length = [1, 200'000]
+        // element = [0, 1'000'000'000]
+        int[] complaints = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        while (Math.Abs(hi - lo) > 1e-6)
+        long sum = 0;
+        for (int i = 0; i < complaints.Length; ++i) // max tc = 200'000
         {
-            double mid = (lo + hi) / 2;
-
-            double c1 = Math.Sqrt(x * x - mid * mid);
-            double c2 = Math.Sqrt(y * y - mid * mid);
-
-            double computedC = c1 * c2 / (c1 + c2);
-
-            if (computedC < c)
-            {
-                hi = mid;
-            }
-            else
-            {
-                lo = mid;
-            }
+            sum += complaints[i];
         }
 
-        Console.Write(lo.ToString("F3"));
+        Array.Sort(complaints); // max tc = 200'000 * log2(200'000) = 200'000 * 17.xxx
+
+        int eggplants = 0;
+        for (int i = complaints.Length - 1; i >= 0; --i) // max tc = 200'000
+        {
+            if (sum < m)
+                break;
+
+            sum -= complaints[i] * 2;
+            ++eggplants;
+        }
+        Console.Write(eggplants);
     }
 }
