@@ -10,7 +10,8 @@
 
         double lo = 0.0;
         double hi = Math.Min(x, y);
-        while (true) // max tc = log2(3'000'000'000) = 31.xxx
+
+        while (Math.Abs(hi - lo) > 1e-6)
         {
             double mid = (lo + hi) / 2;
 
@@ -18,19 +19,17 @@
             double c2 = Math.Sqrt(y * y - mid * mid);
 
             double computedC = c1 * c2 / (c1 + c2);
-            if (Math.Abs(computedC - c) < 1e-6)
-            {
-                Console.Write(Math.Round(mid, 3, MidpointRounding.AwayFromZero).ToString("F3"));
-                break;
-            }
-            else if (computedC > c)
-            {
-                lo = mid;
-            }
-            else // if (computedC < c)
+
+            if (computedC < c)
             {
                 hi = mid;
             }
+            else
+            {
+                lo = mid;
+            }
         }
+
+        Console.Write(((lo + hi) / 2).ToString("F3"));
     }
 }
