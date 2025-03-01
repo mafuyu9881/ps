@@ -30,6 +30,6 @@
             }
         }
 
-        Console.Write(((lo + hi) / 2).ToString("F3"));
+        Console.Write(hi.ToString("F3"));
     }
 }
