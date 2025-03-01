@@ -10,22 +10,22 @@
         // element = [0, 1'000'000'000]
         int[] complaints = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
+        PriorityQueue<int, int> pq = new();
+
         long sum = 0;
+        int eggplants = 0;
         for (int i = 0; i < complaints.Length; ++i) // max tc = 200'000
         {
-            sum += complaints[i];
-        }
+            int complaint = complaints[i]; // [0, 1'000'000'000]
 
-        Array.Sort(complaints); // max tc = 200'000 * log2(200'000) = 200'000 * 17.xxx
+            sum += complaint;
+            pq.Enqueue(complaint, -complaint);
 
-        int eggplants = 0;
-        for (int i = complaints.Length - 1; i >= 0; --i) // max tc = 200'000
-        {
-            if (sum < m)
-                break;
-
-            sum -= complaints[i] * 2;
-            ++eggplants;
+            if (sum >= m)
+            {
+                sum -= pq.Dequeue() * 2;
+                ++eggplants;
+            }
         }
         Console.Write(eggplants);
     }
