@@ -3,30 +3,41 @@
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 200'000]
-        int m = tokens[1]; // [1, 1'000'000'000]
+        int n = tokens[0]; // [1, 100'000]
+        int l = tokens[1] - 1; // [1 - 1, r - 1]
+        int r = tokens[2] - 1; // [l - 1, n - 1]
 
-        // length = [1, 200'000]
-        // element = [0, 1'000'000'000]
-        int[] complaints = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        PriorityQueue<int, int> pq = new();
+        int answer = 0;
 
-        long sum = 0;
-        int eggplants = 0;
-        for (int i = 0; i < complaints.Length; ++i) // max tc = 200'000
+        int min = sequence[l];
+        int max = sequence[l];
+        for (int i = l + 1; i <= r; ++i)
         {
-            int complaint = complaints[i]; // [0, 1'000'000'000]
+            min = Math.Min(min, sequence[i]);
+            max = Math.Max(max, sequence[i]);
+        }
 
-            sum += complaint;
-            pq.Enqueue(complaint, -complaint);
-
-            if (sum >= m)
+        for (int i = 0; i < l; ++i)
+        {
+            if (sequence[i] > min)
             {
-                sum -= pq.Dequeue() * 2;
-                ++eggplants;
+                goto Print;
             }
         }
-        Console.Write(eggplants);
+
+        for (int i = r + 1; i < sequence.Length; ++i)
+        {
+            if (sequence[i] < max)
+            {
+                goto Print;
+            }
+        }
+
+        answer = 1;
+
+Print:
+        Console.Write(answer);
     }
 }
