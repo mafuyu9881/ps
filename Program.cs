@@ -1,43 +1,75 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
+    private const string NullPointerException = "NullPointerException";
+    private const string False = "false";
+    private const string True = "true";
+
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 100'000]
-        int l = tokens[1] - 1; // [1 - 1, r - 1]
-        int r = tokens[2] - 1; // [l - 1, n - 1]
+        string? a = ReadToken();
+        string? b = ReadToken();
 
-        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        StringBuilder sb = new();
+        sb.AppendLine(Equals(a, b, false));
+        sb.AppendLine(Equals(a, b, true));
+        Console.Write(sb);
+    }
 
-        int answer = 0;
+    private static string? ReadToken()
+    {
+        string token = Console.ReadLine()!;
+        return (token != "null") ? token : null;
+    }
 
-        int min = sequence[l];
-        int max = sequence[l];
-        for (int i = l + 1; i <= r; ++i)
+    private static string Equals(string? a, string? b, bool ignoreCase)
+    {
+        if (a == null)
+            return NullPointerException;
+
+        if (b == null)
+            return False;
+
+        if (a.Length != b.Length)
+            return False;
+
+        for (int i = 0; i < a.Length; ++i)
         {
-            min = Math.Min(min, sequence[i]);
-            max = Math.Max(max, sequence[i]);
-        }
-
-        for (int i = 0; i < l; ++i)
-        {
-            if (sequence[i] > min)
+            if (Equals(a[i], b[i], ignoreCase) == false)
             {
-                goto Print;
+                return False;
             }
         }
 
-        for (int i = r + 1; i < sequence.Length; ++i)
+        return True;
+    }
+
+    private static bool Equals(char a, char b, bool ignoreCase)
+    {
+        if (ignoreCase && IsNumber(a) == false && IsNumber(b) == false)
         {
-            if (sequence[i] < max)
-            {
-                goto Print;
-            }
+            a = AdjustToLowerCase(a);
+            b = AdjustToLowerCase(b);
         }
 
-        answer = 1;
+        return a == b;
+    }
+    
+    private static bool IsNumber(char c)
+    {
+        return c >= '0' && c <= '9';
+    }
 
-Print:
-        Console.Write(answer);
+    private static char AdjustToLowerCase(char c)
+    {
+        if (c >= 'a' && c <= 'z')
+        {
+            return c;
+        }
+        else
+        {
+            return (char)(c - 'A' + 'a');
+        }
     }
 }
