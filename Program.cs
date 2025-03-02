@@ -38,6 +38,7 @@ internal class Program
             {
                 Grant();
                 Initialize();
+                continue;
             }
             else if (roll == 2)
             {
