@@ -4,79 +4,98 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int c = ExponentiationBySquaringIteratively(2, 3);
-        int d = ExponentiationBySquaringIteratively(2, 4);
-        int e = ExponentiationBySquaringIteratively(3, 4);
+        // element = [1, 200]
+        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int planeHeight = integerTokens[0];
+        int planeWidth = integerTokens[1];
 
-        int t = int.Parse(Console.ReadLine()!); // [1, 1'000]
+        // element = [1, 200]
+        integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int textureHeight = integerTokens[0];
+        int textureWidth = integerTokens[1];
 
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
+        int[,] texture = new int[textureHeight, textureWidth];
+        for (int row = 0; row < textureHeight; ++row) // max tc = 200
         {
-            // element = [1, 1'000'000]
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int a = tokens[0];
-            int b = tokens[1];
-
-            long rightProduct = a * (long)b;
-            long wrongProduct = WrongMultiplication(a, b);
-            
-            sb.AppendLine(rightProduct == wrongProduct ? "1" : "0");
-        }
-        Console.Write(sb);
-    }
-
-    private static long WrongMultiplication(int a, int b)
-    {
-        string sa = a.ToString();
-        string sb = b.ToString();
-        
-        string longerString;
-        string shorterString;
-        if (sa.Length > sb.Length)
-        {
-            longerString = sa;
-            shorterString = sb;
-        }
-        else // if (sa.Length <= sb.Length)
-        {
-            longerString = sb;
-            shorterString = sa;
-        }
-
-        long output = 0;
-
-        int exceededLength = longerString.Length - shorterString.Length;
-        for (int i = 0; i < exceededLength; ++i)
-        {
-            output *= 10;
-            output += longerString[i] - '0';
-        }
-
-        for (int i = 0; i < shorterString.Length; ++i)
-        {
-            int product = (longerString[exceededLength + i] - '0') * (shorterString[i] - '0');
-
-            output *= ExponentiationBySquaringIteratively(10, product.ToString().Length);
-            output += product;
-        }
-
-        return output;
-    }
-
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
-    {
-        int output = 1;
-        while (exponent > 0)
-        {
-            if ((exponent & 1) == 1)
+            string stringToken = Console.ReadLine()!;
+            for (int col = 0; col < textureWidth; ++col) // max tc = 200
             {
-                output *= basis;
+                texture[row, col] = stringToken[col] - '0';
             }
-
-            basis *= basis;
-            exponent >>= 1;
         }
-        return output;
+        
+        string method = Console.ReadLine()!;
+        if (method == "clamp-to-edge")
+        {
+            Console.Write(ClampToEdge(planeHeight, planeWidth, textureHeight, textureWidth, texture));
+        }
+        else if (method == "repeat")
+        {
+            Console.Write(Repeat(planeHeight, planeWidth, textureHeight, textureWidth, texture));
+        }
+        else // if (method == "mirrored-repeat")
+        {
+            Console.Write(MirroredRepeat(planeHeight, planeWidth, textureHeight, textureWidth, texture));
+        }
+    }
+
+    private static StringBuilder ClampToEdge(int planeHeight, int planeWidth, int textureHeight, int textureWidth, int[,] texture)
+    {
+        StringBuilder sb = new();
+
+        for (int row = 0; row < planeHeight; ++row) // max tc = 200
+        {
+            for (int col = 0; col < planeWidth; ++col) // max tc = 200
+            {
+                sb.Append($"{texture[Math.Min(textureHeight - 1, row), Math.Min(textureWidth - 1, col)]}");
+            }
+            sb.AppendLine();
+        }
+
+        return sb;
+    }
+
+    private static StringBuilder Repeat(int planeHeight, int planeWidth, int textureHeight, int textureWidth, int[,] texture)
+    {
+        StringBuilder sb = new();
+
+        for (int row = 0; row < planeHeight; ++row) // max tc = 200
+        {
+            for (int col = 0; col < planeWidth; ++col) // max tc = 200
+            {
+                sb.Append($"{texture[row % textureHeight, col % textureWidth]}");
+            }
+            sb.AppendLine();
+        }
+
+        return sb;
+    }
+
+    private static StringBuilder MirroredRepeat(int planeHeight, int planeWidth, int textureHeight, int textureWidth, int[,] texture)
+    {
+        StringBuilder sb = new();
+
+        for (int row = 0; row < planeHeight; ++row)
+        {
+            for (int col = 0; col < planeWidth; ++col)
+            {
+                sb.Append($"{texture[ComputeMirroredIndex(row, textureHeight), ComputeMirroredIndex(col, textureWidth)]}");
+            }
+            sb.AppendLine();
+        }
+        
+        return sb;
+    }
+
+    private static int ComputeMirroredIndex(int index, int length)
+    {
+        int texIndex = index % length;
+
+        if (((index / length) % 2) != 0)
+        {
+            texIndex = length - 1 - texIndex;
+        }
+
+        return texIndex;
     }
 }
