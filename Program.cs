@@ -4,27 +4,27 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
+        long n = long.Parse(Console.ReadLine()!); // [1, 100'000]
 
         // length = [1, 100'000]
         // element = [1, 6]
-        int[] rolls = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        
-        int[] rewards = new int[4];
+        long[] rolls = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
 
-        const int InitialRollScore = 1;
-        const int InitialRollScoreSum = 0;
-        const int InitialTurnTime = 4;
-        const int InitialElapsedTurnTime = 0;
+        long[] rewards = new long[4];
 
-        int rollScore = InitialRollScore;
-        int rollScoreSum = InitialRollScoreSum;
-        int turnTime = InitialTurnTime;
-        int elapsedTurnTime = InitialElapsedTurnTime;
+        const long InitialRollScore = 1;
+        const long InitialRollScoreSum = 0;
+        const long InitialTurnTime = 4;
+        const long InitialElapsedTurnTime = 0;
 
-        for (int i = 0; i < rolls.Length; ++i) // max tc = 100'000
+        long rollScore = InitialRollScore;
+        long rollScoreSum = InitialRollScoreSum;
+        long turnTime = InitialTurnTime;
+        long elapsedTurnTime = InitialElapsedTurnTime;
+
+        for (long i = 0; i < rolls.Length; ++i) // max tc = 100'000
         {
-            int roll = rolls[i];
+            long roll = rolls[i];
 
             bool finish = false;
 
@@ -103,7 +103,7 @@ internal class Program
         }
         
         StringBuilder sb = new();
-        for (int i = 0; i < rewards.Length; ++i)
+        for (long i = 0; i < rewards.Length; ++i)
         {
             sb.AppendLine($"{rewards[i]}");
         }
