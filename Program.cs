@@ -4,98 +4,70 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        // element = [1, 200]
-        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int planeHeight = integerTokens[0];
-        int planeWidth = integerTokens[1];
+        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
-        // element = [1, 200]
-        integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int textureHeight = integerTokens[0];
-        int textureWidth = integerTokens[1];
-
-        char[,] texture = new char[textureHeight, textureWidth];
-        for (int row = 0; row < textureHeight; ++row) // max tc = 200
-        {
-            string stringToken = Console.ReadLine()!;
-            for (int col = 0; col < textureWidth; ++col) // max tc = 200
-            {
-                texture[row, col] = stringToken[col];
-            }
-        }
+        // length = [1, 100'000]
+        int[] a = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] b = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(a); // max tc = 100'000 * log2(100'000) = 100'000 * 16.xxx
+        Array.Sort(b); // max tc = 100'000 * 16.xxx
         
-        string method = Console.ReadLine()!;
-        if (method == "clamp-to-edge")
+        int pairs = 0;
+        int i = 0;
+        int j = 0;
+        LinkedList<int> pairedAElements = new();
+        LinkedList<int> unpairedAElements = new();
+        LinkedList<int> pairedBElements = new();
+        LinkedList<int> unpairedBElements = new();
+        while (i >= 0 && i < a.Length && // max tc = 100'000
+               j >= 0 && j < b.Length)
         {
-            Console.Write(ClampToEdge(planeHeight, planeWidth, textureHeight, textureWidth, texture));
-        }
-        else if (method == "repeat")
-        {
-            Console.Write(Repeat(planeHeight, planeWidth, textureHeight, textureWidth, texture));
-        }
-        else // if (method == "mirrored-repeat")
-        {
-            Console.Write(MirroredRepeat(planeHeight, planeWidth, textureHeight, textureWidth, texture));
-        }
-    }
-
-    private static StringBuilder ClampToEdge(int planeHeight, int planeWidth, int textureHeight, int textureWidth, char[,] texture)
-    {
-        StringBuilder sb = new();
-
-        for (int row = 0; row < planeHeight; ++row) // max tc = 200
-        {
-            for (int col = 0; col < planeWidth; ++col) // max tc = 200
+            if (a[i] == b[j])
             {
-                sb.Append($"{texture[Math.Min(textureHeight - 1, row), Math.Min(textureWidth - 1, col)]}");
+                ++pairs;
+
+                pairedAElements.AddLast(a[i]);
+                pairedBElements.AddLast(b[j]);
+
+                ++i;
+                ++j;
             }
-            sb.AppendLine();
-        }
-
-        return sb;
-    }
-
-    private static StringBuilder Repeat(int planeHeight, int planeWidth, int textureHeight, int textureWidth, char[,] texture)
-    {
-        StringBuilder sb = new();
-
-        for (int row = 0; row < planeHeight; ++row) // max tc = 200
-        {
-            for (int col = 0; col < planeWidth; ++col) // max tc = 200
+            else if (a[i] > b[j])
             {
-                sb.Append($"{texture[row % textureHeight, col % textureWidth]}");
+                unpairedBElements.AddLast(b[j]);
+
+                ++j;
             }
-            sb.AppendLine();
-        }
-
-        return sb;
-    }
-
-    private static StringBuilder MirroredRepeat(int planeHeight, int planeWidth, int textureHeight, int textureWidth, char[,] texture)
-    {
-        StringBuilder sb = new();
-
-        for (int row = 0; row < planeHeight; ++row) // max tc = 200
-        {
-            for (int col = 0; col < planeWidth; ++col) // max tc = 200
+            else
             {
-                sb.Append($"{texture[ComputeMirroredIndex(row, textureHeight), ComputeMirroredIndex(col, textureWidth)]}");
+                unpairedAElements.AddLast(a[i]);
+
+                ++i;
             }
-            sb.AppendLine();
         }
-        
-        return sb;
+
+        StringBuilder sb = new();
+        sb.AppendLine($"{pairs}");
+        PrintArray(sb, pairedAElements, unpairedAElements, a, i);
+        PrintArray(sb, pairedBElements, unpairedBElements, b, j);
+        Console.Write(sb);
     }
 
-    private static int ComputeMirroredIndex(int index, int length)
+    // max tc = 100'000
+    private static void PrintArray(StringBuilder sb, LinkedList<int> pairedElements, LinkedList<int> unpairedElements, int[] elements, int iteratableIndex)
     {
-        int texIndex = index % length;
-
-        if (((index / length) % 2) != 0)
+        for (var lln = pairedElements.First; lln != null; lln = lln.Next)
         {
-            texIndex = length - 1 - texIndex;
+            sb.Append($"{lln.Value} ");
         }
-
-        return texIndex;
+        for (var lln = unpairedElements.First; lln != null; lln = lln.Next)
+        {
+            sb.Append($"{lln.Value} ");
+        }
+        for (int k = iteratableIndex; k < elements.Length; ++k)
+        {
+            sb.Append($"{elements[k]} ");
+        }
+        sb.AppendLine();
     }
 }
