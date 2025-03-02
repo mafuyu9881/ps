@@ -2,6 +2,18 @@
 
 internal class Program
 {
+    const long InitialRollScore = 1;
+    const long InitialRollScoreSum = 0;
+    const long InitialTurnTime = 4;
+    const long InitialElapsedTurnTime = 0;
+
+    private static long[] _rewards = new long[4];
+
+    private static long _rollScore;
+    private static long _rollScoreSum;
+    private static long _turnTime;
+    private static long _elapsedTurnTime;
+
     private static void Main(string[] args)
     {
         long n = long.Parse(Console.ReadLine()!); // [1, 100'000]
@@ -10,37 +22,32 @@ internal class Program
         // element = [1, 6]
         long[] rolls = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
 
-        long[] rewards = new long[4];
-
-        const long InitialRollScore = 1;
-        const long InitialRollScoreSum = 0;
-        const long InitialTurnTime = 4;
-        const long InitialElapsedTurnTime = 0;
-
-        long rollScore = InitialRollScore;
-        long rollScoreSum = InitialRollScoreSum;
-        long turnTime = InitialTurnTime;
-        long elapsedTurnTime = InitialElapsedTurnTime;
+        Initialize();
 
         for (long i = 0; i < rolls.Length; ++i) // max tc = 100'000
         {
-            long roll = rolls[i];
+            if (_elapsedTurnTime > 240)
+            {
+                Grant();
+                Initialize();
+            }
 
-            bool finish = false;
+            long roll = rolls[i];
 
             if (roll == 1)
             {
-                finish = true;
+                Grant();
+                Initialize();
             }
             else if (roll == 2)
             {
-                if (rollScore > 1)
+                if (_rollScore > 1)
                 {
-                    rollScore /= 2;
+                    _rollScore /= 2;
                 }
                 else
                 {
-                    turnTime += 2;
+                    _turnTime += 2;
                 }
             }
             else if (roll == 3)
@@ -49,64 +56,60 @@ internal class Program
             }
             else if (roll == 4)
             {
-                elapsedTurnTime += 56;
+                _elapsedTurnTime += 56;
             }
             else if (roll == 5)
             {
-                if (turnTime > 1)
+                if (_turnTime > 1)
                 {
-                    --turnTime;
+                    --_turnTime;
                 }
             }
-            else // if (roll == 6)
+            else if (roll == 6)
             {
-                if (rollScore < 32)
+                if (_rollScore < 32)
                 {
-                    rollScore *= 2;
+                    _rollScore *= 2;
                 }
             }
 
-            if (elapsedTurnTime > 240)
-            {
-                finish = true;
-            }
-
-            if (finish)
-            {
-                if (rollScoreSum >= 35 && rollScoreSum < 65)
-                {
-                    ++rewards[0];
-                }
-                else if (rollScoreSum >= 65 && rollScoreSum < 95)
-                {
-                    ++rewards[1];
-                }
-                else if (rollScoreSum >= 95 && rollScoreSum < 125)
-                {
-                    ++rewards[2];
-                }
-                else if (rollScoreSum >= 125)
-                {
-                    ++rewards[3];
-                }
-
-                rollScore = InitialRollScore;
-                rollScoreSum = InitialRollScoreSum;
-                turnTime = InitialTurnTime;
-                elapsedTurnTime = InitialElapsedTurnTime;
-            }
-            else
-            {
-                rollScoreSum += rollScore;
-                elapsedTurnTime += turnTime;
-            }
+            _rollScoreSum += _rollScore;
+            _elapsedTurnTime += _turnTime;
         }
         
         StringBuilder sb = new();
-        for (long i = 0; i < rewards.Length; ++i)
+        for (long i = 0; i < _rewards.Length; ++i)
         {
-            sb.AppendLine($"{rewards[i]}");
+            sb.AppendLine($"{_rewards[i]}");
         }
         Console.Write(sb);
+    }
+
+    private static void Initialize()
+    {
+        _rollScore = InitialRollScore;
+        _rollScoreSum = InitialRollScoreSum;
+        _turnTime = InitialTurnTime;
+        _elapsedTurnTime = InitialElapsedTurnTime;
+    }
+
+    private static void Grant()
+    {
+        if (_rollScoreSum >= 35 && _rollScoreSum < 65)
+        {
+            ++_rewards[0];
+        }
+        else if (_rollScoreSum >= 65 && _rollScoreSum < 95)
+        {
+            ++_rewards[1];
+        }
+        else if (_rollScoreSum >= 95 && _rollScoreSum < 125)
+        {
+            ++_rewards[2];
+        }
+        else if (_rollScoreSum >= 125)
+        {
+            ++_rewards[3];
+        }
     }
 }
