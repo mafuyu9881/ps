@@ -2,29 +2,29 @@
 
 internal class Program
 {
-    const long InitialRollScore = 1;
-    const long InitialRollScoreSum = 0;
-    const long InitialTurnTime = 4;
-    const long InitialElapsedTurnTime = 0;
+    const int InitialRollScore = 1;
+    const int InitialRollScoreSum = 0;
+    const int InitialTurnTime = 4;
+    const int InitialElapsedTurnTime = 0;
 
-    private static long[] _rewards = new long[4];
+    private static int[] _rewards = new int[4];
 
-    private static long _rollScore;
-    private static long _rollScoreSum;
-    private static long _turnTime;
-    private static long _elapsedTurnTime;
+    private static int _rollScore;
+    private static int _rollScoreSum;
+    private static int _turnTime;
+    private static int _elapsedTurnTime;
 
     private static void Main(string[] args)
     {
-        long n = long.Parse(Console.ReadLine()!); // [1, 100'000]
+        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
         // length = [1, 100'000]
         // element = [1, 6]
-        long[] rolls = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        int[] rolls = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
         Initialize();
 
-        for (long i = 0; i < rolls.Length; ++i) // max tc = 100'000
+        for (int i = 0; i < rolls.Length; ++i) // max tc = 100'000
         {
             if (_elapsedTurnTime > 240)
             {
@@ -32,7 +32,7 @@ internal class Program
                 Initialize();
             }
 
-            long roll = rolls[i];
+            int roll = rolls[i];
 
             if (roll == 1)
             {
@@ -79,7 +79,7 @@ internal class Program
         }
         
         StringBuilder sb = new();
-        for (long i = 0; i < _rewards.Length; ++i)
+        for (int i = 0; i < _rewards.Length; ++i)
         {
             sb.AppendLine($"{_rewards[i]}");
         }
