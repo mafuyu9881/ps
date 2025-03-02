@@ -7,67 +7,106 @@ internal class Program
         int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
         // length = [1, 100'000]
-        int[] a = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int[] b = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(a); // max tc = 100'000 * log2(100'000) = 100'000 * 16.xxx
-        Array.Sort(b); // max tc = 100'000 * 16.xxx
+        // element = [1, 6]
+        int[] rolls = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
         
-        int pairs = 0;
-        int i = 0;
-        int j = 0;
-        LinkedList<int> pairedAElements = new();
-        LinkedList<int> unpairedAElements = new();
-        LinkedList<int> pairedBElements = new();
-        LinkedList<int> unpairedBElements = new();
-        while (i >= 0 && i < a.Length && // max tc = 100'000
-               j >= 0 && j < b.Length)
+        int[] rewards = new int[4];
+
+        const int InitialRollScore = 1;
+        const int InitialRollScoreSum = 0;
+        const int InitialTurnTime = 4;
+        const int InitialElapsedTurnTime = 0;
+
+        int rollScore = InitialRollScore;
+        int rollScoreSum = InitialRollScoreSum;
+        int turnTime = InitialTurnTime;
+        int elapsedTurnTime = InitialElapsedTurnTime;
+
+        for (int i = 0; i < rolls.Length; ++i) // max tc = 100'000
         {
-            if (a[i] == b[j])
+            int roll = rolls[i];
+
+            bool finish = false;
+
+            if (roll == 1)
             {
-                ++pairs;
-
-                pairedAElements.AddLast(a[i]);
-                pairedBElements.AddLast(b[j]);
-
-                ++i;
-                ++j;
+                finish = true;
             }
-            else if (a[i] > b[j])
+            else if (roll == 2)
             {
-                unpairedBElements.AddLast(b[j]);
+                if (rollScore > 1)
+                {
+                    rollScore /= 2;
+                }
+                else
+                {
+                    turnTime += 2;
+                }
+            }
+            else if (roll == 3)
+            {
 
-                ++j;
+            }
+            else if (roll == 4)
+            {
+                elapsedTurnTime += 56;
+            }
+            else if (roll == 5)
+            {
+                if (turnTime > 1)
+                {
+                    --turnTime;
+                }
+            }
+            else // if (roll == 6)
+            {
+                if (rollScore < 32)
+                {
+                    rollScore *= 2;
+                }
+            }
+
+            if (elapsedTurnTime > 240)
+            {
+                finish = true;
+            }
+
+            if (finish)
+            {
+                if (rollScoreSum >= 35 && rollScoreSum < 65)
+                {
+                    ++rewards[0];
+                }
+                else if (rollScoreSum >= 65 && rollScoreSum < 95)
+                {
+                    ++rewards[1];
+                }
+                else if (rollScoreSum >= 95 && rollScoreSum < 125)
+                {
+                    ++rewards[2];
+                }
+                else if (rollScoreSum >= 125)
+                {
+                    ++rewards[3];
+                }
+
+                rollScore = InitialRollScore;
+                rollScoreSum = InitialRollScoreSum;
+                turnTime = InitialTurnTime;
+                elapsedTurnTime = InitialElapsedTurnTime;
             }
             else
             {
-                unpairedAElements.AddLast(a[i]);
-
-                ++i;
+                rollScoreSum += rollScore;
+                elapsedTurnTime += turnTime;
             }
         }
-
+        
         StringBuilder sb = new();
-        sb.AppendLine($"{pairs}");
-        PrintArray(sb, pairedAElements, unpairedAElements, a, i);
-        PrintArray(sb, pairedBElements, unpairedBElements, b, j);
+        for (int i = 0; i < rewards.Length; ++i)
+        {
+            sb.AppendLine($"{rewards[i]}");
+        }
         Console.Write(sb);
-    }
-
-    // max tc = 100'000
-    private static void PrintArray(StringBuilder sb, LinkedList<int> pairedElements, LinkedList<int> unpairedElements, int[] elements, int iteratableIndex)
-    {
-        for (var lln = pairedElements.First; lln != null; lln = lln.Next)
-        {
-            sb.Append($"{lln.Value} ");
-        }
-        for (var lln = unpairedElements.First; lln != null; lln = lln.Next)
-        {
-            sb.Append($"{lln.Value} ");
-        }
-        for (int k = iteratableIndex; k < elements.Length; ++k)
-        {
-            sb.Append($"{elements[k]} ");
-        }
-        sb.AppendLine();
     }
 }
