@@ -14,13 +14,13 @@ internal class Program
         int textureHeight = integerTokens[0];
         int textureWidth = integerTokens[1];
 
-        int[,] texture = new int[textureHeight, textureWidth];
+        char[,] texture = new char[textureHeight, textureWidth];
         for (int row = 0; row < textureHeight; ++row) // max tc = 200
         {
             string stringToken = Console.ReadLine()!;
             for (int col = 0; col < textureWidth; ++col) // max tc = 200
             {
-                texture[row, col] = stringToken[col] - '0';
+                texture[row, col] = stringToken[col];
             }
         }
         
@@ -39,7 +39,7 @@ internal class Program
         }
     }
 
-    private static StringBuilder ClampToEdge(int planeHeight, int planeWidth, int textureHeight, int textureWidth, int[,] texture)
+    private static StringBuilder ClampToEdge(int planeHeight, int planeWidth, int textureHeight, int textureWidth, char[,] texture)
     {
         StringBuilder sb = new();
 
@@ -55,7 +55,7 @@ internal class Program
         return sb;
     }
 
-    private static StringBuilder Repeat(int planeHeight, int planeWidth, int textureHeight, int textureWidth, int[,] texture)
+    private static StringBuilder Repeat(int planeHeight, int planeWidth, int textureHeight, int textureWidth, char[,] texture)
     {
         StringBuilder sb = new();
 
@@ -71,13 +71,13 @@ internal class Program
         return sb;
     }
 
-    private static StringBuilder MirroredRepeat(int planeHeight, int planeWidth, int textureHeight, int textureWidth, int[,] texture)
+    private static StringBuilder MirroredRepeat(int planeHeight, int planeWidth, int textureHeight, int textureWidth, char[,] texture)
     {
         StringBuilder sb = new();
 
-        for (int row = 0; row < planeHeight; ++row)
+        for (int row = 0; row < planeHeight; ++row) // max tc = 200
         {
-            for (int col = 0; col < planeWidth; ++col)
+            for (int col = 0; col < planeWidth; ++col) // max tc = 200
             {
                 sb.Append($"{texture[ComputeMirroredIndex(row, textureHeight), ComputeMirroredIndex(col, textureWidth)]}");
             }
