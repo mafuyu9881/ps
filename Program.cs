@@ -1,116 +1,185 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
-    const int InitialRollScore = 1;
-    const int InitialRollScoreSum = 0;
-    const int InitialTurnTime = 4;
-    const int InitialElapsedTurnTime = 0;
+    private struct Pokemon
+    {
+        private int _idx;
+        public int Idx => _idx;
+        private string _name;
+        public string Name => _name;
+        private string _type1;
+        public string Type1 => _type1;
+        private string _type2;
+        public string Type2 => _type2;
+        private int _hp;
+        public int Hp => _hp;
+        private int _atk;
+        public int Atk => _atk;
+        private int _def;
+        public int Def => _def;
+        private int _specialAtk;
+        public int SpecialAtk => _specialAtk;
+        private int _specialDef;
+        public int SpecialDef => _specialDef;
+        private int _speed;
+        public int Speed => _speed;
+        
+        public Pokemon(int idx, string name, string type1, string type2, int hp, int atk, int def, int specialAtk, int specialDef, int speed)
+        {
+            _idx = idx;
+            _name = name;
+            _type1 = type1;
+            _type2 = type2;
+            _hp = hp;
+            _atk = atk;
+            _def = def;
+            _specialAtk = specialAtk;
+            _specialDef = specialDef;
+            _speed = speed;
+        }
+    }
 
-    private static int[] _rewards = new int[4];
+    private static Pokemon[] _pokemons = null!;
 
-    private static int _rollScore;
-    private static int _rollScoreSum;
-    private static int _turnTime;
-    private static int _elapsedTurnTime;
+    private const int NULL = -1;
+    private static int _cursor = 0;
+    private static string _prefix = "";
+
+    private static int _width = 5;
+    private static int _height = 5;
 
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
+        int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
 
-        // length = [1, 100'000]
-        // element = [1, 6]
-        int[] rolls = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        Initialize();
-
-        for (int i = 0; i < rolls.Length; ++i) // max tc = 100'000
+        _pokemons = new Pokemon[n];
+        for (int i = 0; i < _pokemons.Length; ++i) // max tc = 200'000
         {
-            if (_elapsedTurnTime > 240)
-            {
-                Grant();
-                Initialize();
-            }
+            string[] tokens = Console.ReadLine()!.Split();
 
-            int roll = rolls[i];
-
-            if (roll == 1)
-            {
-                Grant();
-                Initialize();
-                continue;
-            }
-            else if (roll == 2)
-            {
-                if (_rollScore > 1)
-                {
-                    _rollScore /= 2;
-                }
-                else
-                {
-                    _turnTime += 2;
-                }
-            }
-            else if (roll == 3)
-            {
-
-            }
-            else if (roll == 4)
-            {
-                _elapsedTurnTime += 56;
-            }
-            else if (roll == 5)
-            {
-                if (_turnTime > 1)
-                {
-                    --_turnTime;
-                }
-            }
-            else if (roll == 6)
-            {
-                if (_rollScore < 32)
-                {
-                    _rollScore *= 2;
-                }
-            }
-
-            _rollScoreSum += _rollScore;
-            _elapsedTurnTime += _turnTime;
+            _pokemons[i] = new(i + 1,
+                              tokens[0],
+                              tokens[1],
+                              tokens[2],
+                              int.Parse(tokens[3]),
+                              int.Parse(tokens[4]),
+                              int.Parse(tokens[5]),
+                              int.Parse(tokens[6]),
+                              int.Parse(tokens[7]),
+                              int.Parse(tokens[8]));
         }
-        
-        StringBuilder sb = new();
-        for (int i = 0; i < _rewards.Length; ++i)
+
+        int q = int.Parse(Console.ReadLine()!); // [1, 200'000]
+
+        for (int i = 0; i < q; ++i) // max tc = 200'000
         {
-            sb.AppendLine($"{_rewards[i]}");
+            string[] tokens = Console.ReadLine()!.Split();
+
+            string command = tokens[0];
+
+            if (command == "sort")
+            {
+                Sort(tokens[1], tokens[2] == "asc");
+            }
+            else if (command == "filter")
+            {
+                if (tokens[1] == "name")
+                {
+                    string prefix = tokens[2];
+                    if (prefix == "BLANK")
+                    {
+                        _prefix = "";
+                    }
+                    else
+                    {
+                        _prefix = prefix;
+                    }
+                }
+                else // if (tokens[1] == "type")
+                {
+                    
+                }
+            }
         }
-        Console.Write(sb);
     }
 
-    private static void Initialize()
+    private static void Sort(string key, bool asc)
     {
-        _rollScore = InitialRollScore;
-        _rollScoreSum = InitialRollScoreSum;
-        _turnTime = InitialTurnTime;
-        _elapsedTurnTime = InitialElapsedTurnTime;
-    }
-
-    private static void Grant()
-    {
-        if (_rollScoreSum >= 35 && _rollScoreSum < 65)
+        if (key == "idx")
         {
-            ++_rewards[0];
+            if (asc)
+            {
+                Array.Sort(_pokemons, (a, b) => a.Idx.CompareTo(b.Idx));
+            }
+            else
+            {
+                Array.Sort(_pokemons, (a, b) => b.Idx.CompareTo(a.Idx));
+            }
         }
-        else if (_rollScoreSum >= 65 && _rollScoreSum < 95)
+        else if (key == "hp")
         {
-            ++_rewards[1];
+            if (asc)
+            {
+                Array.Sort(_pokemons, (a, b) => a.Hp.CompareTo(b.Hp));
+            }
+            else
+            {
+                Array.Sort(_pokemons, (a, b) => b.Hp.CompareTo(a.Hp));
+            }
         }
-        else if (_rollScoreSum >= 95 && _rollScoreSum < 125)
+        else if (key == "atk")
         {
-            ++_rewards[2];
+            if (asc)
+            {
+                Array.Sort(_pokemons, (a, b) => a.Atk.CompareTo(b.Atk));
+            }
+            else
+            {
+                Array.Sort(_pokemons, (a, b) => b.Atk.CompareTo(a.Atk));
+            }
         }
-        else if (_rollScoreSum >= 125)
+        else if (key == "def")
         {
-            ++_rewards[3];
+            if (asc)
+            {
+                Array.Sort(_pokemons, (a, b) => a.Def.CompareTo(b.Def));
+            }
+            else
+            {
+                Array.Sort(_pokemons, (a, b) => b.Def.CompareTo(a.Def));
+            }
+        }
+        else if (key == "special_atk")
+        {
+            if (asc)
+            {
+                Array.Sort(_pokemons, (a, b) => a.SpecialAtk.CompareTo(b.SpecialAtk));
+            }
+            else
+            {
+                Array.Sort(_pokemons, (a, b) => b.SpecialAtk.CompareTo(a.SpecialAtk));
+            }
+        }
+        else if (key == "special_def")
+        {
+            if (asc)
+            {
+                Array.Sort(_pokemons, (a, b) => a.SpecialDef.CompareTo(b.SpecialDef));
+            }
+            else
+            {
+                Array.Sort(_pokemons, (a, b) => b.SpecialDef.CompareTo(a.SpecialDef));
+            }
+        }
+        else // if (key == "speed")
+        {
+            if (asc)
+            {
+                Array.Sort(_pokemons, (a, b) => a.Speed.CompareTo(b.Speed));
+            }
+            else
+            {
+                Array.Sort(_pokemons, (a, b) => b.Speed.CompareTo(a.Speed));
+            }
         }
     }
 }
