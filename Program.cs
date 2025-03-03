@@ -4,42 +4,35 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [2, 100]
+        // length = [2, 500]
+        string token = Console.ReadLine()!;
 
-        int height = n * 2 - 1;
-        int width = n * 2 + (n - 2) * 2 + 1;
+        int zeros = 0;
+        int ones = 0;
+        for (int i = 0; i < token.Length; ++i) // max tc = 500
+        {
+            char c = token[i];
+            if (c == '0')
+            {
+                ++zeros;
+            }
+            else
+            {
+                ++ones;
+            }
+        }
+
+        zeros /= 2;
+        ones /= 2;
 
         StringBuilder sb = new();
-        for (int row = 0; row < height; ++row)
+        for (int i = 0; i < zeros; ++i) // max tc = 250
         {
-            for (int col = 0; col < width; ++col)
-            {
-                int leftBeginCol = (n - 1) - Math.Abs((n - 1) - row);
-                int leftEndCol = leftBeginCol + (n - 1);
-
-                int rightBeginCol = (width - 1) - leftBeginCol - (n - 1);
-                int rightEndCol = rightBeginCol + (n - 1);
-
-                if ((col >= leftBeginCol && col <= leftEndCol) ||
-                    (col >= rightBeginCol && col <= rightEndCol))
-                {
-                    if (row == 0 || row == height - 1 ||
-                        col == leftBeginCol || col == leftEndCol ||
-                        col == rightBeginCol || col == rightEndCol)
-                    {
-                        sb.Append('*');
-                    }
-                    else
-                    {
-                        sb.Append(' ');
-                    }
-                }
-                else if (col <= rightEndCol)
-                {
-                    sb.Append(' ');
-                }
-            }
-            sb.AppendLine();
+            sb.Append(0);
+        }
+        for (int i = 0; i < ones; ++i) // max tc = 250
+        {
+            sb.Append(1);
         }
         Console.Write(sb);
     }
