@@ -4,66 +4,77 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        // length = [2, 500]
-        string token = Console.ReadLine()!;
+        // element = [2, 20]
+        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = integerTokens[0];
+        int width = integerTokens[1];
 
-        LinkedList<char> ll = new();
-        int zeros = 0;
-        int ones = 0;
-        for (int i = 0; i < token.Length; ++i) // max tc = 500
+        char[] map = new char[height * width];
+        for (int row = 0; row < height; ++row) // max tc = 20
         {
-            char c = token[i];
-
-            if (c == '0')
+            string stringToken = Console.ReadLine()!;
+            for (int col = 0; col < width; ++col) // max tc = 20
             {
-                ++zeros;
+                map[row * width + col] = stringToken[col];
             }
-            else
-            {
-                ++ones;
-            }
-
-            ll.AddLast(c);
         }
 
-        zeros /= 2;
-        ones /= 2;
+        const char Blocked = '#';
 
-        LinkedListNode<char>? lln = null;
-
-        lln = ll.Last!;
-        while (zeros > 0)
+        List<string> words = new();
+        for (int row = 0; row < height; ++row) // max tc = 20
         {
-            var prevLLN = lln.Previous!;
-
-            if (lln.Value == '0')
+            for (int col = 0; col < width; ++col) // max tc = 20
             {
-                ll.Remove(lln);
-                --zeros;
+                char c = map[row * width + col];
+
+                if (c == Blocked)
+                    continue;
+
+                if (col == 0 || map[row * width + col - 1] == Blocked)
+                {
+                    StringBuilder word = new();
+                    
+                    for (int wordCol = col; wordCol < width; ++wordCol) // max tc = 20
+                    {
+                        char wordC = map[row * width + wordCol];
+                        
+                        if (wordC == Blocked)
+                            break;
+
+                        word.Append(wordC);
+                    }
+
+                    if (word.Length > 1)
+                    {
+                        words.Add($"{word}");
+                    }
+                }
+
+                if (row == 0 || map[(row - 1) * width + col] == Blocked)
+                {
+                    StringBuilder word = new();
+
+                    for (int wordRow = row; wordRow < height; ++wordRow) // max tc = 20
+                    {
+                        char wordC = map[wordRow * width + col];
+
+                        if (wordC == Blocked)
+                            break;
+
+                        word.Append(wordC);
+                    }
+
+                    if (word.Length > 1)
+                    {
+                        words.Add($"{word}");
+                    }
+                }
             }
-
-            lln = prevLLN;
         }
 
-        lln = ll.First!;
-        while (ones > 0)
-        {
-            var nextLLN = lln.Next!;
+        words.Sort(); // max tc = about 400 * log2(400) = 400 * 8.xxx
 
-            if (lln.Value == '1')
-            {
-                ll.Remove(lln);
-                --ones;
-            }
-            
-            lln = nextLLN;
-        }
-
-        StringBuilder sb = new();
-        for (lln = ll.First!; lln != null; lln = lln.Next)
-        {
-            sb.Append(lln.Value);
-        }
-        Console.Write(sb);
+        Console.Write(words[0]);
     }
 }
