@@ -1,80 +1,53 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
+    private static int[] _weights = null!;
+    private static bool[] _measured = null!;
+
     private static void Main(string[] args)
     {
-        // element = [2, 20]
-        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = integerTokens[0];
-        int width = integerTokens[1];
+        int k = int.Parse(Console.ReadLine()!); // [3, 13]
 
-        char[] map = new char[height * width];
-        for (int row = 0; row < height; ++row) // max tc = 20
+        // max tc = 200'000
+        // element = [1, 200'000]
+        _weights = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        // max tc = 13
+        // [91, about 13 * 200'000]
+        int weightSum = _weights.Sum();
+
+        _measured = new bool[weightSum + 1]; // max sc = about 13 * 200'000 * 4B = 5.4MB
+
+        Measure(0, 0);
+
+        int measurables = 0;
+        for (int i = 1; i < _measured.Length; ++i) // max tc = about 13 * 200'000
         {
-            string stringToken = Console.ReadLine()!;
-            for (int col = 0; col < width; ++col) // max tc = 20
+            if (_measured[i] == false)
             {
-                map[row * width + col] = stringToken[col];
+                ++measurables;
             }
         }
+        Console.Write(measurables);
+    }
 
-        const char Blocked = '#';
-
-        List<string> words = new();
-        for (int row = 0; row < height; ++row) // max tc = 20
+    private static void Measure(int currIndex, int measuredWeight)
+    {
+        if (currIndex > _weights.Length - 1)
         {
-            for (int col = 0; col < width; ++col) // max tc = 20
+            if (measuredWeight > 0)
             {
-                char c = map[row * width + col];
-
-                if (c == Blocked)
-                    continue;
-
-                if (col == 0 || map[row * width + col - 1] == Blocked)
-                {
-                    StringBuilder word = new();
-                    
-                    for (int wordCol = col; wordCol < width; ++wordCol) // max tc = 20
-                    {
-                        char wordC = map[row * width + wordCol];
-                        
-                        if (wordC == Blocked)
-                            break;
-
-                        word.Append(wordC);
-                    }
-
-                    if (word.Length > 1)
-                    {
-                        words.Add($"{word}");
-                    }
-                }
-
-                if (row == 0 || map[(row - 1) * width + col] == Blocked)
-                {
-                    StringBuilder word = new();
-
-                    for (int wordRow = row; wordRow < height; ++wordRow) // max tc = 20
-                    {
-                        char wordC = map[wordRow * width + col];
-
-                        if (wordC == Blocked)
-                            break;
-
-                        word.Append(wordC);
-                    }
-
-                    if (word.Length > 1)
-                    {
-                        words.Add($"{word}");
-                    }
-                }
+                _measured[measuredWeight] = true;
             }
         }
+        else
+        {
+            int nextIndex = currIndex + 1;
 
-        words.Sort(); // max tc = about 400 * log2(400) = 400 * 8.xxx
+            int weight = _weights[currIndex];
 
-        Console.Write(words[0]);
+            Measure(nextIndex, measuredWeight);
+            Measure(nextIndex, measuredWeight + weight);
+            Measure(nextIndex, measuredWeight - weight);
+        }
     }
 }
