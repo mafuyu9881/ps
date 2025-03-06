@@ -1,53 +1,89 @@
-﻿internal class Program
-{
-    private static int[] _weights = null!;
-    private static bool[] _measured = null!;
+﻿using System.Text;
 
+internal class Program
+{
     private static void Main(string[] args)
     {
-        int k = int.Parse(Console.ReadLine()!); // [3, 13]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int vertices = tokens[0]; // [1, 300]
+        int edges = tokens[1]; // [1, 25'000]
+        int t = tokens[2]; // [1, 40'000]
 
-        // max tc = 200'000
-        // element = [1, 200'000]
-        _weights = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        // max tc = 13
-        // [91, about 13 * 200'000]
-        int weightSum = _weights.Sum();
-
-        _measured = new bool[weightSum + 1]; // max sc = about 13 * 200'000 * 4B = 5.4MB
-
-        Measure(0, 0);
-
-        int measurables = 0;
-        for (int i = 1; i < _measured.Length; ++i) // max tc = about 13 * 200'000
+        LinkedList<(int dstV, int cost)>[] adjList = new LinkedList<(int, int)>[vertices + 1];
+        for (int i = 0; i < adjList.Length; ++i)
         {
-            if (_measured[i] == false)
+            adjList[i] = new();
+        }
+
+        for (int i = 0; i < edges; ++i) // max tc = 25'000
+        {
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            
+            // [1, 300]
+            int u = tokens[0];
+            int v = tokens[1];
+
+            int cost = tokens[2]; // [1, 1'000'000]
+
+            adjList[u].AddLast((v, cost));
+        }
+
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i) // max tc = 40'000
+        {
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            // [1, 300]
+            int s = tokens[0];
+            int e = tokens[1];
+
+            PriorityQueue<(int dstV, int cost), int> pq = new();
+
+            bool[] visited = new bool[adjList.Length + 1]; // max sc = 301 * 4B = about 1.2KB
+
+            visited[s] = true;
+            for (var lln = adjList[s].First; lln != null; lln = lln.Next) // max tc = 25'000
             {
-                ++measurables;
+                int dstV = lln.Value.dstV;
+                int cost = lln.Value.cost;
+                pq.Enqueue((dstV, cost), cost);
+            }
+
+            const int InvalidCost = -1;
+            int maxCost = InvalidCost;
+            while (pq.Count > 0) // max tc = 25'000
+            {
+                var element = pq.Dequeue();
+
+                int dstV = element.dstV;
+                if (visited[dstV])
+                    continue;
+
+                int cost = element.cost;
+                if (maxCost == InvalidCost || cost > maxCost)
+                    maxCost = cost;
+
+                visited[dstV] = true;
+                if (dstV == e)
+                    break;
+
+                for (var lln = adjList[dstV].First; lln != null; lln = lln.Next)
+                {
+                    int adjDstV = lln.Value.dstV;
+                    int adjCost = lln.Value.cost;
+                    pq.Enqueue((adjDstV, adjCost), adjCost);
+                }
+            }
+
+            if (visited[e])
+            {
+                sb.AppendLine($"{maxCost}");
+            }
+            else
+            {
+                sb.AppendLine("-1");
             }
         }
-        Console.Write(measurables);
-    }
-
-    private static void Measure(int currIndex, int measuredWeight)
-    {
-        if (currIndex > _weights.Length - 1)
-        {
-            if (measuredWeight > 0)
-            {
-                _measured[measuredWeight] = true;
-            }
-        }
-        else
-        {
-            int nextIndex = currIndex + 1;
-
-            int weight = _weights[currIndex];
-
-            Measure(nextIndex, measuredWeight);
-            Measure(nextIndex, measuredWeight + weight);
-            Measure(nextIndex, measuredWeight - weight);
-        }
+        Console.Write(sb);
     }
 }
