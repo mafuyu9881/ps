@@ -15,6 +15,18 @@ internal class Program
             adjList[i] = new();
         }
 
+        const int InvalidCost = -1;
+
+        int[][] precomputedMaxCosts = new int[adjList.Length][];
+        for (int row = 0; row < precomputedMaxCosts.Length; ++row)
+        {
+            precomputedMaxCosts[row] = new int[precomputedMaxCosts.Length];
+            for (int col = 0; col < precomputedMaxCosts[row].Length; ++col)
+            {
+                precomputedMaxCosts[row][col] = InvalidCost;
+            }
+        }
+
         for (int i = 0; i < edges; ++i) // max tc = 25'000
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -49,7 +61,6 @@ internal class Program
                 pq.Enqueue((dstV, cost), cost);
             }
 
-            const int InvalidCost = -1;
             int maxCost = InvalidCost;
             while (pq.Count > 0) // max tc = 25'000
             {
@@ -63,6 +74,17 @@ internal class Program
                 if (maxCost == InvalidCost || cost > maxCost)
                     maxCost = cost;
 
+                int precomputedMaxCost = precomputedMaxCosts[dstV][e];
+                if (precomputedMaxCost != InvalidCost)
+                {
+                    if (precomputedMaxCost > maxCost)
+                    {
+                        maxCost = precomputedMaxCost;
+                    }
+
+                    break;
+                }
+
                 visited[dstV] = true;
                 if (dstV == e)
                     break;
@@ -75,14 +97,12 @@ internal class Program
                 }
             }
 
-            if (visited[e])
-            {
-                sb.AppendLine($"{maxCost}");
-            }
-            else
-            {
-                sb.AppendLine("-1");
-            }
+            if (visited[e] == false)
+                maxCost = -1;
+
+            precomputedMaxCosts[s][e] = maxCost;
+
+            sb.AppendLine($"{maxCost}");
         }
         Console.Write(sb);
     }
