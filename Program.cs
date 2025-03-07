@@ -1,82 +1,84 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
+    const int Composite = -1;
+
+    private static int[] _table = null!;
+
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int vertices = tokens[0]; // [1, 300]
-        int edges = tokens[1]; // [1, 25'000]
-        int t = tokens[2]; // [1, 40'000]
-
-        const int Infinity = -1;
-
-        int[,] precomputedMaxCosts = new int[vertices, vertices];
-        for (int row = 0; row < vertices; ++row) // max tc = 300
+        _table = new int[5000000 + 1];
+        _table[0] = Composite;
+        _table[1] = Composite;
+        for (int i = 1; i < _table.Length; ++i) // tc = 14489913
         {
-            for (int col = 0; col < vertices; ++col) // max tc = 300
+            if (_table[i] < 0)
+                continue;
+
+            for (int j = 2; i * j < _table.Length; ++j)
             {
-                if (row == col)
-                {
-                    precomputedMaxCosts[row, col] = 0;
-                }
-                else
-                {
-                    precomputedMaxCosts[row, col] = Infinity;
-                }
+                _table[i * j] = Composite;
             }
         }
 
-        for (int i = 0; i < edges; ++i) // max tc = 25'000
+        int n = int.Parse(Console.ReadLine()!); // [5, 100'000]
+
+        long aScore = 0;
+        long bScore = 0;
+        
+        PriorityQueue<int, int> aPrimes = new();
+        PriorityQueue<int, int> bPrimes = new();
+
+        for (int i = 0; i < n; ++i) // max tc = 100'000
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            
-            // [0, 299]
-            int u = tokens[0] - 1;
-            int v = tokens[1] - 1;
+            // element = [0, 5'000'000]
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-            int cost = tokens[2]; // [1, 1'000'000]
+            int aPresented = tokens[0];
+            int bPresented = tokens[1];
 
-            precomputedMaxCosts[u, v] = cost;
+            Evaluate(ref aScore, ref bScore, aPrimes, bPrimes, aPresented);
+            Evaluate(ref bScore, ref aScore, bPrimes, aPrimes, bPresented);
         }
 
-        for (int transitV = 0; transitV < vertices; ++transitV) // max tc = 300
+        if (aScore > bScore)
         {
-            for (int srcV = 0; srcV < vertices; ++srcV) // max tc = 300
+            Console.Write("소수의 신 갓대웅");
+        }
+        else if (aScore < bScore)
+        {
+            Console.Write("소수 마스터 갓규성");
+        }
+        else
+        {
+            Console.Write("우열을 가릴 수 없음");
+        }
+    }
+
+    private static void Evaluate(ref long selfScore,
+                                 ref long oppoScore,
+                                 PriorityQueue<int, int> selfPrimes,
+                                 PriorityQueue<int, int> oppoPrimes,
+                                 int presented)
+    {
+        if (_table[presented] == Composite)
+        {
+            if (oppoPrimes.Count < 3)
             {
-                for (int dstV = 0; dstV < vertices; ++dstV) // max tc = 300
-                {
-                    int precomputedMaxCost = precomputedMaxCosts[srcV, dstV];
-
-                    int directCost = precomputedMaxCosts[srcV, dstV];
-                    int transitCost0 = precomputedMaxCosts[srcV, transitV];
-                    int transitCost1 = precomputedMaxCosts[transitV, dstV];
-                    if (transitCost0 != Infinity && transitCost1 != Infinity)
-                    {
-                        precomputedMaxCost = Math.Max(transitCost0, transitCost1);
-
-                        if (directCost != Infinity)
-                        {
-                            precomputedMaxCost = Math.Min(directCost, precomputedMaxCost);
-                        }
-                    }
-
-                    precomputedMaxCosts[srcV, dstV] = precomputedMaxCost;
-                }
+                oppoScore += 1000;
+            }
+            else
+            {
+                oppoScore += oppoPrimes.Dequeue(); // max tc = log2(5'000'000) = 22.xxx
             }
         }
-
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i) // max tc = 40'000
+        else if (_table[presented] > 0)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            // [0, 299]
-            int s = tokens[0] - 1;
-            int e = tokens[1] - 1;
-
-            sb.AppendLine($"{precomputedMaxCosts[s, e]}");
+            selfScore -= 1000;
         }
-        Console.Write(sb);
+        else
+        {
+            _table[presented] = 1;
+            selfPrimes.Enqueue(presented, -presented); // max tc = log2(5'000'000) = 22.xxx
+        }
     }
 }
