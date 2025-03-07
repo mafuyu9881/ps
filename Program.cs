@@ -1,6 +1,7 @@
 ﻿internal class Program
 {
     const int Composite = -1;
+    const int DequeuingOrder = 3; // 1-based
 
     private static int[] _table = null!;
 
@@ -62,13 +63,13 @@
     {
         if (_table[presented] == Composite)
         {
-            if (oppoPrimes.Count < 3)
+            if (oppoPrimes.Count < DequeuingOrder)
             {
                 oppoScore += 1000;
             }
             else
             {
-                oppoScore += oppoPrimes.Dequeue(); // max tc = log2(5'000'000) = 22.xxx
+                oppoScore += selfPrimes.Peek(); // max tc = log2(3) = 1.xxx
             }
         }
         else if (_table[presented] > 0)
@@ -78,7 +79,13 @@
         else
         {
             _table[presented] = 1;
-            selfPrimes.Enqueue(presented, -presented); // max tc = log2(5'000'000) = 22.xxx
+
+            selfPrimes.Enqueue(presented, presented); // max tc = log2(3) = 1.xxx
+
+            if (selfPrimes.Count > DequeuingOrder)
+            {
+                selfPrimes.Dequeue(); // tc = log2(4) = 2
+            }
         }
     }
 }
