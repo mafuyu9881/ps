@@ -69,7 +69,7 @@
             }
             else
             {
-                oppoScore += selfPrimes.Peek(); // max tc = log2(3) = 1.xxx
+                oppoScore += oppoPrimes.Peek(); // max tc = log2(3) = 1.xxx
             }
         }
         else if (_table[presented] > 0)
