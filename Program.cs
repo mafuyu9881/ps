@@ -1,45 +1,50 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
+        int n = int.Parse(Console.ReadLine()!); // [2, 5'000]
 
-        int[] seats = new int[1000000 + 1];
+        // element = [1, 1'000'000]
+        int[] rocks = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        for (int i = 0; i < n; ++i) // max tc = 100'000
+        int s = 0;
+        int e = n - 1;
+
+        const int InvalidCost = -1;
+
+        int[] cost = new int[n];
+        for (int i = 0; i < cost.Length; ++i) // max tc = 5'000
         {
-            // length = 2
-            // element = [1, 1'000'000]
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            cost[i] = InvalidCost;
+        }
 
-            int s = tokens[0];
-            int e = tokens[1];
+        Queue<(int v, int cost)> frontier = new();
 
-            ++seats[s];
+        int sNewCost = 0;
+        cost[s] = sNewCost;
+        frontier.Enqueue((s, sNewCost));
 
-            int l = e + 1; // left time
-            if (l < seats.Length)
+        while (frontier.Count > 0)
+        {
+            var element = frontier.Dequeue();
+            int v = element.v;
+            int vCost = element.cost;
+
+            for (int adjV = 0; adjV < cost.Length; ++adjV)
             {
-                --seats[l];
+                if (adjV == v)
+                    continue;
+
+                int adjVOldCost = cost[adjV];
+                int adjVNewCost = vCost + (Math.Abs(adjV - v) * (1 + Math.Abs(rocks[v] - rocks[adjV])));
+                if (adjVOldCost != InvalidCost && adjVOldCost <= adjVNewCost)
+                    continue;
+
+                cost[adjV] = adjVNewCost;
+                frontier.Enqueue((adjV, adjVNewCost));
             }
         }
 
-        for (int i = 1; i < seats.Length; ++i) // tc = 1'000'000
-        {
-            seats[i] += seats[i - 1];
-        }
-
-        int q = int.Parse(Console.ReadLine()!); // [1, 100'000]
-        
-        int[] viewingTimes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        StringBuilder sb = new();
-        for (int i = 0; i < viewingTimes.Length; ++i) // max tc = 100'000
-        {
-            sb.AppendLine($"{seats[viewingTimes[i]]}");
-        }
-        Console.Write(sb);
+        Console.Write(cost[e]);
     }
 }
