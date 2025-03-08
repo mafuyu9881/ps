@@ -7,44 +7,31 @@
         // element = [1, 1'000'000]
         int[] rocks = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int s = 0;
-        int e = n - 1;
-
         const int InvalidCost = -1;
 
         int[] cost = new int[n];
+
         for (int i = 0; i < cost.Length; ++i) // max tc = 5'000
         {
             cost[i] = InvalidCost;
         }
 
-        Queue<(int v, int cost)> frontier = new();
-
-        int sNewCost = 0;
-        cost[s] = sNewCost;
-        frontier.Enqueue((s, sNewCost));
-
-        while (frontier.Count > 0)
+        for (int s = 0; s < cost.Length; ++s) // max tc = 5'000
         {
-            var element = frontier.Dequeue();
-            int v = element.v;
-            int vCost = element.cost;
+            int sCost = cost[s];
 
-            for (int adjV = 0; adjV < cost.Length; ++adjV)
+            for (int i = s + 1; i < cost.Length; ++i) // max tc = 4'999
             {
-                if (adjV == v)
+                int iOldCost = cost[i];
+                int iNewCost = Math.Max(sCost, (i - s) * (1 + Math.Abs(rocks[i] - rocks[s])));
+
+                if (iOldCost != InvalidCost && iOldCost <= iNewCost)
                     continue;
 
-                int adjVOldCost = cost[adjV];
-                int adjVNewCost = vCost + (Math.Abs(adjV - v) * (1 + Math.Abs(rocks[v] - rocks[adjV])));
-                if (adjVOldCost != InvalidCost && adjVOldCost <= adjVNewCost)
-                    continue;
-
-                cost[adjV] = adjVNewCost;
-                frontier.Enqueue((adjV, adjVNewCost));
+                cost[i] = iNewCost;
             }
         }
 
-        Console.Write(cost[e]);
+        Console.Write(cost[cost.Length - 1]);
     }
 }
