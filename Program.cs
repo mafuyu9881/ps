@@ -5,11 +5,11 @@
         int n = int.Parse(Console.ReadLine()!); // [2, 5'000]
 
         // element = [1, 1'000'000]
-        int[] rocks = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        long[] rocks = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
 
         const int InvalidCost = -1;
 
-        int[] cost = new int[n];
+        long[] cost = new long[n];
 
         for (int i = 0; i < cost.Length; ++i) // max tc = 5'000
         {
@@ -18,12 +18,12 @@
 
         for (int s = 0; s < cost.Length; ++s) // max tc = 5'000
         {
-            int sCost = cost[s];
+            long sCost = cost[s];
 
             for (int i = s + 1; i < cost.Length; ++i) // max tc = 4'999
             {
-                int iOldCost = cost[i];
-                int iNewCost = Math.Max(sCost, (i - s) * (1 + Math.Abs(rocks[i] - rocks[s])));
+                long iOldCost = cost[i];
+                long iNewCost = Math.Max(sCost, (i - s) * (1 + Math.Abs(rocks[i] - rocks[s])));
 
                 if (iOldCost != InvalidCost && iOldCost <= iNewCost)
                     continue;
