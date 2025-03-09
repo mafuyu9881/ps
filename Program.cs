@@ -1,68 +1,36 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 3'000]
+        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = integerTokens[0]; // [1, 2 * 10^5]
+        int m = integerTokens[1]; // [1, 2 * 10^5]
 
-        // element = [1, 10^8]
-        int[] xs = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 3'000
-        int[] ts = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 3'000
-
-        (int x, int t)[] xts = new (int, int)[n];
-        for (int i = 0; i < n; ++i) // max tc = 3'000
+        SortedSet<string> ss = new();
+        for (int i = 0; i < n; ++i) // max tc = 2 * 10^5
         {
-            int x = xs[i];
-            int t = ts[i];
-            xts[i] = (x, t);
-        }
-        Array.Sort(xts, (a, b) => a.x.CompareTo(b.x));
-
-        bool[] picked = new bool[n];
-
-        int truckX = 0;
-        long elapsedT = 0;
-
-        for (int i = 0; i < n; ++i) // max tc = 3'000
-        {
-            int currX = xts[i].x;
-
-            int deltaT = currX - truckX;
-            int currT = xts[i].t;
-
-            elapsedT += deltaT;
-
-            if (elapsedT >= currT)
-            {
-                picked[i] = true;
-            }
-            
-            truckX = currX;
+            ss.Add(Console.ReadLine()!); // max tc = log2(2 * 10^5) = 17.xxx
         }
 
-        for (int i = n - 1; i >= 0; --i) // max tc = 3'000
+        StringBuilder sb = new();
+        for (int i = 0; i < m; ++i) // max tc = 2 * 10^5
         {
-            if (picked[i])
-                continue;
+            string[] stringTokens = Console.ReadLine()!.Split(',');
 
-            int currX = xts[i].x;
-
-            int deltaT = truckX - currX;
-            int currT = xts[i].t;
-
-            elapsedT += deltaT;
-
-            if (elapsedT < currT)
+            for (int j = 0; j < stringTokens.Length; ++j) // max tc = 10
             {
-                elapsedT = currT;
+                string keyword = stringTokens[j];
+
+                if (ss.Contains(keyword) == false) // max tc = 17.xxx
+                    continue;
+
+                ss.Remove(keyword); // max tc = 17.xxx
             }
 
-            picked[i] = true;
-            truckX = currX;
+            sb.AppendLine($"{ss.Count}");
         }
-        
-        elapsedT += truckX;
-        truckX = 0;
-
-        Console.Write(elapsedT);
+        Console.Write(sb);
     }
 }
