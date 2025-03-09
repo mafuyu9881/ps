@@ -2,36 +2,69 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [2, 5'000]
+        int n = int.Parse(Console.ReadLine()!); // [1, 3'000]
 
-        // element = [1, 1'000'000]
-        long[] rocks = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        // element = [1, 10^8]
+        int[] xs = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 3'000
+        int[] ts = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // max tc = 3'000
 
-        const int InvalidCost = -1;
-
-        long[] cost = new long[n];
-
-        for (int i = 0; i < cost.Length; ++i) // max tc = 5'000
+        (int x, int t)[] xts = new (int, int)[n];
+        for (int i = 0; i < n; ++i) // max tc = 3'000
         {
-            cost[i] = InvalidCost;
+            int x = xs[i];
+            int t = ts[i];
+            xts[i] = (x, t);
         }
+        
+        Array.Sort(xts, (a, b) => a.x.CompareTo(b.x));
 
-        for (int s = 0; s < cost.Length; ++s) // max tc = 5'000
+        bool[] picked = new bool[n];
+
+        long elapsedT = 0;
+
+        for (int i = 0; i < n; ++i) // max tc = 3'000
         {
-            long sCost = cost[s];
+            int prevX = (i <= 0) ? 0 : xts[i - 1].x;
+            int currX = xts[i].x;
 
-            for (int i = s + 1; i < cost.Length; ++i) // max tc = 4'999
+            int deltaT = currX - prevX;
+            int currT = xts[i].t;
+
+            elapsedT += deltaT;
+
+            if (elapsedT >= currT)
             {
-                long iOldCost = cost[i];
-                long iNewCost = Math.Max(sCost, (i - s) * (1 + Math.Abs(rocks[i] - rocks[s])));
-
-                if (iOldCost != InvalidCost && iOldCost <= iNewCost)
-                    continue;
-
-                cost[i] = iNewCost;
+                picked[i] = true;
             }
         }
 
-        Console.Write(cost[cost.Length - 1]);
+        for (int i = n - 1; i >= 0; --i) // max tc = 3'000
+        {
+            if (picked[i])
+                continue;
+
+            int prevX = (i >= n - 1) ? xts[n - 1].x : xts[i + 1].x;
+            if (i >= n - 1)
+                prevX = xts[n - 1].x;
+
+
+            int currX = xts[i].x;
+
+            int deltaT = prevX - currX;
+            int currT = xts[i].t;
+
+            elapsedT += deltaT;
+
+            if (elapsedT < currT)
+            {
+                elapsedT = currT;
+            }
+
+            picked[i] = true;
+        }
+        
+        elapsedT += xts[0].x;
+
+        Console.Write(elapsedT);
     }
 }
