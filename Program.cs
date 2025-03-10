@@ -2,20 +2,22 @@
 {
     private static void Main(string[] args)
     {
+        int n = int.Parse(Console.ReadLine()!); // [1, 100]
+
+        // length = [1, 100]
+        // element = [-100, 100]
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int width = tokens[0]; // [1, 10'000]
-        int height = tokens[1]; // [1, 10'000]
-        int n = tokens[2]; // [2, 10'000'000]
 
-        double segmentedWidth = height / (double)n;
+        int v = int.Parse(Console.ReadLine()!); // [-100, 100]
 
-        double required = 0.0;
-        for (int i = ((n & 1) == 1) ? 1 : 2; i < n; i += 2)
+        int output = 0;
+        for (int i = 0; i < tokens.Length; ++i)
         {
-            required += segmentedWidth * i;
+            if (tokens[i] == v)
+            {
+                ++output;
+            }
         }
-        required *= 2;
-
-        Console.Write(required.ToString("F6"));
+        Console.Write(output);
     }
 }
