@@ -18,21 +18,21 @@
             nss[i] = (n, s);
         }
 
-        long b = nss[0].n; // common denominator
-        for (int i = 1; i < nss.Length; ++i)
-        {
-            b = LCM(b, nss[i].n);
-        }
-
         const long X = 1_000_000_007;
-
-        long bInverseModX = EBS(b, X - 2, X);
 
         long qSumModX = 0;
         for (int i = 0; i < nss.Length; ++i)
         {
-            long adjustedNumerator = nss[i].s * b / nss[i].n; // numerator after finding a common denominator
-            qSumModX = (qSumModX + (((adjustedNumerator % X) * bInverseModX) % X)) % X;
+            long a = nss[i].s;
+            long b = nss[i].n;
+
+            long gcd = GCD(a, b);
+            a /= gcd;
+            b /= gcd;
+
+            long bInverseModX = EBS(b, X - 2, X);
+
+            qSumModX = (qSumModX + (((a % X) * bInverseModX) % X)) % X;
         }
         Console.Write(qSumModX);
     }
@@ -52,11 +52,6 @@
         }
 
         return bigger;
-    }
-
-    private static long LCM(long a, long b)
-    {
-        return a * b / GCD(a, b);
     }
 
     private static long EBS(long basis, long exponent, long modulus)
