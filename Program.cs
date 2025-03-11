@@ -31,7 +31,8 @@
         long qSumModX = 0;
         for (int i = 0; i < nss.Length; ++i)
         {
-            qSumModX = (qSumModX + (((nss[i].s % X) * bInverseModX) % X)) % X;
+            long adjustedNumerator = nss[i].s * b / nss[i].n; // numerator after finding a common denominator
+            qSumModX = (qSumModX + (((adjustedNumerator % X) * bInverseModX) % X)) % X;
         }
         Console.Write(qSumModX);
     }
