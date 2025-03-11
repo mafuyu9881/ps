@@ -24,15 +24,16 @@
             b = LCM(b, nss[i].n);
         }
 
-        long a = 0;
-        for (int i = 0; i < nss.Length; ++i)
-        {
-            a += nss[i].s * b / nss[i].n;
-        }
-
         const long X = 1_000_000_007;
 
-        Console.Write(((a % X) * EBS(b, X - 2, X)) % X);
+        long bInverseModX = EBS(b, X - 2, X);
+
+        long qSumModX = 0;
+        for (int i = 0; i < nss.Length; ++i)
+        {
+            qSumModX = (qSumModX + (((nss[i].s % X) * bInverseModX) % X)) % X;
+        }
+        Console.Write(qSumModX);
     }
 
     private static long GCD(long a, long b)
