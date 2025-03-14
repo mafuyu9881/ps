@@ -36,20 +36,21 @@ internal class Program
         long[] aMinCost = ComputeMinCost(a);
         long[] bMinCost = ComputeMinCost(b);
 
-        int designatableCount = 0;
-        StringBuilder designatablesSB = new();
+        LinkedList<int> designatables = new();
         for (int i = 0; i < _n; ++i) // max tc = 200'000
         {
             if (aMinCost[i] + bMinCost[i] == aMinCost[b])
             {
-                designatablesSB.Append($"{i + 1} ");
-                ++designatableCount;
+                designatables.AddLast(i);
             }
         }
-        
+
         StringBuilder sb = new();
-        sb.AppendLine($"{designatableCount}");
-        sb.Append(designatablesSB);
+        sb.AppendLine($"{designatables.Count}");
+        for (var lln = designatables.First; lln != null; lln = lln.Next) // max tc = 200'000
+        {
+            sb.Append($"{lln.Value + 1} ");
+        }
         Console.Write(sb);
     }
 
@@ -70,6 +71,9 @@ internal class Program
             var e = pq.Dequeue();
             int dst = e.dst;
             long srcDstCost = e.cost;
+
+            if (minCost[dst] != InvalidCost && minCost[dst] < srcDstCost)
+                continue;
 
             var adjs = _adjList[dst];
             for (var lln = adjs.First; lln != null; lln = lln.Next)
