@@ -36,21 +36,20 @@ internal class Program
         long[] aMinCost = ComputeMinCost(a);
         long[] bMinCost = ComputeMinCost(b);
 
-        LinkedList<int> designatables = new();
+        int designatableCount = 0;
+        StringBuilder designatablesSB = new();
         for (int i = 0; i < _n; ++i) // max tc = 200'000
         {
             if (aMinCost[i] + bMinCost[i] == aMinCost[b])
             {
-                designatables.AddLast(i);
+                designatablesSB.Append($"{i + 1} ");
+                ++designatableCount;
             }
         }
-
+        
         StringBuilder sb = new();
-        sb.AppendLine($"{designatables.Count}");
-        for (var lln = designatables.First; lln != null; lln = lln.Next) // max tc = 200'000
-        {
-            sb.Append($"{lln.Value + 1} ");
-        }
+        sb.AppendLine($"{designatableCount}");
+        sb.Append(designatablesSB);
         Console.Write(sb);
     }
 
