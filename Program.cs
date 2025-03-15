@@ -44,7 +44,7 @@ internal class Program
             
             if (nextLLN != null && currLLN.Value.E >= nextLLN.Value.S)
             {
-                currLLN.ValueRef.E = nextLLN.Value.E;
+                currLLN.ValueRef.E = Math.Max(currLLN.Value.E, nextLLN.Value.E);
                 currLLN.ValueRef.C = Math.Min(currLLN.Value.C, nextLLN.Value.C);
                 routeLL.Remove(nextLLN);
                 nextLLN = currLLN;
