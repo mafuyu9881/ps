@@ -1,64 +1,55 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
-    private struct Route
-    {
-        public int S; // [0, 1'000'000'000]
-        public int E; // [0, 1'000'000'000]
-        public int C; // [1, 1'000'000'000]
-
-        public Route(int s, int e, int c)
-        {
-            S = s;
-            E = e;
-            C = c;
-        }
-    }
-
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
+        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        long n = tokens[0]; // [1, 10^2]
+        long t = tokens[1]; // [1, 10^18]
 
-        Route[] routeArr = new Route[n];
-        for (int i = 0; i < n; ++i) // max tc = 200'000
+        int[] pointings = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        for (int i = 0; i < pointings.Length; ++i) // max tc = 100
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            routeArr[i] = new(tokens[0], tokens[1], tokens[2]);
-        }
-        Array.Sort(routeArr, (x, y) => x.S.CompareTo(y.S));
-
-        LinkedList<Route> routeLL = new();
-        for (int i = 0; i < n; ++i) // max tc = 200'000
-        {
-            routeLL.AddLast(routeArr[i]);
+            --pointings[i]; // adjust to 0-based
         }
 
-        var currLLN = routeLL.First;
-        while (true)
-        {
-            if (currLLN == null)
-                break;
+        const int InvalidPointedOrder = -1;
 
-            var nextLLN = currLLN.Next;
-            
-            if (nextLLN != null && currLLN.Value.E >= nextLLN.Value.S)
+        int[] pointedOrder = new int[n];
+        for (int i = 0; i < pointedOrder.Length; ++i)
+        {
+            pointedOrder[i] = InvalidPointedOrder;
+        }
+
+        LinkedList<int> orderLookupLL = new();
+        int x = 0;
+        int cycleBeginOrder = InvalidPointedOrder;
+        while (true) // max tc = 100
+        {
+            x = pointings[x];
+
+            if (pointedOrder[x] != InvalidPointedOrder)
             {
-                currLLN.ValueRef.E = Math.Max(currLLN.Value.E, nextLLN.Value.E);
-                currLLN.ValueRef.C = Math.Min(currLLN.Value.C, nextLLN.Value.C);
-                routeLL.Remove(nextLLN);
-                nextLLN = currLLN;
+                cycleBeginOrder = pointedOrder[x];
+                break;
             }
 
-            currLLN = nextLLN;
+            orderLookupLL.AddLast(x);
+            pointedOrder[x] = orderLookupLL.Count() - 1;
         }
 
-        StringBuilder sb = new();
-        sb.AppendLine($"{routeLL.Count}");
-        for (var lln = routeLL.First; lln != null; lln = lln.Next)
+        int[] orderLookupArr = orderLookupLL.ToArray();
+        
+        long adjustedT = t - 1;
+        long defeatedPlayerOrder;
+        if (adjustedT > orderLookupArr.Length)
         {
-            sb.AppendLine($"{lln.Value.S} {lln.Value.E} {lln.Value.C}");
+            // the cycle inevitably happens
+            defeatedPlayerOrder = cycleBeginOrder + (adjustedT - cycleBeginOrder) % (orderLookupArr.Length - cycleBeginOrder);
         }
-        Console.Write(sb);
+        else
+        {
+            defeatedPlayerOrder = adjustedT;
+        }
+        Console.Write(orderLookupArr[defeatedPlayerOrder] + 1);
     }
 }
