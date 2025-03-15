@@ -41,7 +41,7 @@
         
         long adjustedT = t - 1;
         long defeatedPlayerOrder;
-        if (adjustedT > orderLookupArr.Length)
+        if (adjustedT > orderLookupArr.Length - 1)
         {
             // the cycle inevitably happens
             defeatedPlayerOrder = cycleBeginOrder + (adjustedT - cycleBeginOrder) % (orderLookupArr.Length - cycleBeginOrder);
@@ -50,6 +50,7 @@
         {
             defeatedPlayerOrder = adjustedT;
         }
+
         Console.Write(orderLookupArr[defeatedPlayerOrder] + 1);
     }
 }
