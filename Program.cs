@@ -2,23 +2,30 @@
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!); // [?, ?]
-        for (int i = 0; i < t; ++i)
+        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
+
+        // length = [1, 100'000]
+        // element = [1, 1'000'000'000]
+        int[] resistances = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        // 0: O X
+        // 1: X O
+        // 2: O O
+        // 'X X' can't happen
+        long[,] dp = new long[n, 3];
+        dp[0, 0] = 0;
+        dp[0, 1] = resistances[0];
+        dp[0, 2] = resistances[0];
+        for (int i = 1; i < n; ++i) // max tc = 100'000
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int n = tokens[0]; // [1, 20'000]
-            int m = tokens[1]; // [1, 20'000]
-
-            // length = [1, 20'000]
-            // element = [1, ?]
-            int[] aSizes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int[] bSizes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            // max tc = 20'000 * log2(20'000) = 20'000 * 14.xxx
-            Array.Sort(aSizes);
-            Array.Sort(bSizes);
-
-            
+            int resistance = resistances[i];
+            dp[i, 0] = Math.Min(dp[i - 1, 1], dp[i - 1, 2]);
+            dp[i, 1] = dp[i - 1, 0] + resistance;
+            dp[i, 2] = Math.Min(dp[i - 1, 1] + resistance, dp[i - 1, 2] + resistance);
         }
+
+        long energy = Math.Min(dp[n - 1, 0], dp[n - 1, 1]);
+        energy = Math.Min(energy, dp[n - 1, 2]);
+        Console.Write(energy);
     }
 }
