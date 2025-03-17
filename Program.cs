@@ -1,54 +1,40 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!); // [?, ?]
+        // length = 2
+        // element = [0, 10^3)
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int a = tokens[0];
+        int b = tokens[1];
 
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i) // max tc = ?
+        int r = int.Parse(Console.ReadLine()!); // [1, 10^3]
+
+        int[,] map = new int[r, r];
+
+        map[a, b] += 1;
+        
+        int t = 0;
+        while (true)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int n = tokens[0]; // [1, 20'000]
-            int m = tokens[1]; // [1, 20'000]
+            ++t;
 
-            // length = [1, 20'000]
-            // element = [1, ?]
-            int[] aSizes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int[] bSizes = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            // max tc = 20'000 * log2(20'000) = 20'000 * 14.xxx
-            Array.Sort(aSizes);
-            Array.Sort(bSizes);
-
-            int pairs = 0;
-            for (int j = 0; j < aSizes.Length; ++j) // max tc = 20'000
+            if ((a + 1) + (b + 1) >= r)
             {
-                int aSize = aSizes[j];
-                
-                int lo = -1;
-                int hi = (bSizes.Length - 1) + 1;
-                while (lo < hi - 1) // max tc = log2(20'000) = 13.xxx
-                {
-                    int mid = (hi + lo) / 2;
-                    
-                    int bSize = bSizes[mid];
-
-                    if (aSize > bSize)
-                    {
-                        lo = mid;
-                    }
-                    else
-                    {
-                        hi = mid;
-                    }
-                }
-
-                pairs += lo + 1;
+                a = a / 2;
+                b = b / 2;
             }
-            sb.AppendLine($"{pairs}");
+            else
+            {
+                a = a + 1;
+                b = b + 1;
+            }
+
+            map[a, b] += 1;
+
+            if (map[a, b] > 1)
+                break;
         }
-        Console.Write(sb);
+        Console.Write(t);
     }
 }
