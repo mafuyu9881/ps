@@ -3,38 +3,28 @@
     private static void Main(string[] args)
     {
         // length = 2
-        // element = [0, 10^3)
+        // element = [1, 300'000]
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int b = tokens[1];
+        int n = tokens[0];
+        int k = tokens[1];
 
-        int r = int.Parse(Console.ReadLine()!); // [1, 10^3]
+        // length = [1, 300'000]
+        // element = [-10^8, 10^8]
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int[,] map = new int[r, r];
-
-        map[a, b] += 1;
-        
-        int t = 0;
-        while (true)
+        long[] prefixSum = new long[n];
+        prefixSum[0] = tokens[0];
+        for (int i = 1; i < prefixSum.Length; ++i) // max tc = 300'000 - 1
         {
-            ++t;
-
-            if ((a + 1) + (b + 1) >= r)
-            {
-                a = a / 2;
-                b = b / 2;
-            }
-            else
-            {
-                a = a + 1;
-                b = b + 1;
-            }
-
-            map[a, b] += 1;
-
-            if (map[a, b] > 1)
-                break;
+            prefixSum[i] = prefixSum[i - 1] + tokens[i];
         }
-        Console.Write(t);
+        Array.Sort(prefixSum, (x, y) => y.CompareTo(x));
+        
+        long sum = 0;
+        for (int i = 0; i < k; ++i)
+        {
+            sum += prefixSum[i];
+        }
+        Console.Write(sum);
     }
 }
