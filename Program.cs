@@ -85,7 +85,7 @@ internal class Program
             {
                 int mid = (lo + hi) / 2;
 
-                if (answerArr[mid].taste > p)
+                if (answerArr[mid].taste >= p)
                 {
                     lo = mid;
                 }
@@ -96,13 +96,13 @@ internal class Program
             }
 
             int answer;
-            if (hi < 0 || hi > answerArr.Length - 1)
+            if (lo < 0 || lo > answerArr.Length - 1)
             {
                 answer = 0;
             }
             else
             {
-                answer = answerArr[hi].count;
+                answer = answerArr[lo].count;
             }
             sb.AppendLine($"{answer}");
         }
