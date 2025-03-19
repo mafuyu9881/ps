@@ -96,7 +96,7 @@ internal class Program
             }
 
             int answer;
-            if (hi < -1 || hi > answerArr.Length - 1)
+            if (hi < 0 || hi > answerArr.Length - 1)
             {
                 answer = 0;
             }
