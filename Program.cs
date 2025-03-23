@@ -4,23 +4,33 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        const int Students = 30;
-        
-        bool[] submitted = new bool[Students];
+        const int MaxDays = 641;
 
-        for (int i = 0; i < submitted.Length - 2; ++i)
+        int n = int.Parse(Console.ReadLine()!); // [1, 5'000]
+
+        string paper = Console.ReadLine()!;
+
+        int currIndex = 0;
+        int soldiers = 0;
+        while (currIndex < paper.Length) // max tc = 5'000
         {
-            submitted[int.Parse(Console.ReadLine()!) - 1] = true;
-        }
+            StringBuilder daysSB = new();
+            for (int subIndex = currIndex; subIndex < paper.Length && subIndex < currIndex + 3; ++subIndex)
+            {
+                daysSB.Append(paper[subIndex]);
+            }
 
-        StringBuilder sb = new();
-        for (int i = 0; i < submitted.Length; ++i)
-        {
-            if (submitted[i])
-                continue;
+            int nextIndex = currIndex + daysSB.Length;
+            while ((int.Parse($"{daysSB}") > MaxDays) || (nextIndex < paper.Length && paper[nextIndex] == '0'))
+            {
+                daysSB = daysSB.Remove(daysSB.Length - 1, 1);
+                nextIndex = currIndex + daysSB.Length;
+            }
 
-            sb.AppendLine($"{i + 1}");
+            ++soldiers;
+
+            currIndex = nextIndex;
         }
-        Console.Write(sb);
+        Console.Write(soldiers);
     }
 }
