@@ -1,60 +1,46 @@
-﻿internal class Program
-{
-    private const int Sensors = 360;
-    private static bool[] _sensors = new bool[Sensors];
-    private static int _sensed = 0;
+﻿using System.Text;
 
+internal class Program
+{
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 1'000'000]
+        int n = int.Parse(Console.ReadLine()!); // [2^2 - 1, 2^17 - 1] = [4 - 1, 131'072 - 1]
 
-        for (int i = 0; i < n; ++i) // max tc = 1'000'000
+        // max length = 131'072 - 1
+        // element = -1, [0, 10^9]
+        int[] values = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        int x = int.Parse(Console.ReadLine()!); // [0, 10^9]
+
+        for (int i = 0; i < values.Length; ++i) // max tc = 131'072 - 1
         {
-            // length = 2
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            int a = tokens[0];
-            int b = tokens[1];
-
-            int target = Adjust(a + 180);
-
-            for (int j = 0; j <= b; ++j) // max tc = 180
+            if (values[i] == -1)
             {
-                Sense(Adjust(target - j));
-                Sense(Adjust(target + j));
-
-                if (_sensed >= Sensors)
-                {
-                    goto Print;
-                }
+                values[i] = x;
+                break;
             }
         }
 
-Print:
-        Console.Write(_sensed);
+        Array.Sort(values);
+
+        StringBuilder sb = new();
+        PostOrderTraversal(sb, values);
+        Console.Write(sb);
     }
 
-    private static int Adjust(int degree)
+    private static void PostOrderTraversal(StringBuilder sb, Span<int> span)
     {
-        while (degree < 0)
+        if (span.Length <= 3) // span's length can't be less than 3 (min n = 2^2 - 1 = 3)
         {
-            degree += 360;
+            sb.Append($"{span[0]} ");
+            sb.Append($"{span[2]} ");
+            sb.Append($"{span[1]} ");
         }
-        
-        while (degree >= 360)
+        else
         {
-            degree -= 360;
+            PostOrderTraversal(sb, span.Slice(0, span.Length / 2));
+            PostOrderTraversal(sb, span.Slice(span.Length / 2 + 1));
+            sb.Append($"{span[span.Length / 2]} ");
         }
-
-        return degree;
-    }
-
-    private static void Sense(int index)
-    {
-        if (_sensors[index])
-            return;
-
-        _sensors[index] = true;
-        ++_sensed;
     }
 }
