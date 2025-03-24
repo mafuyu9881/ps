@@ -1,5 +1,9 @@
 ﻿internal class Program
 {
+    private const int Sensors = 360;
+    private static bool[] _sensors = new bool[Sensors];
+    private static int _sensed = 0;
+
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!); // [1, 1'000'000]
@@ -12,12 +16,22 @@
             int a = tokens[0];
             int b = tokens[1];
 
-            for (int j = 0; j <= b / 2; ++j)
+            int target = Adjust(a + 180);
+
+            for (int j = 0; j <= b; ++j) // max tc = 180
             {
-                Adjust(b - j);
-                Adjust(b + j);
+                Sense(Adjust(target - j));
+                Sense(Adjust(target + j));
+
+                if (_sensed >= Sensors)
+                {
+                    goto Print;
+                }
             }
         }
+
+Print:
+        Console.Write(_sensed);
     }
 
     private static int Adjust(int degree)
@@ -33,5 +47,14 @@
         }
 
         return degree;
+    }
+
+    private static void Sense(int index)
+    {
+        if (_sensors[index])
+            return;
+
+        _sensors[index] = true;
+        ++_sensed;
     }
 }
