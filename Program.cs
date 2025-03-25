@@ -1,46 +1,59 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
+    const int InvalidElement = -1;
+
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [2^2 - 1, 2^17 - 1] = [4 - 1, 131'072 - 1]
+        // length = 2
+        // element = [1, 1'000'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int a = tokens[0];
+        int b = tokens[1];
 
-        // max length = 131'072 - 1
-        // element = -1, [0, 10^9]
-        int[] values = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        int x = int.Parse(Console.ReadLine()!); // [0, 10^9]
-
-        for (int i = 0; i < values.Length; ++i) // max tc = 131'072 - 1
+        int[,] dp = new int[b + 1, 2];
+        for (int i = 0; i <= b; ++i)
         {
-            if (values[i] == -1)
+            dp[i, 0] = InvalidElement;
+            dp[i, 1] = InvalidElement;
+        }
+
+        dp[a, 0] = 0;
+        dp[a, 1] = 0;
+        for (int i = a; i <= b; ++i)
+        {
+            int j = i + 1;
+            if (j <= b)
             {
-                values[i] = x;
-                break;
+                Update(ref dp[j, 0], dp[i, 0] + 1);
+                Update(ref dp[j, 1], dp[i, 1] + 1);
+            }
+
+            int k = i * 2;
+            if (k <= b)
+            {
+                Update(ref dp[k, 0], dp[i, 0] + 1);
+                Update(ref dp[k, 1], dp[i, 1] + 1);
+            }
+
+            int l = i * 10;
+            if (l <= b)
+            {
+                Update(ref dp[l, 1], dp[i, 0] + 1);
             }
         }
 
-        Array.Sort(values);
-
-        StringBuilder sb = new();
-        PostOrderTraversal(sb, values);
-        Console.Write(sb);
+        Console.Write(Math.Min(dp[b, 0], dp[b, 1]));
     }
 
-    private static void PostOrderTraversal(StringBuilder sb, Span<int> span)
+    private static void Update(ref int element, int value)
     {
-        if (span.Length <= 3) // span's length can't be less than 3 (min n = 2^2 - 1 = 3)
+        if (element == InvalidElement)
         {
-            sb.Append($"{span[0]} ");
-            sb.Append($"{span[2]} ");
-            sb.Append($"{span[1]} ");
+            element = value;
         }
         else
         {
-            PostOrderTraversal(sb, span.Slice(0, span.Length / 2));
-            PostOrderTraversal(sb, span.Slice(span.Length / 2 + 1));
-            sb.Append($"{span[span.Length / 2]} ");
+            element = Math.Min(element, value);
         }
     }
 }
