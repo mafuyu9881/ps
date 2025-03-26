@@ -29,7 +29,10 @@
         for (int i = 0; i < stats.Length; ++i)
         {
             int a = stats[i].a;
-            dp[i + 1, 1, a] = true;
+            for (int j = 1; j < dpHeight; ++j)
+            {
+                dp[j, 1, a] = true;
+            }
         }
 
         int maxStatsSum = 0;
