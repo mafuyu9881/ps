@@ -38,18 +38,18 @@
         int maxStatsSum = 0;
         for (int i = 1; i < dpHeight; ++i) // max tc = 80
         {
+            int a = stats[i - 1].a;
+
             for (int j = 1; j < dpWidth; ++j) // max tc = 80
             {
-                for (int l = 1; l < dpLayers; ++l) // max tc = 80 * 200 = 16'000
+                for (int l = a; l < dpLayers; ++l) // max tc = 80 * 200 = 16'000
                 {
-                    int a = stats[i - 1].a;
-
-                    dp[i, j, l] = dp[i - 1, j, l] || (l - a >= 0 && dp[i - 1, j - 1, l - a]);
+                    dp[i, j, l] = dp[i - 1, j, l] || dp[i - 1, j - 1, l - a];
                     
-                    if (dp[i, j, l])
-                    {
-                        maxStatsSum = Math.Max(maxStatsSum, l * (x * k - l));
-                    }
+                    if (dp[i, j, l] == false)
+                        continue;
+
+                    maxStatsSum = Math.Max(maxStatsSum, l * (x * k - l));
                 }
             }
         }
