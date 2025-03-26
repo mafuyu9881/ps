@@ -40,7 +40,10 @@
                         dp[i, j, l] = Math.Max(dp[i, j, l], dp[i - 1, j - 1, l - a] + a);
                     }
 
-                    maxStatsSum = Math.Max(maxStatsSum, l * (x * k - l));
+                    if (dp[i, j, l] > 0)
+                    {
+                        maxStatsSum = Math.Max(maxStatsSum, l * (x * k - l));
+                    }
                 }
             }
         }
