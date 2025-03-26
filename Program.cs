@@ -94,9 +94,13 @@
         for (int i = 0; i < historyWidth; ++i)
         {
             int distance = history[historyHeight - 1, i];
-            if (distance == InvalidDistance || distance < minDistance)
+
+            if (distance == InvalidDistance)
                 continue;
 
+            if (minDistance != InvalidDistance && minDistance <= distance)
+                continue;
+                
             minDistance = distance;
         }
         Console.Write($"{minDistance}");
