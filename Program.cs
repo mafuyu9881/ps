@@ -2,57 +2,103 @@
 {
     private static void Main(string[] args)
     {
-        // length = 3
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 80]
-        int k = tokens[1]; // [1, n] = [1, 80]
-        int x = tokens[2]; // [1, 200]
+        const int Wall = 1;
 
-        (int a, int b)[] stats = new (int, int)[n];
-        for (int i = 0; i < n; ++i) // max tc = 80
+        const int InvalidDistance = -1;
+
+        const int Offsets = 4;
+        int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
+        int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
+
+        // length = 2
+        // element = [1, 1'000]
+        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = integerTokens[0];
+        int width = integerTokens[1];
+
+        int[] map = new int[height * width];
+        for (int row = 0; row < height; ++row)
         {
-            // length = 2
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int a = tokens[0]; // [0, 200]
-            int b = tokens[1]; // [0, 200]
-            stats[i] = (a, b);
-        }
-        
-        int dpHeight = stats.Length + 1;
-        int dpWidth = k + 1;
-        int dpLayers = x * k + 1;
-        bool[,,] dp = new bool[dpHeight, dpWidth, dpLayers];
-        for (int i = 0; i < dpHeight; ++i)
-        {
-            dp[i, 0, 0] = true;
-        }
-        for (int i = 0; i < stats.Length; ++i)
-        {
-            int a = stats[i].a;
-            for (int j = 1; j < dpHeight; ++j)
+            string stringToken = Console.ReadLine()!;
+            for (int col = 0; col < width; ++col)
             {
-                dp[j, 1, a] = true;
+                map[row * width + col] = stringToken[col] - '0';
             }
         }
 
-        int maxStatsSum = 0;
-        for (int i = 1; i < dpHeight; ++i) // max tc = 80
+        int historyHeight = height * width;
+        int historyWidth = 2;
+
+        int[,] history = new int[historyHeight, historyWidth];
+        for (int i = 0; i < historyHeight; ++i)
         {
-            int a = stats[i - 1].a;
-
-            for (int j = 1; j < dpWidth; ++j) // max tc = 80
+            for (int j = 0; j < historyWidth; ++j)
             {
-                for (int l = a; l < dpLayers; ++l) // max tc = 80 * 200 = 16'000
-                {
-                    dp[i, j, l] |= dp[i - 1, j - 1, l - a];
-                    
-                    if (dp[i, j, l] == false)
-                        continue;
+                history[i, j] = InvalidDistance;
+            }
+        }
 
-                    maxStatsSum = Math.Max(maxStatsSum, l * (x * k - l));
+        Queue<(int index, int smashes, int distance)> frontier = new();
+
+        int s = 0;
+        history[s, 0] = 1;
+        frontier.Enqueue((s, 0, history[s, 0]));
+
+        while (frontier.Count > 0)
+        {
+            var element = frontier.Dequeue();
+
+            int index = element.index;
+            int row = index / width;
+            int col = index % width;
+            int smashes = element.smashes;
+            int newSmashes = smashes + 1;
+            int newDistance = element.distance + 1;
+
+            for (int i = 0; i < Offsets; ++i)
+            {
+                int adjRow = row + RowOffsets[i];
+                if (adjRow < 0 || adjRow > height - 1)
+                    continue;
+
+                int adjCol = col + ColOffsets[i];
+                if (adjCol < 0 || adjCol > width - 1)
+                    continue;
+
+                int adjIndex = adjRow * width + adjCol;
+                if (map[adjIndex] == Wall)
+                {
+                    if (smashes < 1)
+                    {
+                        int oldDistance = history[adjIndex, newSmashes];
+                        if (oldDistance == InvalidDistance || newDistance < oldDistance)
+                        {
+                            history[adjIndex, newSmashes] = newDistance;
+                            frontier.Enqueue((adjIndex, newSmashes, newDistance));
+                        }
+                    }
+                }
+                else
+                {
+                    int oldDistance = history[adjIndex, smashes];
+                    if (oldDistance == InvalidDistance || newDistance < oldDistance)
+                    {
+                        history[adjIndex, smashes] = newDistance;
+                        frontier.Enqueue((adjIndex, smashes, newDistance));
+                    }
                 }
             }
         }
-        Console.Write(maxStatsSum);
+
+        int minDistance = InvalidDistance;
+        for (int i = 0; i < historyWidth; ++i)
+        {
+            int distance = history[historyHeight - 1, i];
+            if (distance == InvalidDistance || distance < minDistance)
+                continue;
+
+            minDistance = distance;
+        }
+        Console.Write($"{minDistance}");
     }
 }
