@@ -29,7 +29,6 @@
         for (int i = 0; i < stats.Length; ++i)
         {
             int a = stats[i].a;
-            dp[1, 1, a] = true;
             dp[i + 1, 1, a] = true;
         }
 
