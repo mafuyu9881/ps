@@ -18,12 +18,20 @@
             stats[i] = (a, b);
         }
         
-        Array.Sort(stats, (x, y) => Math.Abs(y.a - y.b).CompareTo(Math.Abs(x.a - x.b)));
-
         int dpHeight = stats.Length + 1;
         int dpWidth = k + 1;
         int dpLayers = x * k + 1;
-        int[,,] dp = new int[dpHeight, dpWidth, dpLayers];
+        bool[,,] dp = new bool[dpHeight, dpWidth, dpLayers];
+        for (int i = 0; i < dpHeight; ++i)
+        {
+            dp[i, 0, 0] = true;
+        }
+        for (int i = 0; i < stats.Length; ++i)
+        {
+            int a = stats[i].a;
+            dp[1, 1, a] = true;
+            dp[i + 1, 1, a] = true;
+        }
 
         int maxStatsSum = 0;
         for (int i = 1; i < dpHeight; ++i) // max tc = 80
@@ -32,15 +40,11 @@
             {
                 for (int l = 1; l < dpLayers; ++l) // max tc = 80 * 200 = 16'000
                 {
-                    dp[i, j, l] = dp[i - 1, j, l];
-                    
                     int a = stats[i - 1].a;
-                    if (l - a >= 0)
-                    {
-                        dp[i, j, l] = Math.Max(dp[i, j, l], dp[i - 1, j - 1, l - a] + a);
-                    }
 
-                    if (dp[i, j, l] > 0)
+                    dp[i, j, l] = dp[i - 1, j, l] || (l - a >= 0 && dp[i - 1, j - 1, l - a]);
+                    
+                    if (dp[i, j, l])
                     {
                         maxStatsSum = Math.Max(maxStatsSum, l * (x * k - l));
                     }
