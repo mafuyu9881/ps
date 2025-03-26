@@ -44,7 +44,7 @@
             {
                 for (int l = a; l < dpLayers; ++l) // max tc = 80 * 200 = 16'000
                 {
-                    dp[i, j, l] = dp[i - 1, j, l] || dp[i - 1, j - 1, l - a];
+                    dp[i, j, l] |= dp[i - 1, j - 1, l - a];
                     
                     if (dp[i, j, l] == false)
                         continue;
