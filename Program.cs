@@ -1,122 +1,83 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
-    private struct Participant
-    {
-        public string Name;
-        public int Score;
-        public bool Hidden;
+    private const int Height = 5;
+    private const int Width = 5;
 
-        public Participant(string name, int score, bool hidden)
-        {
-            Name = name;
-            Score = score;
-            Hidden = hidden;
-        }
-    }
+    private const int Apple = 1;
+    private const int Obstacle = -1;
+    
+    private const int Offsets = 4;
+    private static int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
+    private static int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
+
+    const int InvalidMoves = -1;
 
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = null!;
 
-        Participant[] participants = new Participant[n];        
-
-        for (int i = 0; i < n; ++i)
+        int[] map = new int[Height * Width];
+        for (int row = 0; row < Height; ++row)
         {
-            string[] tokens = Console.ReadLine()!.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-            string name = ParseString(tokens[0]);
-            int score = ParseInteger(tokens[1]); // [1, 10^9]
-            bool hidden = ParseInteger(tokens[2]) == 1;
-
-            participants[i] = new(name, score, hidden);
+            // length = Width
+            // element = [-1, 1]
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < Width; ++col)
+            {
+                map[row * Width + col] = tokens[col];
+            }
         }
 
-        Array.Sort(participants, (x, y) => y.Score.CompareTo(x.Score));
+        // length = 2
+        // element = [0,4]
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int startRow = tokens[0];
+        int startCol = tokens[1];
+        int startIndex = startRow * Width + startCol;
 
-        StringBuilder sb = new();
-        int j = 0;
-        while (j < participants.Length)
-        {
-            LinkedList<Participant> tiedLL = new();
-            
-            tiedLL.AddLast(participants[j]);
-            
-            int k = j + 1;
-            while (k < participants.Length)
-            {
-                if (participants[j].Score == participants[k].Score)
-                {
-                    tiedLL.AddLast(participants[k]);
-                    ++k;
-                }
-                else
-                {
-                    break;
-                }
-            }
+        int minMoves = InvalidMoves;
+        int eatenApples = 0;
 
-            Participant[] tiedArr = tiedLL.ToArray();
-            Array.Sort(tiedArr, (x, y) => x.Name.CompareTo(y.Name));
-            for (int l = 0; l < tiedArr.Length; ++l)
-            {
-                Participant participant = tiedArr[l];
+        map[startIndex] = Obstacle;
 
-                if (participant.Hidden)
-                    continue;
+        DFS(map, ref minMoves, ref eatenApples, startRow, startCol, 0);
 
-                sb.AppendLine($"{j + 1} {participant.Name} {participant.Score}");
-            }
-
-            j += tiedArr.Length;
-        }
-        Console.Write(sb);
+        Console.Write(minMoves);
     }
 
-    private static string ParseString(string token)
+    private static void DFS(int[] map, ref int minMoves, ref int eatenApples, int row, int col, int prevMoves)
     {
-        string[] tokens = token.Split(":");
+        int currMoves = prevMoves + 1;
 
-        StringBuilder sb = new(tokens[1]);
-
-        int i = 0;
-        while (i < sb.Length)
+        for (int i = 0; i < Offsets; ++i)
         {
-            char c = sb[i];
-            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-            {
-                ++i;
-            }
-            else
-            {
-                sb.Remove(i, 1);
-            }
+            int adjRow = row + RowOffsets[i];
+            if (adjRow < 0 || adjRow > Height - 1)
+                continue;
+                
+            int adjCol = col + ColOffsets[i];
+            if (adjCol < 0 || adjCol > Width - 1)
+                continue;
+
+            int adjIndex = adjRow * Width + adjCol;
+            int originalAttribute = map[adjIndex];
+            if (originalAttribute == Obstacle)
+                continue;
+
+            if (originalAttribute == Apple)
+                ++eatenApples;
+            
+            if ((eatenApples >= 3) && (minMoves == InvalidMoves || currMoves < minMoves))
+                minMoves = currMoves;
+            
+            map[adjIndex] = Obstacle;
+
+            DFS(map, ref minMoves, ref eatenApples, adjRow, adjCol, currMoves);
+
+            if (originalAttribute == Apple)
+                --eatenApples;
+
+            map[adjIndex] = originalAttribute;
         }
-
-        return sb.ToString();
-    }
-
-    private static int ParseInteger(string token)
-    {
-        string[] tokens = token.Split(":");
-
-        StringBuilder sb = new(tokens[1]);
-
-        int i = 0;
-        while (i < sb.Length)
-        {
-            char c = sb[i];
-            if (c >= '0' && c <= '9')
-            {
-                ++i;
-            }
-            else
-            {
-                sb.Remove(i, 1);
-            }
-        }
-        
-        return int.Parse(sb.ToString());
     }
 }
