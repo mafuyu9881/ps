@@ -1,83 +1,37 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
-    private const int Height = 5;
-    private const int Width = 5;
-
-    private const int Apple = 1;
-    private const int Obstacle = -1;
-    
-    private const int Offsets = 4;
-    private static int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
-    private static int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
-
-    const int InvalidMoves = -1;
-
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int n = int.Parse(Console.ReadLine()!); // [1, 5 * 10^5]
 
-        int[] map = new int[Height * Width];
-        for (int row = 0; row < Height; ++row)
+        // length = [1, n] = [1, 5 * 10^5]
+        // element = [1, 10^18]
+        long[] inks = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        long[] viscosities = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+
+        StringBuilder sb = new();
+        for (int i = 0; i < inks.Length; ++i)
         {
-            // length = Width
-            // element = [-1, 1]
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < Width; ++col)
+            int lo = (i + 1) - 1;
+            int hi = (viscosities.Length - 1) + 1;
+            while (lo < hi - 1)
             {
-                map[row * Width + col] = tokens[col];
+                int mid = (lo + hi) / 2;
+
+                if (inks[i] < viscosities[mid])
+                {
+                    hi = mid;
+                }
+                else
+                {
+                    lo = mid;
+                }
             }
+
+            sb.Append($"{lo - (i + 1) + 1} ");
         }
-
-        // length = 2
-        // element = [0,4]
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int startRow = tokens[0];
-        int startCol = tokens[1];
-        int startIndex = startRow * Width + startCol;
-
-        int minMoves = InvalidMoves;
-        int eatenApples = 0;
-
-        map[startIndex] = Obstacle;
-
-        DFS(map, ref minMoves, ref eatenApples, startRow, startCol, 0);
-
-        Console.Write(minMoves);
-    }
-
-    private static void DFS(int[] map, ref int minMoves, ref int eatenApples, int row, int col, int prevMoves)
-    {
-        int currMoves = prevMoves + 1;
-
-        for (int i = 0; i < Offsets; ++i)
-        {
-            int adjRow = row + RowOffsets[i];
-            if (adjRow < 0 || adjRow > Height - 1)
-                continue;
-                
-            int adjCol = col + ColOffsets[i];
-            if (adjCol < 0 || adjCol > Width - 1)
-                continue;
-
-            int adjIndex = adjRow * Width + adjCol;
-            int originalAttribute = map[adjIndex];
-            if (originalAttribute == Obstacle)
-                continue;
-
-            if (originalAttribute == Apple)
-                ++eatenApples;
-            
-            if ((eatenApples >= 3) && (minMoves == InvalidMoves || currMoves < minMoves))
-                minMoves = currMoves;
-            
-            map[adjIndex] = Obstacle;
-
-            DFS(map, ref minMoves, ref eatenApples, adjRow, adjCol, currMoves);
-
-            if (originalAttribute == Apple)
-                --eatenApples;
-
-            map[adjIndex] = originalAttribute;
-        }
+        Console.Write(sb);
     }
 }
