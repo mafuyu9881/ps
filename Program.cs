@@ -1,46 +1,83 @@
 ﻿internal class Program
 {
+    const int InvalidV = -1;
+    const int InvalidCost = -1;
+
+    private static LinkedList<(int dst, int cost)>[] _adjList = null!;
+
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
+        int[] tokens = null!;
 
-        const char D = 'D';
-        const char K = 'K';
-        const char S = 'S';
-        const char H = 'H';
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 100'000]
+        int m = tokens[1]; // [1, 200'000]
+
+        _adjList = new LinkedList<(int, int)>[n + 1];
+
+        for (int i = 1; i < _adjList.Length; ++i) // max tc = n = 100'000
+        {
+            _adjList[i] = new();
+        }
         
-        SortedDictionary<char, char> previous = new()
+        for (int i = 0; i < m; ++i) // max tc = m = 200'000
         {
-            { K, D },
-            { S, K },
-            { H, S },
-        };
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int u = tokens[0]; // [1, n] = [1, 100'000]
+            int v = tokens[1]; // [1, n] = [1, 100'000]
+            int w = tokens[2]; // [1, 10'000]
+            _adjList[u].AddLast((v, w));
+        }
 
-        SortedDictionary<char, long> combination = new()
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int x = tokens[0];
+        int y = tokens[1];
+        int z = tokens[2];
+
+        int[] xMinCost = ComputeMinCost(x, InvalidV);
+        int[] yMinCost = ComputeMinCost(y, InvalidV);
+        int[] xMinCostWithoutY = ComputeMinCost(x, y);
+        Console.Write($"{xMinCost[y] + yMinCost[z]} {xMinCostWithoutY[z]}");
+    }
+
+    private static int[] ComputeMinCost(int s, int bannedV)
+    {
+        int[] minCost = new int[_adjList.Length];
+        for (int i = 0; i < minCost.Length; ++i)
         {
-            { D, 0 },
-            { K, 0 },
-            { S, 0 },
-            { H, 0 },
-        };
+            minCost[i] = InvalidCost;
+        }
 
-        string token = Console.ReadLine()!;
-        for (int i = 0; i < token.Length; ++i) // max tc = 100'000
+        PriorityQueue<(int v, int cost), int> frontier = new();
+        
+        minCost[s] = 0;
+        frontier.Enqueue((s, minCost[s]), minCost[s]);
+        while (frontier.Count > 0)
         {
-            char c = token[i];
+            var element = frontier.Dequeue();
+            
+            int v = element.v;
+            int cost = element.cost;
 
-            if (combination.ContainsKey(c)) // max tc = log2(4) = 2
+            var adjs = _adjList[v];
+            for (var lln = adjs.First; lln != null; lln = lln.Next)
             {
-                if (c == D)
-                {
-                    ++combination[c]; // max tc = log2(4) = 2;
-                }
-                else
-                {
-                    combination[c] += combination[previous[c]]; // max tc = log2(4) + log2(4) + log2(3) = 5.xxx
-                }
+                int adjV = lln.Value.dst;
+                if (adjV == bannedV)
+                    continue;
+
+                int adjCost = lln.Value.cost;
+
+                int oldCost = minCost[adjV];
+                int newCost = cost + adjCost;
+                if (oldCost != InvalidCost && oldCost <= newCost)
+                    continue;
+
+                minCost[adjV] = newCost;
+                frontier.Enqueue((adjV, minCost[adjV]), minCost[adjV]);
             }
         }
-        Console.Write(combination[H]);
+
+        return minCost;
     }
 }
