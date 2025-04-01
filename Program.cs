@@ -34,9 +34,9 @@
         int y = tokens[1];
         int z = tokens[2];
 
-        int[] xMinCost = ComputeMinCost(x, y, InvalidV);
-        int[] yMinCost = ComputeMinCost(y, z, InvalidV);
-        int[] xMinCostWithoutY = ComputeMinCost(x, z, y);
+        int[] xMinCost = ComputeMinCost(x, InvalidV);
+        int[] yMinCost = ComputeMinCost(y, InvalidV);
+        int[] xMinCostWithoutY = ComputeMinCost(x, y);
 
         int case0 = (xMinCost[y] == InvalidCost || yMinCost[z] == InvalidCost) ? InvalidCost : xMinCost[y] + yMinCost[z];
         int case1 = xMinCostWithoutY[z];
@@ -45,7 +45,7 @@
     }
 
     // max tc = 100'000 * log2(200'000) = 100'000 * 17.xxx
-    private static int[] ComputeMinCost(int s, int e, int bannedV)
+    private static int[] ComputeMinCost(int s, int bannedV)
     {
         int[] minCost = new int[_adjList.Length];
         for (int i = 0; i < minCost.Length; ++i)
@@ -64,6 +64,9 @@
             int v = element.v;
             int cost = element.cost;
 
+            if (minCost[v] < cost) // minCost[v] can't be set as InvalidCost in this stream
+                continue;
+
             var adjs = _adjList[v];
             for (var lln = adjs.First; lln != null; lln = lln.Next)
             {
@@ -80,9 +83,6 @@
 
                 minCost[adjV] = newCost;
                 frontier.Enqueue((adjV, minCost[adjV]), minCost[adjV]);
-
-                if (minCost[e] != InvalidCost)
-                    return minCost;
             }
         }
 
