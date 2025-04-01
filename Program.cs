@@ -9,7 +9,7 @@
     {
         int[] tokens = null!;
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 2
         int n = tokens[0]; // [1, 100'000]
         int m = tokens[1]; // [1, 200'000]
 
@@ -22,21 +22,21 @@
         
         for (int i = 0; i < m; ++i) // max tc = m = 200'000
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
             int u = tokens[0]; // [1, n] = [1, 100'000]
             int v = tokens[1]; // [1, n] = [1, 100'000]
             int w = tokens[2]; // [1, 10'000]
             _adjList[u].AddLast((v, w));
         }
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
         int x = tokens[0];
         int y = tokens[1];
         int z = tokens[2];
 
-        int[] xMinCost = ComputeMinCost(x, InvalidV);
-        int[] yMinCost = ComputeMinCost(y, InvalidV);
-        int[] xMinCostWithoutY = ComputeMinCost(x, y);
+        int[] xMinCost = ComputeMinCost(x, y, InvalidV);
+        int[] yMinCost = ComputeMinCost(y, z, InvalidV);
+        int[] xMinCostWithoutY = ComputeMinCost(x, z, y);
 
         int case0 = (xMinCost[y] == InvalidCost || yMinCost[z] == InvalidCost) ? InvalidCost : xMinCost[y] + yMinCost[z];
         int case1 = xMinCostWithoutY[z];
@@ -44,7 +44,8 @@
         Console.Write($"{case0} {case1}");
     }
 
-    private static int[] ComputeMinCost(int s, int bannedV)
+    // max tc = 100'000 * log2(200'000) = 100'000 * 17.xxx
+    private static int[] ComputeMinCost(int s, int e, int bannedV)
     {
         int[] minCost = new int[_adjList.Length];
         for (int i = 0; i < minCost.Length; ++i)
@@ -79,6 +80,9 @@
 
                 minCost[adjV] = newCost;
                 frontier.Enqueue((adjV, minCost[adjV]), minCost[adjV]);
+
+                if (minCost[e] != InvalidCost)
+                    return minCost;
             }
         }
 
