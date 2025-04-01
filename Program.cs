@@ -37,7 +37,11 @@
         int[] xMinCost = ComputeMinCost(x, InvalidV);
         int[] yMinCost = ComputeMinCost(y, InvalidV);
         int[] xMinCostWithoutY = ComputeMinCost(x, y);
-        Console.Write($"{xMinCost[y] + yMinCost[z]} {xMinCostWithoutY[z]}");
+
+        int case0 = (xMinCost[y] == InvalidCost || yMinCost[z] == InvalidCost) ? InvalidCost : xMinCost[y] + yMinCost[z];
+        int case1 = xMinCostWithoutY[z];
+
+        Console.Write($"{case0} {case1}");
     }
 
     private static int[] ComputeMinCost(int s, int bannedV)
