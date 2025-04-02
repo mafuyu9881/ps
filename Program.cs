@@ -79,11 +79,11 @@
     {
         int[] tokens = null!;
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 2
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse); // length = 2
         int n = tokens[0]; // [2, 100'000]
         int m = tokens[1]; // [1, 300'000]
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 2
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse); // length = 2
         int s = tokens[0]; // [1, n] = [1, 100'000]
         int e = tokens[1]; // [1, n] = [1, 100'000]
 
@@ -96,7 +96,7 @@
         PriorityQueue<(int h1, int h2, int weightLimit), int> pq = new();
         for (int i = 0; i < m; ++i) // max tc = m = 300'000
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 2
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse); // length = 2
 
             int h1 = tokens[0]; // [1, n] = [1, 100'000]
             int h2 = tokens[1]; // [1, n] = [1, 100'000]
