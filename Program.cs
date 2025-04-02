@@ -1,89 +1,14 @@
 ﻿internal class Program
 {
-    private class DisjointSet
-    {
-        private int[] _parents = null!;
-        private int[] _ranks = null!;
-
-        public DisjointSet(int n)
-        {
-            _parents = new int[n];
-            for (int i = 0; i < _parents.Length; ++i)
-            {
-                _parents[i] = i;
-            }
-
-            _ranks = new int[n];
-        }
-        
-        private int Find(int x)
-        {
-            int parent = _parents[x];
-            if (parent != x)
-            {
-                _parents[x] = Find(parent);
-            }
-            return _parents[x];
-        }
-
-        public void Union(int a, int b)
-        {
-            int aSetRepresentative = Find(a);
-            int bSetRepresentative = Find(b);
-            if (aSetRepresentative == bSetRepresentative)
-                return;
-
-            int aSetRank = _ranks[aSetRepresentative];
-            int bSetRank = _ranks[bSetRepresentative];
-            if (aSetRank > bSetRank)
-            {
-                _parents[bSetRepresentative] = aSetRepresentative;
-            }
-            else if (aSetRank < bSetRank)
-            {
-                _parents[aSetRepresentative] = bSetRepresentative;
-            }
-            else
-            {
-                _parents[bSetRepresentative] = aSetRepresentative;
-                ++_ranks[aSetRepresentative];
-            }
-
-            Find(a);
-            Find(b);
-        }
-
-        public bool United(int a, int b)
-        {
-            return Find(a) == Find(b);
-        }
-
-        public bool United()
-        {
-            if (_parents.Length < 1)
-                return true;
-
-            for (int i = 2; i < _parents.Length; ++i)
-            {
-                if (United(1, i) == false)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
     private static void Main(string[] args)
     {
         int[] tokens = null!;
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse); // length = 2
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 2
         int n = tokens[0]; // [2, 100'000]
         int m = tokens[1]; // [1, 300'000]
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse); // length = 2
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 2
         int s = tokens[0]; // [1, n] = [1, 100'000]
         int e = tokens[1]; // [1, n] = [1, 100'000]
 
@@ -93,33 +18,17 @@
             adjList[i] = new();
         }
 
-        PriorityQueue<(int h1, int h2, int weightLimit), int> pq = new();
         for (int i = 0; i < m; ++i) // max tc = m = 300'000
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse); // length = 2
-
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 2
             int h1 = tokens[0]; // [1, n] = [1, 100'000]
             int h2 = tokens[1]; // [1, n] = [1, 100'000]
             int k = tokens[2]; // [1, 1'000'000]
-
-            pq.Enqueue((h1, h2, k), -k);
+            adjList[h1].AddLast((h2, k));
+            adjList[h2].AddLast((h1, k));
         }
 
-        DisjointSet ds = new(adjList.Length);
-        while (ds.United() == false && pq.Count > 0)
-        {
-            var element = pq.Dequeue();
-            int h1 = element.h1;
-            int h2 = element.h2;
-            if (ds.United(h1, h2))
-                continue;
-            
-            int weightLimit = element.weightLimit;
-            adjList[h1].AddLast((h2, weightLimit));
-            adjList[h2].AddLast((h1, weightLimit));
-        }
-
-        const int Infinity = -1;
+        const int Infinity = -2;
 
         int[] maxCapacity = new int[adjList.Length];
 
@@ -130,6 +39,7 @@
         while (frontier.Count > 0)
         {
             var element = frontier.Dequeue();
+
             int v = element.v;
             int capacity = element.capacity;
 
@@ -138,19 +48,19 @@
             {
                 int adjV = lln.Value.v;
 
-                int oldMaxCapacity = maxCapacity[adjV];
-                if (oldMaxCapacity == Infinity)
+                int oldAdjVCapacity = maxCapacity[adjV];
+                if (oldAdjVCapacity == Infinity)
                     continue;
 
-                int newMaxCapacity = lln.Value.weightLimit;
+                int newAdjVCapacity = lln.Value.weightLimit;
                 if (capacity != Infinity)
-                    newMaxCapacity = Math.Min(newMaxCapacity, capacity);
-                
-                if (oldMaxCapacity >= newMaxCapacity)
+                    newAdjVCapacity = Math.Min(newAdjVCapacity, capacity);
+
+                if (oldAdjVCapacity >= newAdjVCapacity)
                     continue;
 
-                maxCapacity[adjV] = newMaxCapacity;
-                frontier.Enqueue((adjV, newMaxCapacity));
+                maxCapacity[adjV] = newAdjVCapacity;
+                frontier.Enqueue((adjV, maxCapacity[adjV]));
             }
         }
         Console.Write(maxCapacity[e]);
