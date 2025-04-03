@@ -12,15 +12,16 @@ internal class Program
             // length = 4
             // element = [1, 1'000]
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int side = tokens[0];
+            int width = tokens[0];
+            int height = tokens[1];
             int x = tokens[2];
             int y = tokens[3];
 
             int placeable = 0;
-            bool[,] chocolate = new bool[side, side];
-            for (int currRow = 0; currRow < side; ++currRow) // max tc = 1'000
+            bool[,] chocolate = new bool[height, width];
+            for (int currRow = 0; currRow < height; ++currRow) // max tc = 1'000
             {
-                for (int currCol = 0; currCol < side; ++currCol) // max tc = 1'000
+                for (int currCol = 0; currCol < width; ++currCol) // max tc = 1'000
                 {
                     int prevRow = currRow - y;
                     int prevCol = currCol - x;
