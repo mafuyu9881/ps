@@ -1,73 +1,57 @@
 ﻿internal class Program
 {
-    const int EscapableDistance = 25;
-
-    private static LinkedList<(int row, int col)> _others = new();
-    private static (int row, int col) _sungkyu = (0, 0);
-    private static (int row, int col) _professor = (0, 0);
-
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [7, 1'000]
+        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
-        for (int row = 0; row < n; ++row) // max tc = 1'000
+        SortedDictionary<int, int> xs = new();
+        SortedDictionary<int, int> ys = new();
+
+        LinkedList<(int x, int y)> points = new();
+        for (int i = 0; i < n; ++i) // max tc = 100'000
         {
-            // length = [1, n] = [1, 1'000]
-            // element = 0, 1, 2, 5
+            // length = 2
+            // element = [-2^31 + 1, 2^31 - 1]
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < n; ++col) // max tc = 1'000
-            {
-                int attr = tokens[col];
+            int x = tokens[0];
+            int y = tokens[1];
+            
+            CollectPoint(xs, x);
+            CollectPoint(ys, y);
 
-                if (attr == 1)
-                {
-                    _others.AddLast((row, col));
-                }
-                else if (attr == 2)
-                {
-                    _sungkyu = (row, col);
-                }
-                else if (attr == 5)
-                {
-                    _professor = (row, col);
-                }
-            }
+            points.AddLast((x, y));
         }
 
-        Console.Write(Evaluate());
-    }
-
-    private static int Evaluate()
-    {
-        const int Succeeded = 1;
-        const int Failed = 0;
-
-        int distance = ComputeDistance(_sungkyu, _professor);
-        if (distance < EscapableDistance)
-            return Failed;
-
-        (int row, int col) lt = (Math.Min(_sungkyu.row, _professor.row), Math.Min(_sungkyu.col, _professor.col));
-        (int row, int col) rb = (Math.Max(_sungkyu.row, _professor.row), Math.Max(_sungkyu.col, _professor.col));
-
-        int bounded = 0;
-        for (var lln = _others.First; lln != null; lln = lln.Next) // max tc = about 1'000'000
+        int lines = 0;
+        for (var lln = points.First; lln != null; lln = lln.Next) // max tc = 100'000
         {
-            var other = lln.Value;
-
-            if (other.row < lt.row || other.row > rb.row)
-                continue;
-
-            if (other.col < lt.col || other.col > rb.col)
-                continue;
-
-            ++bounded;
+            lines += ComputeLines(xs, lln.Value.x);
+            lines += ComputeLines(ys, lln.Value.y);
         }
-
-        return (bounded < 3) ? Failed : Succeeded;
+        Console.Write(lines);
     }
 
-    private static int ComputeDistance((int x, int y) a, (int x, int y) b)
+    private static void CollectPoint(SortedDictionary<int, int> ps, int p)
     {
-        return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+        if (ps.ContainsKey(p)) // max tc = log2(100'000) = 16.xxx
+        {
+            ++ps[p]; // max tc = 16.xxx
+        }
+        else
+        {
+            ps.Add(p, 1); // max tc = 16.xxx
+        }
+    }
+
+    private static int ComputeLines(SortedDictionary<int, int> ps, int p)
+    {
+        int lines = 0;
+
+        if (ps.ContainsKey(p) == false) // max tc = 16.xxx
+            return lines;
+
+        lines = ps[p] - 1; // max tc = 16.xxx
+        ps.Remove(p); // max tc = 16.xxx
+        return lines;
     }
 }
