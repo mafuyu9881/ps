@@ -1,33 +1,38 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
+        int t = int.Parse(Console.ReadLine()!); // [1, 1'000]
 
-        SortedSet<int> xPoints = new();
-        SortedSet<int> yPoints = new();
-        
-        SortedSet<int> xLines = new();
-        SortedSet<int> yLines = new();
-
-        for (int i = 0; i < n; ++i) // max tc = 100'000
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i) // max tc = 1'000
         {
-            // length = 2
-            // element = [-2^31 + 1, 2^31 - 1]
+            // length = 4
+            // element = [1, 1'000]
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int x = tokens[0];
-            int y = tokens[1];
-            
-            if (xPoints.Contains(x))
-                xLines.Add(x);
+            int side = tokens[0];
+            int x = tokens[2];
+            int y = tokens[3];
 
-            if (yPoints.Contains(y))
-                yLines.Add(y);
+            int placeable = 0;
+            bool[,] chocolate = new bool[side, side];
+            for (int currRow = 0; currRow < side; ++currRow) // max tc = 1'000
+            {
+                for (int currCol = 0; currCol < side; ++currCol) // max tc = 1'000
+                {
+                    int prevRow = currRow - y;
+                    int prevCol = currCol - x;
+                    if (prevRow >= 0 && prevCol >= 0 && chocolate[prevRow, prevCol])
+                        continue;
 
-            xPoints.Add(x);
-            yPoints.Add(y);
+                    chocolate[currRow, currCol] = true;
+                    ++placeable;
+                }
+            }
+            sb.AppendLine($"{placeable}");
         }
-
-        Console.Write(xLines.Count + yLines.Count);
+        Console.Write(sb);
     }
 }
