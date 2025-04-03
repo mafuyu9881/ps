@@ -47,11 +47,15 @@
     {
         int lines = 0;
 
-        if (ps.ContainsKey(p) == false) // max tc = 16.xxx
+        if (ps.ContainsKey(p) == false)
             return lines;
 
-        lines = ps[p] - 1; // max tc = 16.xxx
-        ps.Remove(p); // max tc = 16.xxx
+        lines = ps[p] - 1;
+        
+        --ps[p];
+        if (ps[p] < 1)
+            ps.Remove(p);
+
         return lines;
     }
 }
