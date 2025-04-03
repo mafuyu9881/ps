@@ -1,90 +1,73 @@
 ﻿internal class Program
 {
-    const int InvalidTravelTime = -1;
+    const int EscapableDistance = 25;
 
-    private static LinkedList<(int dst, int travelTime)>[] _adjList = null!;
-    
+    private static LinkedList<(int row, int col)> _others = new();
+    private static (int row, int col) _sungkyu = (0, 0);
+    private static (int row, int col) _professor = (0, 0);
+
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int n = int.Parse(Console.ReadLine()!); // [7, 1'000]
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
-        int n = tokens[0]; // [1, 1'000]
-        int m = tokens[1]; // [1, 10'000]
-        int x = tokens[2]; // [1, n] = [1, 1'000]
-
-        _adjList = new LinkedList<(int, int)>[n + 1];
-        for (int i = 1; i < _adjList.Length; ++i) // max tc = 1'000
+        for (int row = 0; row < n; ++row) // max tc = 1'000
         {
-            _adjList[i] = new();
-        }
-
-        for (int i = 0; i < m; ++i) // max tc = 10'000
-        {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
-            int src = tokens[0]; // [1, 1'000]
-            int dst = tokens[1]; // [1, 1'000]
-            int travelTime = tokens[2]; // [1, 100]
-            _adjList[src].AddLast((dst, travelTime));
-        }
-
-        int[] xMinTravelTimes = ComputeMinTravelTimes(x);
-
-        int maxRoundTripTime = InvalidTravelTime;
-        for (int s = 1; s <= n; ++s) // max tc = 1'000
-        {
-            if (s == x)
-                continue;
-
-            int[] sMinTravelTimes = ComputeMinTravelTimes(s);
-
-            int newMaxRoundTripTime = sMinTravelTimes[x] + xMinTravelTimes[s];
-
-            if (maxRoundTripTime != InvalidTravelTime && maxRoundTripTime >= newMaxRoundTripTime)
-                continue;
-
-            maxRoundTripTime = newMaxRoundTripTime;
-        }
-        Console.Write(maxRoundTripTime);
-    }
-
-    private static int[] ComputeMinTravelTimes(int s)
-    {
-        int[] minTravelTimes = new int[_adjList.Length];
-        for (int i = 1; i < minTravelTimes.Length; ++i) // max tc = 1'000
-        {
-            minTravelTimes[i] = InvalidTravelTime;
-        }
-
-        PriorityQueue<(int v, int travelTime), int> pq = new();
-
-        minTravelTimes[s] = 0;
-        pq.Enqueue((s, minTravelTimes[s]), minTravelTimes[s]);
-
-        while (pq.Count > 0)
-        {
-            var element = pq.Dequeue();
-            int v = element.v;
-            int travelTime = element.travelTime;
-
-            if (minTravelTimes[v] < travelTime)
-                continue;
-
-            var adjs = _adjList[v];
-            for (var lln = adjs.First; lln != null; lln = lln.Next)
+            // length = [1, n] = [1, 1'000]
+            // element = 0, 1, 2, 5
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < n; ++col) // max tc = 1'000
             {
-                int adjV = lln.Value.dst;
+                int attr = tokens[col];
 
-                int oldMinTravelTime = minTravelTimes[adjV];
-                int newMinTravelTime = travelTime + lln.Value.travelTime;
-                if (oldMinTravelTime != InvalidTravelTime && oldMinTravelTime <= newMinTravelTime)
-                    continue;
-
-                minTravelTimes[adjV] = newMinTravelTime;
-                pq.Enqueue((adjV, newMinTravelTime), newMinTravelTime);
+                if (attr == 1)
+                {
+                    _others.AddLast((row, col));
+                }
+                else if (attr == 2)
+                {
+                    _sungkyu = (row, col);
+                }
+                else if (attr == 5)
+                {
+                    _professor = (row, col);
+                }
             }
         }
 
-        return minTravelTimes;
+        Console.Write(Evaluate());
+    }
+
+    private static int Evaluate()
+    {
+        const int Succeeded = 1;
+        const int Failed = 0;
+
+        int distance = ComputeDistance(_sungkyu, _professor);
+        if (distance < EscapableDistance)
+            return Failed;
+
+        (int row, int col) lt = (Math.Min(_sungkyu.row, _professor.row), Math.Min(_sungkyu.col, _professor.col));
+        (int row, int col) rb = (Math.Max(_sungkyu.row, _professor.row), Math.Max(_sungkyu.col, _professor.col));
+
+        int bounded = 0;
+        for (var lln = _others.First; lln != null; lln = lln.Next) // max tc = about 1'000'000
+        {
+            var other = lln.Value;
+
+            if (other.row < lt.row || other.row > rb.row)
+                continue;
+
+            if (other.col < lt.col || other.col > rb.col)
+                continue;
+
+            ++bounded;
+        }
+
+        return (bounded < 3) ? Failed : Succeeded;
+    }
+
+    private static int ComputeDistance((int x, int y) a, (int x, int y) b)
+    {
+        return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
     }
 }
