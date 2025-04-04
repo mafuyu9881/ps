@@ -40,30 +40,16 @@ internal class Program
                 ++satisfieds;
             }
 
+            for (long i = 1; i * i <= n; ++i) // max tc = about 10^6
             {
-                long a = 1;
-                while ((a + 1) * (a + 1) - a * a <= n)
-                {
-                    long sqrA = a * a;
-                    long sqrB = sqrA + n;
-                    
-                    // it doesn't matter if the pair of integers `a`, `b` that satisfy
-                    // the condition in this loop has already been found during the
-                    // iteration on line 26
+                if (n % i != 0)
+                    continue;
 
-                    // although the pair on line 26 consists of two values that both form the
-                    // non-hypotenuse side, in this case, on of the values forms the hypotenuse,
-                    // meaning they represent different triangles
+                long j = n / i;
+                if (i % 2 != j % 2) // if two integers have opposite parity
+                    continue;
 
-                    // additionally, since `a` continues to increase and the expression adds n
-                    // to it, the structure of the formula prevents any duplicate pairs
-                    // from being found
-
-                    if (PerfectSquare(sqrB))
-                        ++satisfieds;
-
-                    ++a;
-                }
+                ++satisfieds;
             }
         }
         Console.Write(satisfieds);
