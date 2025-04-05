@@ -2,86 +2,64 @@
 
 internal class Program
 {
-    const int MaxSqrtN = 1000000;
-
     private static void Main(string[] args)
     {
-        long n = long.Parse(Console.ReadLine()!); // [1, 10^12]
+        int t = int.Parse(Console.ReadLine()!); // [1, 5]
 
-        int satisfieds;
-        if (PerfectSquare(n)) // max tc = 19.xxx
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i) // max tc = 5
         {
-            // If sqrt(n) is an integer, it is intuitively clear
-            // that setting it as the base or height of a right triangle
-            // allows for the creation of infinitely many right triangles
-            // in which at least two sides have integer lengths.
-            satisfieds = -1;
-        }
-        else
-        {
-            satisfieds = 0;
+            int[] tokens = null!;
 
-            SortedSet<long> founds = new();
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
+            int n = tokens[0]; // [1, 500]
+            int m = tokens[1]; // [1, 2'500]
+            int w = tokens[2]; // [1, 200]
 
-            for (long a = 1; a * a < n; ++a) // max tc = about 10^6
+            LinkedList<(int v, int cost)>[] adjList = new LinkedList<(int, int)>[n + 1];
+            for (int j = 1; j < adjList.Length; ++j) // max tc = [1, n] = [1, 500]
             {
-                long sqrA = a * a;
-                long sqrB = n - sqrA;
-
-                if (PerfectSquare(sqrB) == false) // max tc = 19.xxx
-                    continue;
-
-                if (founds.Contains(sqrA) || founds.Contains(sqrB)) // max tc = 19.xxx * 2
-                    continue;
-
-                founds.Add(sqrA);
-                founds.Add(sqrB);
-
-                ++satisfieds;
+                adjList[j] = new();
             }
 
-            for (long i = 1; i * i <= n; ++i) // max tc = about 10^6
+            for (int j = 0; j < m; ++j) // max tc = 2'500
             {
-                if (n % i != 0)
-                    continue;
+                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
 
-                long j = n / i;
-                if (i % 2 != j % 2) // if two integers have opposite parity
-                    continue;
+                int s = tokens[0]; // [1, n] = [1, 500]
+                int e = tokens[1]; // [1, n] = [1, 500]
+                int cost = tokens[2]; // [0, 10'000]
 
-                ++satisfieds;
+                adjList[s].AddLast((e, cost));
+                adjList[e].AddLast((s, cost));
             }
-        }
-        Console.Write(satisfieds);
-    }
 
-    private static bool PerfectSquare(long x)
-    {
-        bool output = false;
+            int minMinusCost = 0;
+            for (int j = 0; j < w; ++j) // max tc = 200
+            {
+                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
 
-        int lo = 0 - 1;
-        int hi = MaxSqrtN + 1;
-        while (lo < hi - 1) // max tc = log2(1'000'000) = 19.xxx
-        {
-            int mid = (lo + hi) / 2;
+                int s = tokens[0]; // [1, n] = [1, 500]
+                int e = tokens[1]; // [1, n] = [1, 500]
+                int cost = tokens[2]; // [0, 10'000]}
+                
+                minMinusCost = Math.Min(minMinusCost, cost);
+                adjList[s].AddLast((e, cost));
+            }
+
+            for (int j = 1; j < adjList.Length; ++j) // max tc (including inner loop) = m + w = 2'500 + 200
+            {
+                var adjs = adjList[j];
+                for (var lln = adjs.First; lln != null; lln = lln.Next)
+                {
+                    int v = lln.Value.v;
+                    int cost = lln.Value.cost;
+                    lln.ValueRef = (v, cost + minMinusCost);
+                }
+            }
+
             
-            long sqrMid = mid * (long)mid;
-
-            if (sqrMid > x)
-            {
-                hi = mid;
-            }
-            else if (sqrMid < x)
-            {
-                lo = mid;
-            }
-            else
-            {
-                output = true;
-                break;
-            }
         }
-
-        return output;
+        Console.Write(sb);
     }
 }
