@@ -1,174 +1,201 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        const int InvalidCost = -1;
-        const int InvalidIndex = -1;
+        const int InvalidRow = -1;
+        const int AirPurifier = -1;
+        const int AirPurifierCol = 0;
 
         const int Offsets = 4;
-        int[] RowOffsets = new int[] { -1, 1, 0, 0 };
-        int[] ColOffsets = new int[] { 0, 0, -1, 1 };
+        int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
+        int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
 
-        const int BabyShark = 9;
-        const int MinFish = 1;
-        const int MaxFish = 6;
+        int[] tokens = null!;
 
-        Func<int, bool> IsBabyShark = (attr) => { return attr == BabyShark; };
-        Func<int, bool> IsFish = (attr) => { return attr >= MinFish && attr <= MaxFish; };
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
+        int height = tokens[0]; // [6, 50]
+        int width = tokens[1]; // [6, 50]
+        int t = tokens[2]; // [1, 1'000]
 
-        int n = int.Parse(Console.ReadLine()!); // [2, 20]
-        
-        Func<int, (int row, int col)> ConvertIndex1DTo2D = (int index) => { return (index / n, index % n); };
-        Func<(int row, int col), int> ConvertIndex2DTo1D = ((int row, int col) index2D) => { return index2D.row * n + index2D.col; };
+        int[,] frontBuffer = new int[height, width];
+        int[,] backBuffer = new int[height, width];
 
-        int babySharkSize = 2;
-        int babySharkSatiation = 0;
-        int babySharkIndex = InvalidIndex;
-        SortedSet<int> fishIndices = new();
+        int upperAirPurifierRow = InvalidRow;
+        int lowerAirPurifierRow = InvalidRow;
 
-        int[] map = new int[n * n];
-        for (int row = 0; row < n; ++row) // max tc = 20
+        for (int row = 0; row < height; ++row) // max tc = 50
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < n; ++col) // max tc = 20
+            // length = width = [6, 50]
+            // element = [-1, 1'000]
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < width; ++col) // max tc = 50
             {
                 int attr = tokens[col];
-                int index = ConvertIndex2DTo1D((row, col));
 
-                if (IsBabyShark(attr))
+                if (attr == AirPurifier)
                 {
-                    babySharkIndex = index;
-                }
-                
-                if (IsFish(attr))
-                {
-                    fishIndices.Add(index);
-                }
-
-                map[index] = attr;
-            }
-        }
-
-        int[] costs = new int[map.Length];
-        
-        Func<int, int, int, int> HigherPriority = (int preyIndex, int adjIndex, int adjCost) =>
-        {
-            if (preyIndex == InvalidIndex)
-                return adjIndex;
-
-            var babySharkIndex2D = ConvertIndex1DTo2D(babySharkIndex);
-            var preyIndex2D = ConvertIndex1DTo2D(preyIndex);
-            var adjIndex2D = ConvertIndex1DTo2D(adjIndex);
-
-            int preyCost = costs[preyIndex];
-
-            if (adjCost < preyCost)
-            {
-                return adjIndex;
-            }
-            if (adjCost == preyCost)
-            {
-                if (adjIndex2D.row < preyIndex2D.row)
-                {
-                    return adjIndex;
-                }
-                else if (adjIndex2D.row == preyIndex2D.row)
-                {
-                    if (adjIndex2D.col < preyIndex2D.col)
+                    if (upperAirPurifierRow == InvalidRow)
                     {
-                        return adjIndex;
-                    }
-                    else if (adjIndex2D.col == preyIndex2D.col)
-                    {
-                        // can't happen
-                        return adjIndex;
+                        upperAirPurifierRow = row;
                     }
                     else
                     {
-                        return preyIndex;
+                        lowerAirPurifierRow = row;
                     }
                 }
-                else
-                {
-                    return preyIndex;
-                }
+
+                frontBuffer[row, col] = attr;
             }
-            else
+        }
+        
+        Action ClearBackBuffer = () =>
+        {
+            for (int row = 0; row < height; ++row) // max tc = 50
             {
-                return preyIndex;
+                for (int col = 0; col < width; ++col) // max tc = 50
+                {
+                    backBuffer[row, col] = Math.Min(frontBuffer[row, col], 0); // to consider -1
+                }
             }
         };
 
-        int elapsedTime = 0;
-        while (fishIndices.Count > 0) // max tc = 399
+        Action SwapBuffer = () =>
         {
-            for (int i = 0; i < costs.Length; ++i) // max tc = 400
+            var temp = frontBuffer;
+            frontBuffer = backBuffer;
+            backBuffer = temp;
+        };
+
+        Action<int> LeftShift = (row) =>
+        {
+            for (int col = width - 1; col > 0; --col) // max tc = about 50
             {
-                costs[i] = InvalidCost;
+                backBuffer[row, col - 1] = frontBuffer[row, col];
             }
+        };
 
-            int preyIndex = InvalidIndex;
-
-            Queue<int> frontier = new();
-
-            costs[babySharkIndex] = 0;
-            frontier.Enqueue(babySharkIndex);
-            while (frontier.Count > 0) // max tc = 400
+        Action<int> RightShift = (row) =>
+        {
+            for (int col = 0; col < width - 1; ++col) // max tc = about 50
             {
-                int index = frontier.Dequeue();
-                var index2D = ConvertIndex1DTo2D(index);
+                int attr = frontBuffer[row, col];
+                if (attr == AirPurifier)
+                    attr = 0;
 
-                int adjCost = costs[index] + 1;
+                backBuffer[row, col + 1] = attr;
+            }
+        };
 
-                for (int i = 0; i < Offsets; ++i)
+        Action<int, int, int> UpShift = (col, startRow, endRow) =>
+        {
+            if (startRow <= endRow) // max tc = about 50
+                return; // startRow must be greater than endRow
+
+            for (int row = startRow; row > endRow; --row)
+            {
+                if (backBuffer[row - 1, col] == AirPurifier)
+                    continue;
+
+                backBuffer[row - 1, col] = frontBuffer[row, col]; // in this context, `frontBuffer[row, col]` can't be `AirPurifier`
+            }
+        };
+
+        Action<int, int, int> DownShift = (col, startRow, endRow) =>
+        {
+            if (startRow >= endRow) // max tc = about 50
+                return; // startRow must be less than endRow
+
+            for (int row = startRow; row < endRow; ++row)
+            {
+                if (backBuffer[row + 1, col] == AirPurifier)
+                    continue;
+
+                backBuffer[row + 1, col] = frontBuffer[row, col]; // frontBuffer[row, col] can't be `AirPurifier` too
+            }
+        };
+
+        for (int i = 0; i < t; ++i) // max tc = 1'000
+        {
+            ClearBackBuffer();
+
+            for (int row = 0; row < height; ++row) // max tc = 50
+            {
+                for (int col = 0; col < width; ++col) // max tc = 50
                 {
-                    int adjRow = index2D.row + RowOffsets[i];
-                    if (adjRow < 0 || adjRow > n - 1)
+                    int attr = frontBuffer[row, col];
+                    if (attr <= 0)
                         continue;
 
-                    int adjCol = index2D.col + ColOffsets[i];
-                    if (adjCol < 0 || adjCol > n - 1)
-                        continue;
+                    int spread = attr / 5;
+                    if (spread > 0)
+                    {
+                        for (int j = 0; j < Offsets; ++j) // max tc = 4
+                        {
+                            int adjRow = row + RowOffsets[j];
+                            if (adjRow < 0 || adjRow > height - 1)
+                                continue;
 
-                    int adjIndex = adjRow * n + adjCol;
-                    if (costs[adjIndex] != InvalidCost)
-                        continue;
+                            int adjCol = col + ColOffsets[j];
+                            if (adjCol < 0 || adjCol > width - 1)
+                                continue;
 
-                    // in this context, adjAttr can't be BabyShark
-                    int adjAttr = map[adjIndex];
-                    if (IsFish(adjAttr) && adjAttr > babySharkSize)
-                        continue;
+                            if (backBuffer[adjRow, adjCol] == AirPurifier)
+                                continue;
 
-                    if (IsFish(adjAttr) && adjAttr < babySharkSize)
-                        preyIndex = HigherPriority(preyIndex, adjIndex, adjCost);
+                            attr -= spread;
+                            backBuffer[adjRow, adjCol] += spread;
+                        }
+                    }
 
-                    costs[adjIndex] = adjCost;
-                    frontier.Enqueue(adjIndex);
+                    backBuffer[row, col] += attr;
                 }
             }
 
-            if (preyIndex != InvalidIndex)
+            SwapBuffer();
+
+            ClearBackBuffer();
+
+            RightShift(upperAirPurifierRow);
+            UpShift(width - 1, upperAirPurifierRow, 0);
+            LeftShift(0);
+            DownShift(0, 0, upperAirPurifierRow);
+
+            RightShift(lowerAirPurifierRow);
+            DownShift(width - 1, lowerAirPurifierRow, height - 1);
+            LeftShift(height - 1);
+            UpShift(0, height - 1, lowerAirPurifierRow);
+
+            for (int row = 0 + 1; row < upperAirPurifierRow; ++row) // max tc = less than 50
             {
-                elapsedTime += costs[preyIndex];
-
-                map[babySharkIndex] = 0;
-                map[preyIndex] = BabyShark;
-                babySharkIndex = preyIndex;
-                ++babySharkSatiation;
-
-                if (babySharkSatiation >= babySharkSize)
+                for (int col = AirPurifierCol + 1; col < width - 1; ++col) // max tc = less than 50
                 {
-                    babySharkSatiation = 0;
-                    ++babySharkSize;
+                    backBuffer[row, col] = frontBuffer[row, col];
                 }
             }
-            else
+
+            for (int row = lowerAirPurifierRow + 1; row < height - 1; ++row) // max tc = less than 50
             {
-                break;
+                for (int col = AirPurifierCol + 1; col < width - 1; ++col) // max tc = less than 50
+                {
+                    backBuffer[row, col] = frontBuffer[row, col];
+                }
+            }
+
+            SwapBuffer();
+        }
+
+        int fineDust = 0;
+        for (int row = 0; row < height; ++row) // max tc = 50
+        {
+            for (int col = 0; col < width; ++col) // max tc = 50
+            {
+                int attr = frontBuffer[row, col];
+                if (attr == AirPurifier)
+                    continue;
+
+                fineDust += attr;
             }
         }
-        Console.Write(elapsedTime);
+        Console.Write(fineDust);
     }
 }
