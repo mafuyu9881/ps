@@ -2,200 +2,134 @@
 {
     private static void Main(string[] args)
     {
-        const int InvalidRow = -1;
-        const int AirPurifier = -1;
-        const int AirPurifierCol = 0;
+        const int ExteriorAir = -1;
+        const int InteriorAir = 0;
+        const int Cheese = 1;
 
         const int Offsets = 4;
         int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
         int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
 
         int[] tokens = null!;
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse); // length = 3
-        int height = tokens[0]; // [6, 50]
-        int width = tokens[1]; // [6, 50]
-        int t = tokens[2]; // [1, 1'000]
-
-        int[,] frontBuffer = new int[height, width];
-        int[,] backBuffer = new int[height, width];
-
-        int upperAirPurifierRow = InvalidRow;
-        int lowerAirPurifierRow = InvalidRow;
-
-        for (int row = 0; row < height; ++row) // max tc = 50
-        {
-            // length = width = [6, 50]
-            // element = [-1, 1'000]
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < width; ++col) // max tc = 50
-            {
-                int attr = tokens[col];
-
-                if (attr == AirPurifier)
-                {
-                    if (upperAirPurifierRow == InvalidRow)
-                    {
-                        upperAirPurifierRow = row;
-                    }
-                    else
-                    {
-                        lowerAirPurifierRow = row;
-                    }
-                }
-
-                frontBuffer[row, col] = attr;
-            }
-        }
         
-        Action ClearBackBuffer = () =>
-        {
-            for (int row = 0; row < height; ++row) // max tc = 50
-            {
-                for (int col = 0; col < width; ++col) // max tc = 50
-                {
-                    backBuffer[row, col] = Math.Min(frontBuffer[row, col], 0); // to consider -1
-                }
-            }
-        };
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = tokens[0];
+        int width = tokens[1];
 
-        Action SwapBuffer = () =>
+        int[] frontBuffer = new int[height * width];
+        int[] backBuffer = new int[height * width];
+
+        Action Flush = () =>
         {
             var temp = frontBuffer;
             frontBuffer = backBuffer;
             backBuffer = temp;
+
+            // no need to clear `backBuffer`
         };
 
-        Action<int> LeftShift = (row) =>
+        Func<int, int, int> ConvertIndex2DTo1D = (row, col) =>
         {
-            for (int col = width - 1; col > 0; --col) // max tc = about 50
+            return row * width + col;
+        };
+        Func<int, (int, int)> ConvertIndex1DTo2D = (index) =>
+        {
+            return (index / width, index % width);
+        };
+
+        int cheeses = 0;
+        for (int row = 0; row < height; ++row)
+        {
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < width; ++col)
             {
-                backBuffer[row, col - 1] = frontBuffer[row, col];
+                int index = ConvertIndex2DTo1D(row, col);
+
+                int attr = tokens[col];
+                if (attr == Cheese)
+                    ++cheeses;
+
+                frontBuffer[index] = attr;
             }
-        };
+        }
 
-        Action<int> RightShift = (row) =>
+        Queue<int> frontier = new();
+
+        int sIndex = 0;
+        frontBuffer[sIndex] = ExteriorAir;        
+        frontier.Enqueue(sIndex);
+        while (frontier.Count > 0)
         {
-            for (int col = 0; col < width - 1; ++col) // max tc = about 50
+            int index = frontier.Dequeue();
+            int row = index / width;
+            int col = index % width;
+
+            for (int i = 0; i < Offsets; ++i)
             {
-                int attr = frontBuffer[row, col];
-                if (attr == AirPurifier)
-                    attr = 0;
-
-                backBuffer[row, col + 1] = attr;
-            }
-        };
-
-        Action<int, int, int> UpShift = (col, startRow, endRow) =>
-        {
-            if (startRow <= endRow) // max tc = about 50
-                return; // startRow must be greater than endRow
-
-            for (int row = startRow; row > endRow; --row)
-            {
-                if (backBuffer[row - 1, col] == AirPurifier)
+                int adjRow = row + RowOffsets[i];
+                if (adjRow < 0 || adjRow > height - 1)
                     continue;
 
-                backBuffer[row - 1, col] = frontBuffer[row, col]; // in this context, `frontBuffer[row, col]` can't be `AirPurifier`
-            }
-        };
-
-        Action<int, int, int> DownShift = (col, startRow, endRow) =>
-        {
-            if (startRow >= endRow) // max tc = about 50
-                return; // startRow must be less than endRow
-
-            for (int row = startRow; row < endRow; ++row)
-            {
-                if (backBuffer[row + 1, col] == AirPurifier)
+                int adjCol = col + ColOffsets[i];
+                if (adjCol < 0 || adjCol > width - 1)
                     continue;
 
-                backBuffer[row + 1, col] = frontBuffer[row, col]; // frontBuffer[row, col] can't be `AirPurifier` too
+                int adjIndex = adjRow * width + adjCol;
+                int adjAttr = frontBuffer[adjIndex];
+                if (adjAttr != InteriorAir)
+                    continue;
+
+                frontBuffer[adjIndex] = ExteriorAir;
+                frontier.Enqueue(adjIndex);
             }
-        };
+        }
 
-        for (int i = 0; i < t; ++i) // max tc = 1'000
+        int elapsedTime = 0;
+        while (cheeses > 0)
         {
-            ClearBackBuffer();
-
-            for (int row = 0; row < height; ++row) // max tc = 50
+            for (int index = 0; index < frontBuffer.Length; ++index)
             {
-                for (int col = 0; col < width; ++col) // max tc = 50
+                int frontBufferAttr = frontBuffer[index];
+                int row = index / width;
+                int col = index % width;
+
+                int exposed = 0;
+                if (frontBufferAttr == Cheese)
                 {
-                    int attr = frontBuffer[row, col];
-                    if (attr <= 0)
-                        continue;
-
-                    int spread = attr / 5;
-                    if (spread > 0)
+                    for (int j = 0; j < Offsets; ++j)
                     {
-                        for (int j = 0; j < Offsets; ++j) // max tc = 4
-                        {
-                            int adjRow = row + RowOffsets[j];
-                            if (adjRow < 0 || adjRow > height - 1)
-                                continue;
+                        int adjRow = row + RowOffsets[j];
+                        if (adjRow < 0 || adjRow > height - 1)
+                            continue;
 
-                            int adjCol = col + ColOffsets[j];
-                            if (adjCol < 0 || adjCol > width - 1)
-                                continue;
+                        int adjCol = col + ColOffsets[j];
+                        if (adjCol < 0 || adjCol > width - 1)
+                            continue;
 
-                            if (backBuffer[adjRow, adjCol] == AirPurifier)
-                                continue;
+                        int adjIndex = adjRow * width + adjCol;
+                        int adjAttr = frontBuffer[adjIndex];
+                        if (adjAttr != ExteriorAir)
+                            continue;
 
-                            attr -= spread;
-                            backBuffer[adjRow, adjCol] += spread;
-                        }
+                        ++exposed;
                     }
-
-                    backBuffer[row, col] += attr;
                 }
-            }
-
-            SwapBuffer();
-
-            ClearBackBuffer();
-
-            RightShift(upperAirPurifierRow);
-            UpShift(width - 1, upperAirPurifierRow, 0);
-            LeftShift(0);
-            DownShift(0, 0, upperAirPurifierRow);
-
-            RightShift(lowerAirPurifierRow);
-            DownShift(width - 1, lowerAirPurifierRow, height - 1);
-            LeftShift(height - 1);
-            UpShift(0, height - 1, lowerAirPurifierRow);
-
-            for (int row = 0 + 1; row < upperAirPurifierRow; ++row) // max tc = less than 50
-            {
-                for (int col = AirPurifierCol + 1; col < width - 1; ++col) // max tc = less than 50
+                
+                if (exposed < 2)
                 {
-                    backBuffer[row, col] = frontBuffer[row, col];
+                    backBuffer[index] = frontBufferAttr;
                 }
-            }
-
-            for (int row = lowerAirPurifierRow + 1; row < height - 1; ++row) // max tc = less than 50
-            {
-                for (int col = AirPurifierCol + 1; col < width - 1; ++col) // max tc = less than 50
+                else
                 {
-                    backBuffer[row, col] = frontBuffer[row, col];
+                    backBuffer[index] = ExteriorAir;
+                    --cheeses;
                 }
             }
 
-            SwapBuffer();
-        }
+            Flush();
 
-        int fineDust = 0;
-        for (int row = 0; row < height; ++row) // max tc = 50
-        {
-            for (int col = 0; col < width; ++col) // max tc = 50
-            {
-                int attr = frontBuffer[row, col];
-                if (attr == AirPurifier)
-                    continue;
-
-                fineDust += attr;
-            }
+            ++elapsedTime;
         }
-        Console.Write(fineDust);
+        Console.Write(elapsedTime);
     }
 }
