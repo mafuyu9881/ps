@@ -27,7 +27,7 @@
             return (index / width, index % width);
         };
 
-        int cheeses = 0;
+        LinkedList<int> cheeseIndices = new();
         for (int row = 0; row < height; ++row)
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -37,7 +37,7 @@
 
                 int attr = tokens[col];
                 if (attr == Cheese)
-                    ++cheeses;
+                    cheeseIndices.AddLast(index);
 
                 map[index] = attr;
             }
@@ -74,53 +74,57 @@
             }
         }
 
-        LinkedList<int> meltedIndices = new();
         int elapsedTime = 0;
-        while (cheeses > 0)
+        while (cheeseIndices.Count > 0)
         {
-            for (int index = 0; index < map.Length; ++index)
+            LinkedList<int> meltedIndices = new();
+            var cheeseIndicesCurrLLN = cheeseIndices.First;
+            while (cheeseIndicesCurrLLN != null)
             {
-                int attr = map[index];
-                int row = index / width;
-                int col = index % width;
-
-                int exposed = 0;
-                if (attr == Cheese)
+                int index = cheeseIndicesCurrLLN.Value;
+                
+                var cheeseIndicesNextLLN = cheeseIndicesCurrLLN.Next;
                 {
-                    for (int j = 0; j < Offsets; ++j)
+                    int attr = map[index];
+                    int row = index / width;
+                    int col = index % width;
+
+                    int exposed = 0;
+                    if (attr == Cheese)
                     {
-                        int adjRow = row + RowOffsets[j];
-                        if (adjRow < 0 || adjRow > height - 1)
-                            continue;
+                        for (int j = 0; j < Offsets; ++j)
+                        {
+                            int adjRow = row + RowOffsets[j];
+                            if (adjRow < 0 || adjRow > height - 1)
+                                continue;
 
-                        int adjCol = col + ColOffsets[j];
-                        if (adjCol < 0 || adjCol > width - 1)
-                            continue;
+                            int adjCol = col + ColOffsets[j];
+                            if (adjCol < 0 || adjCol > width - 1)
+                                continue;
 
-                        int adjIndex = adjRow * width + adjCol;
-                        int adjAttr = map[adjIndex];
-                        if (adjAttr != ExteriorAir)
-                            continue;
+                            int adjIndex = adjRow * width + adjCol;
+                            int adjAttr = map[adjIndex];
+                            if (adjAttr != ExteriorAir)
+                                continue;
 
-                        ++exposed;
+                            ++exposed;
+                        }
+                    }
+
+                    if (exposed >= 2)
+                    {
+                        meltedIndices.AddLast(index);
+                        cheeseIndices.Remove(cheeseIndicesCurrLLN);
                     }
                 }
-
-                if (exposed >= 2)
-                {
-                    meltedIndices.AddLast(index);
-                    --cheeses;
-                }
-
-                map[index] = attr;
+                cheeseIndicesCurrLLN = cheeseIndicesNextLLN;
             }
 
             for (var lln = meltedIndices.First; lln != null; lln = lln.Next)
             {
                 map[lln.Value] = ExteriorAir;
             }
-            meltedIndices.Clear();
-
+            
             ++elapsedTime;
         }
         Console.Write(elapsedTime);
