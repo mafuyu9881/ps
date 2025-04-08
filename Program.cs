@@ -16,17 +16,7 @@
         int height = tokens[0];
         int width = tokens[1];
 
-        int[] frontBuffer = new int[height * width];
-        int[] backBuffer = new int[height * width];
-
-        Action Flush = () =>
-        {
-            var temp = frontBuffer;
-            frontBuffer = backBuffer;
-            backBuffer = temp;
-
-            // no need to clear `backBuffer`
-        };
+        int[] map = new int[height * width];
 
         Func<int, int, int> ConvertIndex2DTo1D = (row, col) =>
         {
@@ -49,14 +39,14 @@
                 if (attr == Cheese)
                     ++cheeses;
 
-                frontBuffer[index] = attr;
+                map[index] = attr;
             }
         }
 
         Queue<int> frontier = new();
 
         int sIndex = 0;
-        frontBuffer[sIndex] = ExteriorAir;        
+        map[sIndex] = ExteriorAir;
         frontier.Enqueue(sIndex);
         while (frontier.Count > 0)
         {
@@ -75,26 +65,27 @@
                     continue;
 
                 int adjIndex = adjRow * width + adjCol;
-                int adjAttr = frontBuffer[adjIndex];
+                int adjAttr = map[adjIndex];
                 if (adjAttr != InteriorAir)
                     continue;
 
-                frontBuffer[adjIndex] = ExteriorAir;
+                map[adjIndex] = ExteriorAir;
                 frontier.Enqueue(adjIndex);
             }
         }
 
+        LinkedList<int> meltedIndices = new();
         int elapsedTime = 0;
         while (cheeses > 0)
         {
-            for (int index = 0; index < frontBuffer.Length; ++index)
+            for (int index = 0; index < map.Length; ++index)
             {
-                int frontBufferAttr = frontBuffer[index];
+                int attr = map[index];
                 int row = index / width;
                 int col = index % width;
 
                 int exposed = 0;
-                if (frontBufferAttr == Cheese)
+                if (attr == Cheese)
                 {
                     for (int j = 0; j < Offsets; ++j)
                     {
@@ -107,26 +98,28 @@
                             continue;
 
                         int adjIndex = adjRow * width + adjCol;
-                        int adjAttr = frontBuffer[adjIndex];
+                        int adjAttr = map[adjIndex];
                         if (adjAttr != ExteriorAir)
                             continue;
 
                         ++exposed;
                     }
                 }
-                
-                if (exposed < 2)
+
+                if (exposed >= 2)
                 {
-                    backBuffer[index] = frontBufferAttr;
-                }
-                else
-                {
-                    backBuffer[index] = ExteriorAir;
+                    meltedIndices.AddLast(index);
                     --cheeses;
                 }
+
+                map[index] = attr;
             }
 
-            Flush();
+            for (var lln = meltedIndices.First; lln != null; lln = lln.Next)
+            {
+                map[lln.Value] = ExteriorAir;
+            }
+            meltedIndices.Clear();
 
             ++elapsedTime;
         }
