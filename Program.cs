@@ -3,7 +3,6 @@
     private static void Main(string[] args)
     {
         const int MinExteriorAir = 2; // if the attribute is greater than 1, it is treated as ExteriorAir
-        const int InteriorAir = 0;
         const int Cheese = 1;
 
         const int Offsets = 4;
@@ -27,7 +26,7 @@
             return (index / width, index % width);
         };
 
-        LinkedList<int> cheeseIndices = new();
+        int cheeses = 0;
         for (int row = 0; row < height; ++row) // max tc = 100
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
@@ -37,92 +36,89 @@
 
                 int attr = tokens[col];
                 if (attr == Cheese)
-                    cheeseIndices.AddLast(index);
+                    ++cheeses;
+                else
+                    attr = MinExteriorAir;
 
                 map[index] = attr;
             }
         }
 
-        Queue<int> frontier = new();
-
-        int sIndex = 0;
-        map[sIndex] = MinExteriorAir;
-        frontier.Enqueue(sIndex);
-        while (frontier.Count > 0) // max tc = 10'000
-        {
-            int index = frontier.Dequeue();
-            int row = index / width;
-            int col = index % width;
-
-            for (int i = 0; i < Offsets; ++i) // tc = 4
-            {
-                int adjRow = row + RowOffsets[i];
-                if (adjRow < 0 || adjRow > height - 1)
-                    continue;
-
-                int adjCol = col + ColOffsets[i];
-                if (adjCol < 0 || adjCol > width - 1)
-                    continue;
-
-                int adjIndex = adjRow * width + adjCol;
-                int adjAttr = map[adjIndex];
-                if (adjAttr != InteriorAir)
-                    continue;
-
-                map[adjIndex] = MinExteriorAir;
-                frontier.Enqueue(adjIndex);
-            }
-        }
-
-        int currMaxExteriorAir = MinExteriorAir;
         int elapsedTime = 0;
-        while (cheeseIndices.Count > 0) // max tc = below 10'000
+        int currExteriorAir = MinExteriorAir + 1;
+        while (cheeses > 0) // max tc = below 10'000
         {
-            int nextMaxExteriorAir = currMaxExteriorAir + 1;
-            var cheeseIndicesCurrLLN = cheeseIndices.First;
-            while (cheeseIndicesCurrLLN != null) // max tc = below 10'000
-            {
-                int index = cheeseIndicesCurrLLN.Value;
+            int tempExteriorAir = currExteriorAir + 1;
+            int nextExteriorAir = currExteriorAir + 2;
 
-                int attr = map[index];
+            Queue<int> frontier = new();
+
+            int sIndex = 0;
+            map[sIndex] = currExteriorAir;
+            frontier.Enqueue(sIndex);
+            while (frontier.Count > 0) // max tc = below 10'000
+            {
+                int index = frontier.Dequeue();
                 int row = index / width;
                 int col = index % width;
-
-                var cheeseIndicesNextLLN = cheeseIndicesCurrLLN.Next;
                 
-                int exposed = 0;
-                if (attr == Cheese)
+                for (int i = 0; i < Offsets; ++i) // tc = 4
                 {
-                    for (int j = 0; j < Offsets; ++j) // tc = 4
+                    int adjRow = row + RowOffsets[i];
+                    if (adjRow < 0 || adjRow > height - 1)
+                        continue;
+
+                    int adjCol = col + ColOffsets[i];
+                    if (adjCol < 0 || adjCol > width - 1)
+                        continue;
+
+                    int adjIndex = ConvertIndex2DTo1D(adjRow, adjCol);
+                    int adjAttr = map[adjIndex];
+                    if (adjAttr == Cheese || adjAttr >= currExteriorAir)
+                        continue;
+
+                    map[adjIndex] = currExteriorAir;
+                    frontier.Enqueue(adjIndex);
+                }
+            }
+
+            for (int row = 0; row < height; ++row) // max tc = 100
+            {
+                for (int col = 0; col < width; ++col) // max tc = 100
+                {
+                    int index = ConvertIndex2DTo1D(row, col);
+                    int attr = map[index];
+                    if (attr != Cheese)
+                        continue;
+
+                    int exposed = 0;
+                    for (int i = 0; i < Offsets; ++i) // tc = 4
                     {
-                        int adjRow = row + RowOffsets[j];
+                        int adjRow = row + RowOffsets[i];
                         if (adjRow < 0 || adjRow > height - 1)
                             continue;
-
-                        int adjCol = col + ColOffsets[j];
+                        
+                        int adjCol = col + ColOffsets[i];
                         if (adjCol < 0 || adjCol > width - 1)
                             continue;
 
-                        int adjIndex = adjRow * width + adjCol;
+                        int adjIndex = ConvertIndex2DTo1D(adjRow, adjCol);
                         int adjAttr = map[adjIndex];
-                        if (adjAttr < MinExteriorAir ||
-                            adjAttr > currMaxExteriorAir)
+                        if (adjAttr == Cheese || adjAttr > currExteriorAir)
                             continue;
 
                         ++exposed;
                     }
-                }
 
-                if (exposed >= 2)
-                {
-                    map[index] = nextMaxExteriorAir;
-                    cheeseIndices.Remove(cheeseIndicesCurrLLN);
+                    if (exposed >= 2)
+                    {
+                        map[index] = tempExteriorAir;
+                        --cheeses;
+                    }
                 }
-                
-                cheeseIndicesCurrLLN = cheeseIndicesNextLLN;
             }
-
-            currMaxExteriorAir = nextMaxExteriorAir; // cheese always melts
+            
+            currExteriorAir = nextExteriorAir;
 
             ++elapsedTime;
         }
