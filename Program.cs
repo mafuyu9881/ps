@@ -104,7 +104,7 @@
 
                         int adjIndex = ConvertIndex2DTo1D(adjRow, adjCol);
                         int adjAttr = map[adjIndex];
-                        if (adjAttr == Cheese || adjAttr > currExteriorAir)
+                        if (adjAttr != currExteriorAir)
                             continue;
 
                         ++exposed;
