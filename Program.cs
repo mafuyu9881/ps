@@ -2,23 +2,68 @@
 {
     private static void Main(string[] args)
     {
-        SortedDictionary<string, float> sd = new()
+        int n = int.Parse(Console.ReadLine()!); // [1, 1'000]
+
+        const int Axes = 3;
+        int[] intersectionMin = null!;
+        int[] intersectionMax = null!;
+
+        Action<int[]> ApplyToIntersectionMin = (int[] min) =>
         {
-            { "A+", 4.3f },
-            { "A0", 4.0f },
-            { "A-", 3.7f },
-            { "B+", 3.3f },
-            { "B0", 3.0f },
-            { "B-", 2.7f },
-            { "C+", 2.3f },
-            { "C0", 2.0f },
-            { "C-", 1.7f },
-            { "D+", 1.3f },
-            { "D0", 1.0f },
-            { "D-", 0.7f },
-            { "F", 0.0f },
+            if (intersectionMin == null)
+            {
+                intersectionMin = min;
+            }
+            else
+            {
+                for (int i = 0; i < Axes; ++i)
+                {
+                    intersectionMin[i] = Math.Max(intersectionMin[i], min[i]);
+                }
+            }
+        };
+        Action<int[]> ApplyToIntersectionMax = (int[] max) =>
+        {
+            if (intersectionMax == null)
+            {
+                intersectionMax = max;
+            }
+            else
+            {
+                for (int i = 0; i < Axes; ++i)
+                {
+                    intersectionMax[i] = Math.Min(intersectionMax[i], max[i]);
+                }
+            }
         };
 
-        Console.Write(sd[Console.ReadLine()!].ToString("F1"));
+        for (int i = 0; i < n; ++i) // max tc = max n = 1'000
+        {
+            // length = 6
+            // element = [1, 1'000]
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            int[] min = new int[] { tokens[0], tokens[1], tokens[2] };
+            int[] max = new int[] { tokens[3], tokens[4], tokens[5] };
+
+            ApplyToIntersectionMin(min);
+            ApplyToIntersectionMax(max);
+        }
+
+        int intersectionArea = 1;
+        for (int i = 0; i < Axes; ++i)
+        {
+            int diff = intersectionMax[i] - intersectionMin[i];
+            if (diff > 0)
+            {
+                intersectionArea *= diff;
+            }
+            else
+            {
+                intersectionArea = 0;
+                break;
+            }
+        }
+        Console.Write(intersectionArea);
     }
 }
