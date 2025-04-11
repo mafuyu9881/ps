@@ -2,68 +2,45 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 1'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [3, 200]
+        int m = tokens[1]; // [1, n] = [1, 200]
+        int k = tokens[2]; // [0, 1'000'000]
 
-        const int Axes = 3;
-        int[] intersectionMin = null!;
-        int[] intersectionMax = null!;
+        bool[] frontBuffer = new bool[n];
+        bool[] backBuffer = new bool[n];
 
-        Action<int[]> ApplyToIntersectionMin = (int[] min) =>
+        for (int i = 0; i < m; ++i) // max tc = 200
         {
-            if (intersectionMin == null)
-            {
-                intersectionMin = min;
-            }
-            else
-            {
-                for (int i = 0; i < Axes; ++i)
-                {
-                    intersectionMin[i] = Math.Max(intersectionMin[i], min[i]);
-                }
-            }
-        };
-        Action<int[]> ApplyToIntersectionMax = (int[] max) =>
-        {
-            if (intersectionMax == null)
-            {
-                intersectionMax = max;
-            }
-            else
-            {
-                for (int i = 0; i < Axes; ++i)
-                {
-                    intersectionMax[i] = Math.Min(intersectionMax[i], max[i]);
-                }
-            }
-        };
-
-        for (int i = 0; i < n; ++i) // max tc = max n = 1'000
-        {
-            // length = 6
-            // element = [1, 1'000]
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            int[] min = new int[] { tokens[0], tokens[1], tokens[2] };
-            int[] max = new int[] { tokens[3], tokens[4], tokens[5] };
-
-            ApplyToIntersectionMin(min);
-            ApplyToIntersectionMax(max);
+            frontBuffer[int.Parse(Console.ReadLine()!)] = true;
         }
 
-        int intersectionArea = 1;
-        for (int i = 0; i < Axes; ++i)
+        Action SwapBuffer = () =>
         {
-            int diff = intersectionMax[i] - intersectionMin[i];
-            if (diff > 0)
+            var temp = frontBuffer;
+            frontBuffer = backBuffer;
+            backBuffer = temp;
+        };
+        
+        for (int i = 0; i < k; ++i) // max tc = 1'000'000
+        {
+            for (int index = 0; index < n; ++index) // max tc = 200
             {
-                intersectionArea *= diff;
+                int prevIndex = (index - 1 + n) % n;
+                int nextIndex = (index + 1) % n;
+                backBuffer[index] = frontBuffer[prevIndex] != frontBuffer[nextIndex];
             }
-            else
+            SwapBuffer();
+        }
+
+        int greetings = 0;
+        for (int i = 0; i < frontBuffer.Length; ++i) // max tc = 1'000'000
+        {
+            if (frontBuffer[i])
             {
-                intersectionArea = 0;
-                break;
+                ++greetings;
             }
         }
-        Console.Write(intersectionArea);
+        Console.Write(greetings);
     }
 }
