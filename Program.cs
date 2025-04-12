@@ -1,46 +1,56 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [3, 200]
-        int m = tokens[1]; // [1, n] = [1, 200]
-        int k = tokens[2]; // [0, 1'000'000]
+        int t = int.Parse(Console.ReadLine()!); // [?, ?]
 
-        bool[] frontBuffer = new bool[n];
-        bool[] backBuffer = new bool[n];
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i) // max tc = ?
+        {
+            int n = int.Parse(Console.ReadLine()!); // [2, 1'000]
 
-        for (int i = 0; i < m; ++i) // max tc = 200
-        {
-            frontBuffer[int.Parse(Console.ReadLine()!)] = true;
-        }
+            // length = [2, 1'000]
+            // element = [1, 1'000]
+            // max tc = 1'000
+            int[] permutation = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        Action SwapBuffer = () =>
-        {
-            var temp = frontBuffer;
-            frontBuffer = backBuffer;
-            backBuffer = temp;
-        };
-        
-        for (int i = 0; i < k; ++i) // max tc = 1'000'000
-        {
-            for (int index = 0; index < n; ++index) // max tc = 200
+            int[] adjList = new int[n + 1];
+            for (int j = 1; j < adjList.Length; ++j) // max tc = 1'000
             {
-                int prevIndex = (index - 1 + n) % n;
-                int nextIndex = (index + 1) % n;
-                backBuffer[index] = frontBuffer[prevIndex] != frontBuffer[nextIndex];
+                adjList[j] = permutation[j - 1];
             }
-            SwapBuffer();
-        }
 
-        int greetings = 0;
-        for (int i = 0; i < frontBuffer.Length; ++i) // max tc = 1'000'000
-        {
-            if (frontBuffer[i])
+            int cycles = 0;
+            bool[] visited = new bool[adjList.Length];
+            for (int s = 1; s < adjList.Length; ++s) // max tc = 1'000
             {
-                ++greetings;
+                if (visited[s])
+                    continue;
+
+                Stack<int> frontier = new();
+
+                visited[s] = true;
+                frontier.Push(s);
+                while (frontier.Count > 0) // global max tc = 1'000
+                {
+                    int v = frontier.Pop();
+
+                    int adjV = adjList[v];
+                    if (adjV == v || visited[adjV])
+                    {
+                        ++cycles;
+                    }
+                    else
+                    {
+                        visited[adjV] = true;
+                        frontier.Push(adjV);
+                    }
+                }
             }
+            sb.AppendLine($"{cycles}");
         }
-        Console.Write(greetings);
+        Console.Write(sb);
     }
 }
