@@ -2,56 +2,38 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int[] Damage = new int[3] { 9, 3, 1 };
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [2, 200'000]
-        int k = tokens[1]; // [2, n) = [2, 200'000)
+        int n = int.Parse(Console.ReadLine()!);
 
-        Func<int, bool> Condition = (t) =>
+        // length = [1, 3]
+        // element = [1, 60]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        Func<bool> Complete = () =>
         {
-            int day = n;
-
-            int travels = 0;
-            while (true)
+            for (int i = 0; i < tokens.Length; ++i)
             {
-                if (tokens[day - 1] == 1)
+                if (tokens[i] > 0)
                 {
-                    day = Math.Max(1, day - t);
-                    ++travels;
-                }
-                else
-                {
-                    ++day;
-                }
-
-                if (travels > k)
                     return false;
-
-                if (day == 1)
-                    return true;
+                }
             }
+            return true;
         };
 
-        // length = [2, 200'000]
-        // element = [0, 1]
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        
-        int lo = 0 - 1;
-        int hi = n + 1;
-        while (lo < hi - 1)
+        int attacks = 0;
+        while (Complete() == false)
         {
-            int mid = (lo + hi) / 2;
+            Array.Sort(tokens, (x, y) => y.CompareTo(x));
 
-            if (Condition(mid))
+            for (int i = 0; i < tokens.Length; ++i)
             {
-                hi = mid;
+                tokens[i] = Math.Max(0, tokens[i] - Damage[i]);
             }
-            else
-            {
-                lo = mid;
-            }
+
+            ++attacks;
         }
-        Console.Write(hi);
+        Console.Write(attacks);
     }
 }
