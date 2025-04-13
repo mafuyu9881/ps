@@ -27,9 +27,9 @@ internal class Program
             int b = tokens[1]; // [1, n] = [1, 10^5]
             int x = tokens[2]; // [1, 10^9]
 
+            SortedSet<int> subset = set.GetViewBetween(a, b);
             while (true)
             {
-                SortedSet<int> subset = set.GetViewBetween(a, b);
                 if (subset.Count < 1)
                     break;
 
