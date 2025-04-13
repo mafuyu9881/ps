@@ -15,16 +15,21 @@
             bool[] visited = new bool[n + 1];
             visited[n] = true;
 
+            int travels = 0;
             while (true)
             {
                 if (tokens[day - 1] == 1)
                 {
                     day = Math.Max(1, day - t);
+                    ++travels;
                 }
                 else
                 {
                     ++day;
                 }
+
+                if (travels > k)
+                    return false;
 
                 if (visited[day])
                     return false;
