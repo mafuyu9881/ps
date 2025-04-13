@@ -1,70 +1,49 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        const int InvalidCost = -1;
+        int[] tokens = null!;
 
-        int n = int.Parse(Console.ReadLine()!); // [1, 3]
+        // length = 2
+        // element = [1, 10^5]
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0];
+        int q = tokens[1];
 
-        // length = [1, 3]
-        // element = [1, 60]
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] canvas = new int[n + 1];
 
-        int[] hp = new int[3];
-        for (int i = 0; i < tokens.Length; ++i) // max tc = 3
+        SortedSet<int> set = new();
+        for (int i = 1; i < canvas.Length; ++i) // max tc = 10^5
         {
-            hp[i] = tokens[i];
+            set.Add(i);
         }
-
-        int initialHP0 = hp[0];
-        int initialHP1 = hp[1];
-        int initialHP2 = hp[2];
-
-        int[,,] dp = new int[initialHP0 + 1, initialHP1 + 1, initialHP2 + 1];
-        for (int i = initialHP0; i >= 0; --i) // max tc = 61
+        
+        for (int i = 0; i < q; ++i) // max tc = 10^5
         {
-            for (int j = initialHP1; j >= 0; --j) // max tc = 61
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int a = tokens[0]; // [1, n] = [1, 10^5]
+            int b = tokens[1]; // [1, n] = [1, 10^5]
+            int x = tokens[2]; // [1, 10^9]
+
+            while (true)
             {
-                for (int k = initialHP2; k >= 0; --k) // max tc = 61
-                {
-                    dp[i, j, k] = InvalidCost;
-                }
+                SortedSet<int> subset = set.GetViewBetween(a, b);
+                if (subset.Count < 1)
+                    break;
+
+                int index = subset.Min;
+                canvas[index] = x;
+                subset.Remove(index);
             }
         }
-
-        Action<int, int, int, int, int, int> Transition = (i, j, k, damageI, damageJ, damageK) =>
+        
+        StringBuilder sb = new();
+        for (int i = 1; i < canvas.Length; ++i) // max tc = 10^5
         {
-            if (dp[i, j, k] == InvalidCost)
-                return;
-
-            int nextI = Math.Max(0, i - damageI);
-            int nextJ = Math.Max(0, j - damageJ);
-            int nextK = Math.Max(0, k - damageK);
-
-            int oldCost = dp[nextI, nextJ, nextK];
-            int newCost = dp[i, j, k] + 1;
-            if (oldCost != InvalidCost && oldCost <= newCost)
-                return;
-
-            dp[nextI, nextJ, nextK] = newCost;
-        };
-
-        dp[initialHP0, initialHP1, initialHP2] = 0;
-        for (int i = initialHP0; i >= 0; --i) // max tc = 61
-        {
-            for (int j = initialHP1; j >= 0; --j) // max tc = 61
-            {
-                for (int k = initialHP2; k >= 0; --k) // max tc = 61
-                {
-                    Transition(i, j, k, 9, 3, 1);
-                    Transition(i, j, k, 9, 1, 3);
-                    Transition(i, j, k, 3, 9, 1);
-                    Transition(i, j, k, 3, 1, 9);
-                    Transition(i, j, k, 1, 3, 9);
-                    Transition(i, j, k, 1, 9, 3);
-                }
-            }
+            sb.Append($"{canvas[i]} ");
         }
-        Console.Write(dp[0, 0, 0]);
+        Console.Write(sb);
     }
 }
