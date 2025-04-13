@@ -12,9 +12,6 @@
         {
             int day = n;
 
-            bool[] visited = new bool[n + 1];
-            visited[n] = true;
-
             int travels = 0;
             while (true)
             {
@@ -30,11 +27,6 @@
 
                 if (travels > k)
                     return false;
-
-                if (visited[day])
-                    return false;
-
-                visited[day] = true;
 
                 if (day == 1)
                     return true;
