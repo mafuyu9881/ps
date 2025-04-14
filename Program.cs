@@ -99,13 +99,13 @@ internal class Program
                     for (var lln = edges.First; lln != null; lln = lln.Next) // max tc = 2'500
                     {
                         int s = lln.Value.s;
-                        if (minCost[s] == Infinity)
+                        if (minCost[s] >= Infinity)
                             continue;
 
                         int e = lln.Value.e;
                         int eOldMinCost = minCost[e];
                         int eNewMinCost = minCost[s] + lln.Value.cost;
-                        if (eOldMinCost != Infinity && eOldMinCost <= eNewMinCost)
+                        if (eOldMinCost < Infinity && eOldMinCost <= eNewMinCost)
                             continue;
 
                         minCost[e] = eNewMinCost;
