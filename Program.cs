@@ -50,43 +50,42 @@ internal class Program
 
             bool[] visited = new bool[n + 1];
             Queue<int> frontier = new();
-            LinkedList<int> cc = null!;
             LinkedList<LinkedList<int>> ccs = new();
-            for (int j = 1; j <= n; ++j) // max tc = 500
             {
-                if (frontier.Count < 1)
+                LinkedList<int> cc = null!;
+                for (int j = 1; j <= n; ++j) // max tc = 500
                 {
-                    if (visited[j])
-                        continue;
+                    if (frontier.Count < 1)
+                    {
+                        if (visited[j])
+                            continue;
 
-                    cc = new();
-                    ccs.AddLast(cc);
+                        cc = new();
+                        ccs.AddLast(cc);
 
-                    cc.AddLast(j);
-                    visited[j] = true;
-                    frontier.Enqueue(j);
-                }
+                        cc.AddLast(j);
+                        visited[j] = true;
+                        frontier.Enqueue(j);
+                    }
 
-                int s = frontier.Dequeue();
+                    int s = frontier.Dequeue();
 
-                var adjs = adjList[s];
-                for (var lln = adjs.First; lln != null; lln = lln.Next)
-                {
-                    int e = lln.Value.e;
-                    if (visited[e])
-                        continue;
+                    var adjs = adjList[s];
+                    for (var lln = adjs.First; lln != null; lln = lln.Next)
+                    {
+                        int e = lln.Value.e;
+                        if (visited[e])
+                            continue;
 
-                    cc.AddLast(e);
-                    visited[e] = true;
-                    frontier.Enqueue(e);
+                        cc.AddLast(e);
+                        visited[e] = true;
+                        frontier.Enqueue(e);
+                    }
                 }
             }
-            
-            bool negativeWeightCycle = false;
-            for (var ccsLLN = ccs.First; ccsLLN != null; ccsLLN = ccsLLN.Next)
-            {
-                cc = ccsLLN.Value;
 
+            Func<LinkedList<int>, bool> DetectNegativeWeightCycle = (LinkedList<int> cc) =>
+            {
                 int[] minCost = new int[n + 1];
                 for (int j = 1; j < minCost.Length; ++j) // max tc = 200
                 {
@@ -111,16 +110,23 @@ internal class Program
                         minCost[e] = eNewMinCost;
 
                         if (j >= n - 1)
-                        {
-                            negativeWeightCycle = true;
-                            goto Print;
-                        }
+                            return true;
                     }
                 }
-            }
 
-Print:
-            sb.AppendLine(negativeWeightCycle ? "YES" : "NO");
+                return false;
+            };
+            
+            bool detected = false;
+            for (var ccsLLN = ccs.First; ccsLLN != null; ccsLLN = ccsLLN.Next)
+            {
+                if (DetectNegativeWeightCycle(ccsLLN.Value))
+                {
+                    detected = true;
+                    break;
+                }
+            }
+            sb.AppendLine(detected ? "YES" : "NO");
         }
         Console.Write(sb);
     }
