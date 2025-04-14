@@ -4,7 +4,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        const int Infinity = 499 * 10000 + 1; // (max cost over any path) + 1 = (number of steps) * (max edge cost) + 1
+        const int Infinity = int.MaxValue;
 
         int t = int.Parse(Console.ReadLine()!); // [1, 5]
 
