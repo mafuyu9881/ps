@@ -4,139 +4,91 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        const int Infinity = 499 * 10000 + 1; // (max cost over any path) + 1 = (number of steps) * (max edge cost) + 1
+        int n = int.Parse(Console.ReadLine()!); // [1, 100]
+        // length = [1, n] = [1, 100]
+        // element = [1, 100]
+        int[] seqA = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int t = int.Parse(Console.ReadLine()!); // [1, 5]
+        int m = int.Parse(Console.ReadLine()!); // [1, 100]
+        // length = [1, m] = [1, 100]
+        // element = [1, 100]
+        int[] seqB = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int[] tokens = null!;
-
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i) // max t = 5
+        int[,] dp = new int[n + 1, m + 1];
+        for (int row = 1; row < dp.GetLength(0); ++row) // max tc = 100
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int n = tokens[0]; // [1, 500]
-            int m = tokens[1]; // [1, 2'500]
-            int w = tokens[2]; // [1, 200]
-
-            LinkedList<int> candidates = new();
-            for (int j = 1; j < n + 1; ++j)
+            for (int col = 1; col < dp.GetLength(1); ++col) // max tc = 100
             {
-                candidates.AddLast(j);
-            }
+                int seqAIndex = row - 1;
+                int seqBIndex = col - 1;
 
-            LinkedList<(int e, int cost)>[] adjList = new LinkedList<(int, int)>[n + 1];
-            for (int j = 1; j < adjList.Length; ++j) // max tc = 500
-            {
-                adjList[j] = new();
+                int streaks;
+                if (seqA[seqAIndex] == seqB[seqBIndex])
+                {
+                    streaks = dp[row - 1, col - 1] + 1;
+                }
+                else
+                {
+                    streaks = Math.Max(dp[row - 1, col], dp[row, col - 1]);
+                }
+                dp[row, col] = streaks;
             }
+        }
+
+        LinkedList<int> lcs = new();
+        {
+            int row = dp.GetLength(0) - 1;
+            int col = dp.GetLength(1) - 1;
             
-            LinkedList<(int s, int e, int cost)> edges = new LinkedList<(int, int, int)>();
-
-            for (int j = 0; j < m; ++j) // max tc = 2'500
+            while (row > 0 && col > 0)
             {
-                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int s = tokens[0];
-                int e = tokens[1];
-                int cost = tokens[2]; // [0, 10'000]
-                adjList[s].AddLast((e, cost));
-                adjList[e].AddLast((s, cost));
-                edges.AddLast((s, e, cost));
-                edges.AddLast((e, s, cost));
-            }
+                // It is guaranteed that currStreaks is greater than or equal to both leftStreaks and upStreaks
+                int currStreaks = dp[row, col];
+                int leftStreaks = dp[row, col - 1];
+                int aboveStreaks = dp[row - 1, col];
 
-            for (int j = 0; j < w; ++j) // max tc = 200
-            {
-                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int s = tokens[0];
-                int e = tokens[1];
-                int cost = -tokens[2]; // [-10'000, 0]
-                adjList[s].AddLast((e, cost));
-                edges.AddLast((s, e, cost));
-            }
-
-            bool[] visited = new bool[n + 1];
-            Queue<int> frontier = new();
-            LinkedList<LinkedList<int>> ccs = new();
-            {
-                LinkedList<int> cc = null!;
-                
-                while (candidates.Count > 0) // max tc = 500
+                if (currStreaks == leftStreaks)
                 {
-                    if (frontier.Count < 1)
-                    {
-                        var lln = candidates.First!;
-                        int v = lln.Value;
-                        candidates.Remove(lln);
-                        if (visited[v])
-                            continue;
-
-                        cc = new();
-                        ccs.AddLast(cc);
-
-                        cc.AddLast(v);
-                        visited[v] = true;
-                        frontier.Enqueue(v);
-                    }
-
-                    int s = frontier.Dequeue();
-
-                    var adjs = adjList[s];
-                    for (var lln = adjs.First; lln != null; lln = lln.Next)
-                    {
-                        int e = lln.Value.e;
-                        if (visited[e])
-                            continue;
-
-                        cc.AddLast(e);
-                        visited[e] = true;
-                        frontier.Enqueue(e);
-                    }
+                    --col;
+                }
+                else if (currStreaks == aboveStreaks)
+                {
+                    --row;
+                }
+                else
+                {
+                    lcs.AddLast(seqA[row - 1]);
+                    --row;
+                    --col;
                 }
             }
-
-            Func<LinkedList<int>, bool> BellmanFord = (LinkedList<int> cc) =>
+        }
+        
+        if (lcs.Count > 0)
+        {
+            LinkedListNode<int>? currLLN = lcs.Last;
+            while (currLLN != null)
             {
-                int[] minCost = new int[n + 1];
-                for (int j = 1; j < minCost.Length; ++j) // max tc = 200
-                {
-                    minCost[j] = Infinity;
-                }
-                minCost[cc.First!.Value] = 0;
+                LinkedListNode<int>? PrevLLN = currLLN.Previous;
 
-                for (int j = 0; j < n; ++j) // max tc = 500
+                for (var lln = PrevLLN; lln != null; lln = lln.Previous)
                 {
-                    for (var lln = edges.First; lln != null; lln = lln.Next) // max tc = 2'500
+                    if (lln.Value > currLLN.Value)
                     {
-                        int s = lln.Value.s;
-                        if (minCost[s] >= Infinity)
-                            continue;
-
-                        int e = lln.Value.e;
-                        int eOldMinCost = minCost[e];
-                        int eNewMinCost = minCost[s] + lln.Value.cost;
-                        if (eOldMinCost < Infinity && eOldMinCost <= eNewMinCost)
-                            continue;
-
-                        minCost[e] = eNewMinCost;
-
-                        if (j >= n - 1)
-                            return true;
+                        lcs.Remove(currLLN);
+                        break;
                     }
                 }
 
-                return false;
-            };
-            
-            bool detected = false;
-            for (var lln = ccs.First; lln != null; lln = lln.Next)
-            {
-                if (BellmanFord(lln.Value))
-                {
-                    detected = true;
-                    break;
-                }
+                currLLN = PrevLLN;
             }
-            sb.AppendLine(detected ? "YES" : "NO");
+        }
+        
+        StringBuilder sb = new();
+        sb.AppendLine($"{lcs.Count}");
+        for (var lln = lcs.Last; lln != null; lln = lln.Previous)
+        {
+            sb.Append($"{lln.Value} ");
         }
         Console.Write(sb);
     }
