@@ -14,82 +14,81 @@ internal class Program
         // element = [1, 100]
         int[] seqB = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int[,] dp = new int[n + 1, m + 1];
-        for (int row = 1; row < dp.GetLength(0); ++row) // max tc = 100
+        LinkedList<int>[,] csList = new LinkedList<int>[n + 1, m + 1]; // cs = common sequence
+        for (int row = 0; row < csList.GetLength(0); ++row) // max tc = 101
         {
-            for (int col = 1; col < dp.GetLength(1); ++col) // max tc = 100
+            for (int col = 0; col < csList.GetLength(1); ++col) // max tc = 101
             {
-                int seqAIndex = row - 1;
-                int seqBIndex = col - 1;
-
-                int streaks;
-                if (seqA[seqAIndex] == seqB[seqBIndex])
-                {
-                    streaks = dp[row - 1, col - 1] + 1;
-                }
-                else
-                {
-                    streaks = Math.Max(dp[row - 1, col], dp[row, col - 1]);
-                }
-                dp[row, col] = streaks;
+                csList[row, col] = new();
             }
         }
 
-        LinkedList<int> lcs = new();
+        for (int row = 1; row < csList.GetLength(0); ++row) // max tc = 100
         {
-            int row = dp.GetLength(0) - 1;
-            int col = dp.GetLength(1) - 1;
-            
-            while (row > 0 && col > 0)
+            for (int col = 1; col < csList.GetLength(1); ++col) // max tc = 100
             {
-                // It is guaranteed that currStreaks is greater than or equal to both leftStreaks and upStreaks
-                int currStreaks = dp[row, col];
-                int leftStreaks = dp[row, col - 1];
-                int aboveStreaks = dp[row - 1, col];
-
-                if (currStreaks == leftStreaks)
+                int elemA = seqA[row - 1];
+                int elemB = seqB[col - 1];
+                if (elemA == elemB)
                 {
-                    --col;
-                }
-                else if (currStreaks == aboveStreaks)
-                {
-                    --row;
-                }
-                else
-                {
-                    lcs.AddLast(seqA[row - 1]);
-                    --row;
-                    --col;
-                }
-            }
-        }
-        
-        if (lcs.Count > 0)
-        {
-            LinkedListNode<int>? currLLN = lcs.Last;
-            while (currLLN != null)
-            {
-                LinkedListNode<int>? PrevLLN = currLLN.Previous;
-
-                for (var lln = PrevLLN; lln != null; lln = lln.Previous)
-                {
-                    if (lln.Value > currLLN.Value)
+                    LinkedList<int> prevCS = csList[row - 1, col - 1];
+                    for (var lln = prevCS.First; lln != null; lln = lln.Next) // max tc = 100
                     {
-                        lcs.Remove(currLLN);
-                        break;
-                    }
-                }
+                        int elem = lln.Value;
+                        if (elem < elemA)
+                            break;
 
-                currLLN = PrevLLN;
+                        csList[row, col].AddLast(elem);
+                    }
+                    csList[row, col].AddLast(elemA);
+                }
+                else
+                {
+                    csList[row, col] = GetGreaterSequence(csList[row - 1, col], csList[row, col - 1]);
+                }
             }
         }
-        
+
         StringBuilder sb = new();
-        sb.AppendLine($"{lcs.Count}");
-        for (var lln = lcs.Last; lln != null; lln = lln.Previous)
         {
-            sb.Append($"{lln.Value} ");
+            var cs = csList[csList.GetLength(0) - 1, csList.GetLength(1) - 1];
+            sb.AppendLine($"{cs.Count}");
+            for (var lln = cs.First; lln != null; lln = lln.Next)
+            {
+                sb.Append($"{lln.Value} ");
+            }
         }
         Console.Write(sb);
+    }
+
+    private static LinkedList<int> GetGreaterSequence(LinkedList<int> s1, LinkedList<int> s2)
+    {
+        if (s1 == null)
+            return s2;
+
+        if (s2 == null)
+            return s1;
+
+        var s1LLN = s1.First;
+        var s2LLN = s2.First;
+        while (s1LLN != null && s2LLN != null)
+        {
+            if (s1LLN.Value > s2LLN.Value)
+                return s1;
+
+            if (s1LLN.Value < s2LLN.Value)
+                return s2;
+
+            s1LLN = s1LLN.Next;
+            s2LLN = s2LLN.Next;
+        }
+
+        if (s1.Count > s2.Count)
+            return s1;
+
+        if (s1.Count < s2.Count)
+            return s2;
+        
+        return s1;
     }
 }
