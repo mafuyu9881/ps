@@ -94,7 +94,7 @@ internal class Program
                 }
             }
 
-            Func<LinkedList<int>, bool> DetectNegativeWeightCycle = (LinkedList<int> cc) =>
+            Func<LinkedList<int>, bool> BellmanFord = (LinkedList<int> cc) =>
             {
                 int[] minCost = new int[n + 1];
                 for (int j = 1; j < minCost.Length; ++j) // max tc = 200
@@ -130,7 +130,7 @@ internal class Program
             bool detected = false;
             for (var lln = ccs.First; lln != null; lln = lln.Next)
             {
-                if (DetectNegativeWeightCycle(lln.Value))
+                if (BellmanFord(lln.Value))
                 {
                     detected = true;
                     break;
