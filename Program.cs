@@ -4,7 +4,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        const int Infinity = int.MaxValue;
+        const int Infinity = 499 * 10000 + 1; // (max cost over any path) + 1 = (number of steps) * (max edge cost) + 1
 
         int t = int.Parse(Console.ReadLine()!); // [1, 5]
 
@@ -18,8 +18,14 @@ internal class Program
             int m = tokens[1]; // [1, 2'500]
             int w = tokens[2]; // [1, 200]
 
+            LinkedList<int> candidates = new();
+            for (int j = 1; j < n + 1; ++j)
+            {
+                candidates.AddLast(j);
+            }
+
             LinkedList<(int e, int cost)>[] adjList = new LinkedList<(int, int)>[n + 1];
-            for (int j = 1; j < adjList.Length; ++j)
+            for (int j = 1; j < adjList.Length; ++j) // max tc = 500
             {
                 adjList[j] = new();
             }
@@ -43,9 +49,9 @@ internal class Program
                 tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
                 int s = tokens[0];
                 int e = tokens[1];
-                int cost = tokens[2]; // [0, 10'000]
-                adjList[s].AddLast((e, -cost));
-                edges.AddLast((s, e, -cost));
+                int cost = -tokens[2]; // [-10'000, 0]
+                adjList[s].AddLast((e, cost));
+                edges.AddLast((s, e, cost));
             }
 
             bool[] visited = new bool[n + 1];
@@ -53,19 +59,23 @@ internal class Program
             LinkedList<LinkedList<int>> ccs = new();
             {
                 LinkedList<int> cc = null!;
-                for (int j = 1; j <= n; ++j) // max tc = 500
+                
+                while (candidates.Count > 0) // max tc = 500
                 {
                     if (frontier.Count < 1)
                     {
-                        if (visited[j])
+                        var lln = candidates.First!;
+                        int v = lln.Value;
+                        candidates.Remove(lln);
+                        if (visited[v])
                             continue;
 
                         cc = new();
                         ccs.AddLast(cc);
 
-                        cc.AddLast(j);
-                        visited[j] = true;
-                        frontier.Enqueue(j);
+                        cc.AddLast(v);
+                        visited[v] = true;
+                        frontier.Enqueue(v);
                     }
 
                     int s = frontier.Dequeue();
@@ -118,9 +128,9 @@ internal class Program
             };
             
             bool detected = false;
-            for (var ccsLLN = ccs.First; ccsLLN != null; ccsLLN = ccsLLN.Next)
+            for (var lln = ccs.First; lln != null; lln = lln.Next)
             {
-                if (DetectNegativeWeightCycle(ccsLLN.Value))
+                if (DetectNegativeWeightCycle(lln.Value))
                 {
                     detected = true;
                     break;
