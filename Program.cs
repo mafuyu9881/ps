@@ -2,33 +2,68 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [2, 20'000]
-        int s = tokens[1]; // [1, 1'000'000]
+        const int Girl = 0;
 
-        int[] cows = new int[n];
-        for (int i = 0; i < cows.Length; ++i)
-        {
-            cows[i] = int.Parse(Console.ReadLine()!); // [1, 1'000'000]
-        }
-        Array.Sort(cows);
+        int[] nk = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = nk[0]; // [1, 1'000'000]
+        int k = nk[1]; // [1, n] = [1, 1'000'000]
 
-        int pairs = 0;
+        int[] line = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        int[] streaks = null!;
         {
-            for (int i = 0; i < cows.Length; ++i)
+            LinkedList<int> temp = new();
             {
-                if (cows[i] > s)
-                    break;
-
-                for (int j = i + 1; j < cows.Length; ++j)
+                int streak = 0;
+                for (int i = 0; i < line.Length; ++i)
                 {
-                    if (cows[i] + cows[j] > s)
-                        break;
+                    if (line[i] == Girl)
+                    {
+                        ++streak;
+                    }
+                    else if (streak > 0)
+                    {
+                        temp.AddLast(streak);
+                        streak = 0;
+                    }
+                }
 
-                    ++pairs;
+                if (streak > 0)
+                {
+                    temp.AddLast(streak);
+                    streak = 0;
+                }
+            }
+            streaks = temp.ToArray();
+        }
+
+        const int InvalidLeaves = -1;
+        int leaves = InvalidLeaves;
+        {
+            int i = 0;
+            int j = 0;
+            int girls = 0;
+            while (i < streaks.Length && j < streaks.Length)
+            {
+                girls += streaks[j];
+
+                int boys = j - i;
+                if ((girls == k) && (leaves == InvalidLeaves || boys < leaves))
+                {
+                    leaves = boys;
+                }
+
+                if (j < k)
+                {
+                    ++j;
+                }
+                else
+                {
+                    girls -= streaks[i];
+                    ++i;
                 }
             }
         }
-        Console.Write(pairs);
+        Console.Write((leaves != InvalidLeaves) ? leaves : "NIE");
     }
 }
