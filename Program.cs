@@ -15,23 +15,18 @@
 
         int pairs = 0;
         {
-            int i = 0;
-            int j = 1;
-            while (i < cows.Length && j < cows.Length)
+            for (int i = 0; i < cows.Length; ++i)
             {
-                int l = cows[i] + cows[j];
+                if (cows[i] > n)
+                    break;
 
-                if (l <= s)
+                for (int j = i + 1; j < cows.Length; ++j)
                 {
+                    if (cows[i] + cows[j] > s)
+                        break;
+
                     ++pairs;
                 }
-
-                if (l >= s)
-                {
-                    ++i;
-                    j = i;
-                }
-                ++j;
             }
         }
         Console.Write(pairs);
