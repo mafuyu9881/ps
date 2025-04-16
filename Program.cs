@@ -40,12 +40,17 @@
         const int InvalidLeaves = -1;
         int leaves = InvalidLeaves;
         {
+            bool[] visited = new bool[streaks.Length];
             int i = 0;
             int j = 0;
             int girls = 0;
             while (i < streaks.Length && j < streaks.Length)
             {
-                girls += streaks[j];
+                if (visited[j] == false)
+                {
+                    girls += streaks[j];
+                    visited[j] = true;
+                }
 
                 int boys = j - i;
                 if ((girls == k) && (leaves == InvalidLeaves || boys < leaves))
@@ -53,7 +58,7 @@
                     leaves = boys;
                 }
 
-                if (j < k)
+                if (girls < k)
                 {
                     ++j;
                 }
