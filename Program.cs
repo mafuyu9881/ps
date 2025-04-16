@@ -1,34 +1,57 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 10'000'000]
-
-        int i = 0;
-        int j = 0;
-
-        int cnt = 0;
+        StringBuilder sb = new();
+        while (true)
         {
-            int sum = 0;
-            while (i <= n && j <= n)
-            {
-                if (sum > n)
-                {
-                    sum -= i;
-                    ++i;
-                }
-                else
-                {
-                    ++j;
-                    sum += j;
-                }
+            // length = 2
+            // element = [0, 1'000'000]
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int n = tokens[0];
+            int m = tokens[0];
+            if (n == 0 && m == 0)
+                break;
 
-                if (sum == n)
+            int[] nCDs = new int[n];
+            for (int i = 0; i < nCDs.Length; ++i)
+            {
+                nCDs[i] = int.Parse(Console.ReadLine()!);
+            }
+            int[] mCDs = new int[m];
+            for (int i = 0; i < mCDs.Length; ++i)
+            {
+                mCDs[i] = int.Parse(Console.ReadLine()!);
+            }
+
+            int sells = 0;
+            {
+                int i = 0;
+                int j = 0;
+                while (i < nCDs.Length && j < mCDs.Length)
                 {
-                    ++cnt;
+                    int nCD = nCDs[i];
+                    int mCD = mCDs[j];
+
+                    if (nCD == mCD)
+                    {
+                        ++sells;
+                    }
+
+                    if (nCD < mCD)
+                    {
+                        ++i;
+                    }
+                    else
+                    {
+                        ++j;
+                    }
                 }
             }
+            sb.AppendLine($"{sells}");
         }
-        Console.Write(cnt);
+        Console.Write(sb);
     }
 }
