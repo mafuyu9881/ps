@@ -1,57 +1,42 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        StringBuilder sb = new();
-        while (true)
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [2, 20'000]
+        int s = tokens[1]; // [1, 1'000'000]
+
+        int[] cows = new int[n];
+        for (int i = 0; i < cows.Length; ++i)
         {
-            // length = 2
-            // element = [0, 1'000'000]
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int n = tokens[0];
-            int m = tokens[0];
-            if (n == 0 && m == 0)
-                break;
+            cows[i] = int.Parse(Console.ReadLine()!); // [1, 1'000'000]
+        }
+        Array.Sort(cows);
 
-            int[] nCDs = new int[n];
-            for (int i = 0; i < nCDs.Length; ++i)
+        int pairs = 0;
+        {
+            int i = 0;
+            int j = 1;
+            while (i < cows.Length && j < cows.Length)
             {
-                nCDs[i] = int.Parse(Console.ReadLine()!);
-            }
-            int[] mCDs = new int[m];
-            for (int i = 0; i < mCDs.Length; ++i)
-            {
-                mCDs[i] = int.Parse(Console.ReadLine()!);
-            }
+                int l = cows[i] + cows[j];
 
-            int sells = 0;
-            {
-                int i = 0;
-                int j = 0;
-                while (i < nCDs.Length && j < mCDs.Length)
+                if (l <= s)
                 {
-                    int nCD = nCDs[i];
-                    int mCD = mCDs[j];
+                    ++pairs;
+                }
 
-                    if (nCD == mCD)
-                    {
-                        ++sells;
-                    }
-
-                    if (nCD < mCD)
-                    {
-                        ++i;
-                    }
-                    else
-                    {
-                        ++j;
-                    }
+                if (l < s)
+                {
+                    ++j;
+                }
+                else
+                {
+                    ++i;
+                    j = i + 1;
                 }
             }
-            sb.AppendLine($"{sells}");
         }
-        Console.Write(sb);
+        Console.Write(pairs);
     }
 }
