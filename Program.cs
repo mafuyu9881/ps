@@ -17,7 +17,7 @@
         {
             for (int i = 0; i < cows.Length; ++i)
             {
-                if (cows[i] > n)
+                if (cows[i] > s)
                     break;
 
                 for (int j = i + 1; j < cows.Length; ++j)
