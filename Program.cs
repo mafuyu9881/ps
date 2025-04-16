@@ -26,15 +26,12 @@
                     ++pairs;
                 }
 
-                if (l < s)
-                {
-                    ++j;
-                }
-                else
+                if (l >= s)
                 {
                     ++i;
-                    j = i + 1;
+                    j = i;
                 }
+                ++j;
             }
         }
         Console.Write(pairs);
