@@ -4,11 +4,11 @@
     {
         const int Girl = 0;
 
-        int[] nk = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] nk = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
         int n = nk[0]; // [1, 1'000'000]
         int k = nk[1]; // [1, n] = [1, 1'000'000]
 
-        int[] line = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] line = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
 
         int[] streaks = null!;
         {
