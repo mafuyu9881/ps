@@ -10,58 +10,37 @@
 
         int[] line = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
 
-        int[] streaks = null!;
+        int[] girlIndices = null!;
         {
             LinkedList<int> temp = new();
+            for (int i = 0; i < line.Length; ++i)
             {
-                int streak = 0;
-                for (int i = 0; i < line.Length; ++i)
+                if (line[i] == Girl)
                 {
-                    if (line[i] == Girl)
-                    {
-                        ++streak;
-                    }
-                    else
-                    {
-                        temp.AddLast(streak);
-                        streak = 0;
-                    }
-                }
-
-                if (streak > 0)
-                {
-                    temp.AddLast(streak);
-                    streak = 0;
+                    temp.AddLast(i);
                 }
             }
-            streaks = temp.ToArray();
+            girlIndices = temp.ToArray();
         }
 
-        const int InvalidLeaves = -1;
-        int lefts = InvalidLeaves;
+        const int InvalidLefts = -1;
+        int lefts = InvalidLefts;
         {
-            for (int i = 0; i < streaks.Length; ++i)
+            int windowSize = k;
+            for (int i = 0; i + k - 1 < girlIndices.Length; ++i)
             {
-                int girls = 0;
-                for (int j = i; j < streaks.Length; ++j)
-                {
-                    girls += streaks[j];
+                int beginGirlIndex = girlIndices[i];
+                int endGirlIndex = girlIndices[i + k - 1];
 
-                    if (girls > k)
-                    {
-                        break;
-                    }
-                    else if (girls == k)
-                    {
-                        int boys = j - i;
-                        if (lefts == InvalidLeaves || lefts > boys)
-                        {
-                            lefts = boys;
-                        }
-                    }
+                // k is equal to the number of girls in the window
+                int boys = (endGirlIndex - beginGirlIndex + 1) - k;
+
+                if (lefts == InvalidLefts || lefts > boys)
+                {
+                    lefts = boys;
                 }
             }
         }
-        Console.Write((lefts != InvalidLeaves) ? lefts : "NIE");
+        Console.Write((lefts != InvalidLefts) ? lefts : "NIE");
     }
 }
