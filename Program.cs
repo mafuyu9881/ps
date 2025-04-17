@@ -4,25 +4,49 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] nk = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = nk[0]; // [1, 100'000]
-        int k = nk[1]; // [1, 100'000]
+        string[] WordTable = new string[] { "V", "딸기" };
 
-        int[] houses = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int t = int.Parse(Console.ReadLine()!);
 
-        int max = 0;
+        StringBuilder output = new();
+        for (int i = 0; i < t; ++i)
         {
-            int i = 0;
-            for (int j = 0; j < houses.Length; ++j)
-            {
-                if ((j > 0) && (houses[j] == houses[j - 1]))
-                {
-                    i = j;
-                }
+            int n = int.Parse(Console.ReadLine()!) % 28;
 
-                max = Math.Max(max, j - i + 1);
+            if (n == 0)
+            {
+                n = 2;
             }
+
+            if (n > 15)
+            {
+                n = 30 - n;
+            }
+
+            LinkedList<int> bits = ConvertDecimalToBinary(n);
+
+            StringBuilder message = new();
+            for (var lln = bits.First; lln != null; lln = lln.Next)
+            {
+                message.Append(WordTable[lln.Value]);
+            }
+            output.AppendLine($"{message}");
         }
-        Console.Write(max);
+        Console.Write(output);
+    }
+
+    private static LinkedList<int> ConvertDecimalToBinary(int n)
+    {
+        LinkedList<int> bits = new();
+        while (n > 0)
+        {
+            bits.AddFirst(n % 2);
+            n /= 2;
+        }
+        while (bits.Count < 4)
+        {
+            bits.AddFirst(0);
+        }
+        return bits;
     }
 }
