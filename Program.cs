@@ -21,7 +21,7 @@
                     {
                         ++streak;
                     }
-                    else if (streak > 0)
+                    else
                     {
                         temp.AddLast(streak);
                         streak = 0;
@@ -38,37 +38,30 @@
         }
 
         const int InvalidLeaves = -1;
-        int leaves = InvalidLeaves;
+        int lefts = InvalidLeaves;
         {
-            bool[] visited = new bool[streaks.Length];
-            int i = 0;
-            int j = 0;
-            int girls = 0;
-            while (i < streaks.Length && j < streaks.Length)
+            for (int i = 0; i < streaks.Length; ++i)
             {
-                if (visited[j] == false)
+                int girls = 0;
+                for (int j = i; j < streaks.Length; ++j)
                 {
                     girls += streaks[j];
-                    visited[j] = true;
-                }
 
-                int boys = j - i;
-                if ((girls == k) && (leaves == InvalidLeaves || boys < leaves))
-                {
-                    leaves = boys;
-                }
-
-                if (girls < k)
-                {
-                    ++j;
-                }
-                else
-                {
-                    girls -= streaks[i];
-                    ++i;
+                    if (girls > k)
+                    {
+                        break;
+                    }
+                    else if (girls == k)
+                    {
+                        int boys = j - i;
+                        if (lefts == InvalidLeaves || lefts > boys)
+                        {
+                            lefts = boys;
+                        }
+                    }
                 }
             }
         }
-        Console.Write((leaves != InvalidLeaves) ? leaves : "NIE");
+        Console.Write((lefts != InvalidLeaves) ? lefts : "NIE");
     }
 }
