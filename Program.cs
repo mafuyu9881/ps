@@ -4,54 +4,25 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] nm = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = nm[0]; // [1, 1'000'000]
-        int m = nm[1]; // [1, 1'000'000]
+        int[] nk = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = nk[0]; // [1, 100'000]
+        int k = nk[1]; // [1, 100'000]
 
-        int[] a = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int[] b = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        
-        int[] combined = new int[n + m];
+        int[] houses = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        int max = 0;
         {
-            int aReadIndex = 0;
-            int bReadIndex = 0;
-            int writingIndex = 0;
-            while (writingIndex < combined.Length)
+            int i = 0;
+            for (int j = 0; j < houses.Length; ++j)
             {
-                if (aReadIndex > n - 1)
+                if ((j > 0) && (houses[j] == houses[j - 1]))
                 {
-                    combined[writingIndex] = b[bReadIndex];
-                    ++bReadIndex;
+                    i = j;
                 }
-                else if (bReadIndex > m - 1)
-                {
-                    combined[writingIndex] = a[aReadIndex];
-                    ++aReadIndex;
-                }
-                else // `aReadIndex > n - 1 && bReadIndex > m - 1` can't happen in this context
-                {
-                    int aElement = a[aReadIndex];
-                    int bElement = b[bReadIndex];
-                    if (aElement >= bElement)
-                    {
-                        combined[writingIndex] = bElement;
-                        ++bReadIndex;
-                    }
-                    else
-                    {
-                        combined[writingIndex] = aElement;
-                        ++aReadIndex;
-                    }
-                }
-                ++writingIndex;
+
+                max = Math.Max(max, j - i + 1);
             }
         }
-
-        StringBuilder sb = new();
-        for (int i = 0; i < combined.Length; ++i)
-        {
-            sb.Append($"{combined[i]} ");
-        }
-        Console.Write(sb);
+        Console.Write(max);
     }
 }
