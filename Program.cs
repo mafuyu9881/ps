@@ -1,46 +1,57 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        const int Girl = 0;
+        int[] nm = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = nm[0]; // [1, 1'000'000]
+        int m = nm[1]; // [1, 1'000'000]
 
-        int[] nk = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
-        int n = nk[0]; // [1, 1'000'000]
-        int k = nk[1]; // [1, n] = [1, 1'000'000]
-
-        int[] line = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), int.Parse);
-
-        int[] girlIndices = null!;
+        int[] a = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] b = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        
+        int[] combined = new int[n + m];
         {
-            LinkedList<int> temp = new();
-            for (int i = 0; i < line.Length; ++i)
+            int aReadIndex = 0;
+            int bReadIndex = 0;
+            int writingIndex = 0;
+            while (writingIndex < combined.Length)
             {
-                if (line[i] == Girl)
+                if (aReadIndex > n - 1)
                 {
-                    temp.AddLast(i);
+                    combined[writingIndex] = b[bReadIndex];
+                    ++bReadIndex;
                 }
+                else if (bReadIndex > m - 1)
+                {
+                    combined[writingIndex] = a[aReadIndex];
+                    ++aReadIndex;
+                }
+                else // `aReadIndex > n - 1 && bReadIndex > m - 1` can't happen in this context
+                {
+                    int aElement = a[aReadIndex];
+                    int bElement = b[bReadIndex];
+                    if (aElement >= bElement)
+                    {
+                        combined[writingIndex] = bElement;
+                        ++bReadIndex;
+                    }
+                    else
+                    {
+                        combined[writingIndex] = aElement;
+                        ++aReadIndex;
+                    }
+                }
+                ++writingIndex;
             }
-            girlIndices = temp.ToArray();
         }
 
-        const int InvalidLefts = -1;
-        int lefts = InvalidLefts;
+        StringBuilder sb = new();
+        for (int i = 0; i < combined.Length; ++i)
         {
-            int windowSize = k;
-            for (int i = 0; i + k - 1 < girlIndices.Length; ++i)
-            {
-                int beginGirlIndex = girlIndices[i];
-                int endGirlIndex = girlIndices[i + k - 1];
-
-                // k is equal to the number of girls in the window
-                int boys = (endGirlIndex - beginGirlIndex + 1) - k;
-
-                if (lefts == InvalidLefts || lefts > boys)
-                {
-                    lefts = boys;
-                }
-            }
+            sb.Append($"{combined[i]} ");
         }
-        Console.Write((lefts != InvalidLefts) ? lefts : "NIE");
+        Console.Write(sb);
     }
 }
