@@ -4,41 +4,31 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        const int Nodes = 1024;
-
         int t = int.Parse(Console.ReadLine()!);
 
-        bool[] visited = new bool[Nodes];
-        
         StringBuilder sb = new();
         for (int i = 0; i < t; ++i)
         {
-            for (int j = 0; j < visited.Length; ++j)
-            {
-                visited[j] = false;
-            }
+            long n = long.Parse(Console.ReadLine()!);
 
-            int[] ab = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int a = ab[0];
-            int b = ab[1];
-
-            int m = 1;
+            long lo = 1 - 1;
+            long hi = Math.Min(n + 1, 200000000);
+            while (lo < hi - 1)
             {
-                for (int v = a; v > 0; v /= 2)
+                long mid = (lo + hi) / 2;
+
+                long prefixSum = mid * (mid + 1) / 2;
+
+                if (prefixSum <= n)
                 {
-                    visited[v] = true;
+                    lo = mid;
                 }
-
-                for (int v = b; v > 0; v /= 2)
+                else
                 {
-                    if (visited[v] == false)
-                        continue;
-
-                    m = Math.Max(m, v);
+                    hi = mid;
                 }
             }
-
-            sb.AppendLine($"{m * 10}");
+            sb.AppendLine($"{lo}");
         }
         Console.Write(sb);
     }
