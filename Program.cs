@@ -4,32 +4,61 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
-
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
+        SortedDictionary<char, int> Indices = new()
         {
-            long n = long.Parse(Console.ReadLine()!);
+            { 'q', 0 },
+            { 'u', 1 },
+            { 'a', 2 },
+            { 'c', 3 },
+            { 'k', 4 },
+        };
 
-            long lo = 1 - 1;
-            long hi = Math.Min(n + 1, 200000000);
-            while (lo < hi - 1)
+        // length = [5, 2'500]
+        // element = q, u, a, c, k
+        string s = Console.ReadLine()!;
+
+        int[] count = new int[5];
+
+        int ducksPeak = 0;
+        {
+            int ducks = 0;
+            for (int i = 0; i < s.Length; ++i)
             {
-                long mid = (lo + hi) / 2;
+                char c = s[i];
 
-                long prefixSum = mid * (mid + 1) / 2;
+                int currIndex = Indices[c];
 
-                if (prefixSum <= n)
+                if (currIndex <= 0)
                 {
-                    lo = mid;
+                    ++count[currIndex];
+                    ++ducks;
                 }
                 else
                 {
-                    hi = mid;
+                    int prevIndex = currIndex - 1;
+
+                    if (count[prevIndex] > 0)
+                    {
+                        --count[prevIndex];
+                    }
+                    else
+                    {
+                        ducksPeak = -1;
+                        break;
+                    }
+
+                    if (currIndex < 4)
+                    {
+                        ++count[currIndex];
+                    }
+                    else
+                    {
+                        --ducks;
+                    }
                 }
+                ducksPeak = Math.Max(ducksPeak, ducks);
             }
-            sb.AppendLine($"{lo}");
         }
-        Console.Write(sb);
+        Console.Write(ducksPeak);
     }
 }
