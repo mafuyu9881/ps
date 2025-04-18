@@ -58,6 +58,11 @@ internal class Program
                 }
                 ducksPeak = Math.Max(ducksPeak, ducks);
             }
+
+            if (ducks > 0)
+            {
+                ducksPeak = -1;
+            }
         }
         Console.Write(ducksPeak);
     }
