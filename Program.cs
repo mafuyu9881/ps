@@ -4,49 +4,42 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        string[] WordTable = new string[] { "V", "딸기" };
+        const int Nodes = 1024;
 
         int t = int.Parse(Console.ReadLine()!);
 
-        StringBuilder output = new();
+        bool[] visited = new bool[Nodes];
+        
+        StringBuilder sb = new();
         for (int i = 0; i < t; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!) % 28;
-
-            if (n == 0)
+            for (int j = 0; j < visited.Length; ++j)
             {
-                n = 2;
+                visited[j] = false;
             }
 
-            if (n > 15)
+            int[] ab = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int a = ab[0];
+            int b = ab[1];
+
+            int m = 1;
             {
-                n = 30 - n;
+                for (int v = a; v > 0; v /= 2)
+                {
+                    visited[v] = true;
+                }
+
+                for (int v = b; v > 0; v /= 2)
+                {
+                    if (visited[v] == false)
+                        continue;
+
+                    m = Math.Max(m, v);
+                }
             }
 
-            LinkedList<int> bits = ConvertDecimalToBinary(n);
-
-            StringBuilder message = new();
-            for (var lln = bits.First; lln != null; lln = lln.Next)
-            {
-                message.Append(WordTable[lln.Value]);
-            }
-            output.AppendLine($"{message}");
+            sb.AppendLine($"{m * 10}");
         }
-        Console.Write(output);
-    }
-
-    private static LinkedList<int> ConvertDecimalToBinary(int n)
-    {
-        LinkedList<int> bits = new();
-        while (n > 0)
-        {
-            bits.AddFirst(n % 2);
-            n /= 2;
-        }
-        while (bits.Count < 4)
-        {
-            bits.AddFirst(0);
-        }
-        return bits;
+        Console.Write(sb);
     }
 }
