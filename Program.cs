@@ -1,52 +1,83 @@
 ﻿internal class Program
 {
+    private enum Behavior
+    {
+        Enter,
+        Exit,
+    }
+
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int n = int.Parse(Console.ReadLine()!);
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int d = tokens[0]; // [7, 100'000]
-        int p = tokens[1]; // [1, 350]
+        (int time, Behavior behavior)[] acts = new (int, Behavior)[n * 2];
 
-        (int length, int capacity)[] pipes = new (int, int)[p];
-        for (int i = 0; i < p; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int l = tokens[0]; // [1, 2^23]
-            int c = tokens[1]; // [1, 2^23]
-            pipes[i] = (l, c);
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int enteringTime = tokens[0];
+            int exitingTime = tokens[1];
+            acts[(i * 2) + 0] = (enteringTime, Behavior.Enter);
+            acts[(i * 2) + 1] = (exitingTime, Behavior.Exit);
         }
 
-        int[,] dp = new int[p + 1, d + 1];
-        for (int i = 1; i < dp.GetLength(0); ++i)
+        Array.Sort(acts, (a, b) => a.time.CompareTo(b.time));
+
+        List<(int time, Behavior behavior)> refinedActs = new();
+        refinedActs.Capacity = n * 2;
+        for (int i = 0; i < acts.Length; ++i)
         {
-            var pipe = pipes[i - 1];
-            int length = pipe.length;
-            int capacity = pipe.capacity;
-            
-            for (int j = 1; j < dp.GetLength(1); ++j)
+            var act = acts[i];
+
+            if (refinedActs.Count > 0)
             {
-                dp[i, j] = dp[i - 1, j];
-
-                if (j == length)
+                if (refinedActs[refinedActs.Count - 1].time == act.time &&
+                    refinedActs[refinedActs.Count - 1].behavior != act.behavior)
                 {
-                    dp[i, j] = Math.Max(dp[i, j], capacity);
+                    refinedActs.RemoveAt(refinedActs.Count - 1);
                 }
-
-                if (j >= length && dp[i - 1, j - length] > 0)
+                else
                 {
-                    dp[i, j] = Math.Max(dp[i, j], Math.Min(dp[i - 1, j - length], capacity));
+                    refinedActs.Add(act);
                 }
             }
-        }
-        
-        int maxCapacity = 0;
-        {
-            for (int i = 1; i < dp.GetLength(0); ++i)
+            else
             {
-                maxCapacity = Math.Max(maxCapacity, dp[i, d]);
+                refinedActs.Add(act);
             }
         }
-        Console.Write(maxCapacity);
+
+        int maxCount = 0;
+        int enteringTimeOnMaxCount = 0;
+        int exitingTimeOnMaxCount = 0;
+        int count = 0;
+        for (int i = 0; i < refinedActs.Count; ++i)
+        {
+            var element = refinedActs[i];
+            int time = element.time;
+            Behavior behavior = element.behavior;
+
+            if (behavior == Behavior.Enter)
+            {
+                ++count;
+
+                if (count > maxCount)
+                {
+                    maxCount = count;
+                    enteringTimeOnMaxCount = time;
+                }
+            }
+            else
+            {
+                if (count == maxCount)
+                {
+                    exitingTimeOnMaxCount = time;
+                }
+
+                --count;
+            }
+        }
+        Console.WriteLine(maxCount);
+        Console.WriteLine($"{enteringTimeOnMaxCount} {exitingTimeOnMaxCount}");
     }
 }
