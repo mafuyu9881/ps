@@ -50,32 +50,37 @@
         int maxCount = 0;
         int enteringTimeOnMaxCount = 0;
         int exitingTimeOnMaxCount = 0;
-        int count = 0;
-        for (int i = 0; i < refinedActs.Count; ++i)
         {
-            var element = refinedActs[i];
-            int time = element.time;
-            Behavior behavior = element.behavior;
-
-            if (behavior == Behavior.Enter)
+            int count = 0;
+            bool enteredOnMaxCount = false;
+            for (int i = 0; i < refinedActs.Count; ++i)
             {
-                ++count;
+                var element = refinedActs[i];
+                int time = element.time;
+                Behavior behavior = element.behavior;
 
-                if (count > maxCount)
+                if (behavior == Behavior.Enter)
                 {
-                    maxCount = count;
-                    enteringTimeOnMaxCount = time;
-                    exitingTimeOnMaxCount = time;
-                }
-            }
-            else
-            {
-                if (count == maxCount)
-                {
-                    exitingTimeOnMaxCount = time;
-                }
+                    ++count;
 
-                --count;
+                    if (count > maxCount)
+                    {
+                        maxCount = count;
+                        enteringTimeOnMaxCount = time;
+                        exitingTimeOnMaxCount = time;
+                        enteredOnMaxCount = true;
+                    }
+                }
+                else
+                {
+                    if (enteredOnMaxCount && count == maxCount)
+                    {
+                        exitingTimeOnMaxCount = time;
+                        enteredOnMaxCount = false;
+                    }
+
+                    --count;
+                }
             }
         }
         Console.WriteLine(maxCount);
