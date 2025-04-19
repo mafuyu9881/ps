@@ -65,6 +65,7 @@
                 {
                     maxCount = count;
                     enteringTimeOnMaxCount = time;
+                    exitingTimeOnMaxCount = time;
                 }
             }
             else
