@@ -1,100 +1,52 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
         int[] tokens = null!;
 
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 2'000]
-        int m = tokens[1]; // [1, 2'100'000]
+        int d = tokens[0]; // [7, 100'000]
+        int p = tokens[1]; // [1, 350]
 
-        LinkedList<int>[] adjList = new LinkedList<int>[n + 1];
+        (int length, int capacity)[] pipes = new (int, int)[p];
+        for (int i = 0; i < p; ++i)
         {
-            for (int i = 1; i < adjList.Length; ++i)
-            {
-                adjList[i] = new();
-            }
-            for (int i = 0; i < m; ++i)
-            {
-                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int u = tokens[0]; // [1, n] = [1, 2'000]
-                int v = tokens[1]; // [1, n] = [1, 2'000]
-                adjList[u].AddLast(v);
-                adjList[v].AddLast(u);
-            }
-        }
-
-        bool[] receivedRuins = new bool[n + 1];
-        {
-            Console.ReadLine();
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int i = 0; i < tokens.Length; ++i)
-            {
-                receivedRuins[tokens[i]] = true;
-            }
+            int l = tokens[0]; // [1, 2^23]
+            int c = tokens[1]; // [1, 2^23]
+            pipes[i] = (l, c);
         }
 
-        LinkedList<int> impactPoints = new();
+        int[,] dp = new int[p + 1, d + 1];
+        for (int i = 1; i < dp.GetLength(0); ++i)
         {
-            bool[] simulatedRuins = new bool[n + 1];
-            for (int v = 1; v <= n; ++v)
+            var pipe = pipes[i - 1];
+            int length = pipe.length;
+            int capacity = pipe.capacity;
+            
+            for (int j = 1; j < dp.GetLength(1); ++j)
             {
-                if (receivedRuins[v] == false)
-                    continue;
+                dp[i, j] = dp[i - 1, j];
 
-                bool impactable = true;
+                if (j == length)
                 {
-                    var adjs = adjList[v];
-                    for (var lln = adjs.First; lln != null; lln = lln.Next)
-                    {
-                        int adjV = lln.Value;
-                        if (receivedRuins[adjV] == false)
-                        {
-                            impactable = false;
-                            break;
-                        }
-                    }
+                    dp[i, j] = Math.Max(dp[i, j], capacity);
                 }
 
-                if (impactable)
+                if (j >= length && dp[i - 1, j - length] > 0)
                 {
-                    var adjs = adjList[v];
-                    for (var lln = adjs.First; lln != null; lln = lln.Next)
-                    {
-                        int adjV = lln.Value;
-                        simulatedRuins[adjV] = true;
-                    }
-                    simulatedRuins[v] = true;
-
-                    impactPoints.AddLast(v);
-                }
-            }
-
-            for (int i = 1; i <= n; ++i)
-            {
-                if (receivedRuins[i] != simulatedRuins[i])
-                {
-                    impactPoints = null!;
-                    break;
+                    dp[i, j] = Math.Max(dp[i, j], Math.Min(dp[i - 1, j - length], capacity));
                 }
             }
         }
-
-        StringBuilder sb = new();
-        if (impactPoints == null)
+        
+        int maxCapacity = 0;
         {
-            sb.Append(-1);
-        }
-        else
-        {
-            sb.AppendLine($"{impactPoints.Count}");
-            for (var lln = impactPoints.First; lln != null; lln = lln.Next)
+            for (int i = 1; i < dp.GetLength(0); ++i)
             {
-                sb.Append($"{lln.Value} ");
+                maxCapacity = Math.Max(maxCapacity, dp[i, d]);
             }
         }
-        Console.Write(sb);
+        Console.Write(maxCapacity);
     }
 }
