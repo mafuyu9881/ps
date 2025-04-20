@@ -2,36 +2,36 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int n = int.Parse(Console.ReadLine()!);
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 10'000]
-        int m = tokens[1]; // [1, 300'000'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(tokens);
 
-        // length = [1, 10'000]
-        // element = [1, 30'000]
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int x = int.Parse(Console.ReadLine()!);
 
-        int cases = 0;
+        int pairs = 0;
         {
-            for (int i = 0; i < tokens.Length; ++i)
+            int i = 0;
+            int j = tokens.Length - 1;
+            while (i < j)
             {
-                int sum = 0;
-                for (int j = i; j < tokens.Length; ++j)
+                int sum = tokens[i] + tokens[j];
+                if (sum < x)
                 {
-                    sum += tokens[j];
-
-                    if (sum >= m)
-                    {
-                        if (sum == m)
-                        {
-                            ++cases;
-                        }
-                        break;
-                    }
+                    ++i;
+                }
+                else if (sum > x)
+                {
+                    --j;
+                }
+                else
+                {
+                    ++pairs;
+                    ++i;
+                    --j;
                 }
             }
         }
-        Console.Write(cases);
+        Console.Write(pairs);
     }
 }
