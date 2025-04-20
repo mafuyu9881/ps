@@ -4,25 +4,31 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int[] arr = new int[n];
-        for (int i = 0; i < n; ++i)
-        {
-            arr[i] = int.Parse(Console.ReadLine()!);
-        }
-        Array.Sort(arr);
+        int m = int.Parse(Console.ReadLine()!);
 
-        int minRequired = 4;
+        // length = [1, 15'000]
+        // element = [1, 100'000]
+        int[] materials = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(materials);
+
+        int armours = 0;
         {
-            for (int i = 0; i < arr.Length; ++i)
+            int i = 0;
+            int j = materials.Length - 1;
+            while (i < j)
             {
-                int j = i + 1;
-                while (j < arr.Length && arr[j] - arr[i] < 5)
+                if (materials[i] + materials[j] >= m)
                 {
-                    ++j;
+                    ++armours;
+                    ++i;
+                    --j;
                 }
-                minRequired = Math.Min(minRequired, 5 - (j - i));
+                else
+                {
+                    ++i;
+                }
             }
         }
-        Console.Write(minRequired);
+        Console.Write(armours);
     }
 }
