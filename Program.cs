@@ -2,36 +2,39 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = null!;
 
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(tokens);
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 100'000]
+        int k = tokens[1]; // [1, 2'000'000]
 
-        int x = int.Parse(Console.ReadLine()!);
-
-        int pairs = 0;
+        int[] map = new int[1000001];
+        for (int i = 0; i < n; ++i)
         {
-            int i = 0;
-            int j = tokens.Length - 1;
-            while (i < j)
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int g = tokens[0]; // [1, 10'000]
+            int x = tokens[1]; // [1, 1'000'000]
+            map[x] = g;
+        }
+
+        int maxIces = 0;
+        {
+            int e = Math.Min(2 * k, map.Length - 1);
+
+            int ices = 0;
+            for (int i = 0; i <= e; ++i)
             {
-                int sum = tokens[i] + tokens[j];
-                if (sum < x)
-                {
-                    ++i;
-                }
-                else if (sum > x)
-                {
-                    --j;
-                }
-                else
-                {
-                    ++pairs;
-                    ++i;
-                    --j;
-                }
+                ices += map[i];
+            }
+            maxIces = ices;
+
+            for (int i = 1; e + i < map.Length; ++i)
+            {
+                ices -= map[i - 1];
+                ices += map[e + i];
+                maxIces = Math.Max(maxIces, ices);
             }
         }
-        Console.Write(pairs);
+        Console.Write(maxIces);
     }
 }
