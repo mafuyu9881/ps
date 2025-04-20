@@ -2,38 +2,36 @@
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = null!;
 
-        int m = int.Parse(Console.ReadLine()!);
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 10'000]
+        int m = tokens[1]; // [1, 300'000'000]
 
-        // length = [1, 15'000]
-        // element = [1, 100'000]
-        int[] materials = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(materials);
+        // length = [1, 10'000]
+        // element = [1, 30'000]
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int armours = 0;
+        int cases = 0;
         {
-            int i = 0;
-            int j = materials.Length - 1;
-            while (i < j)
+            for (int i = 0; i < tokens.Length; ++i)
             {
-                int sum = materials[i] + materials[j];
-                if (sum < m)
+                int sum = 0;
+                for (int j = i; j < tokens.Length; ++j)
                 {
-                    ++i;
-                }
-                else if (sum > m)
-                {
-                    --j;
-                }
-                else
-                {
-                    ++armours;
-                    ++i;
-                    --j;
+                    sum += tokens[j];
+
+                    if (sum >= m)
+                    {
+                        if (sum == m)
+                        {
+                            ++cases;
+                        }
+                        break;
+                    }
                 }
             }
         }
-        Console.Write(armours);
+        Console.Write(cases);
     }
 }
