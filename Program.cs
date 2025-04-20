@@ -17,15 +17,20 @@
             int j = materials.Length - 1;
             while (i < j)
             {
-                if (materials[i] + materials[j] >= m)
+                int sum = materials[i] + materials[j];
+                if (sum < m)
                 {
-                    ++armours;
                     ++i;
+                }
+                else if (sum > m)
+                {
                     --j;
                 }
                 else
                 {
+                    ++armours;
                     ++i;
+                    --j;
                 }
             }
         }
