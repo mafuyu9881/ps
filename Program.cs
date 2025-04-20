@@ -1,88 +1,92 @@
 ﻿internal class Program
 {
-    private enum Behavior
-    {
-        Enter,
-        Exit,
-    }
-
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        (int time, Behavior behavior)[] acts = new (int, Behavior)[n * 2];
-
-        for (int i = 0; i < n; ++i)
+        (int enteringTime, int exitingTime)[] acts = new (int, int)[n];
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int enteringTime = tokens[0];
-            int exitingTime = tokens[1];
-            acts[(i * 2) + 0] = (enteringTime, Behavior.Enter);
-            acts[(i * 2) + 1] = (exitingTime, Behavior.Exit);
+            for (int i = 0; i < n; ++i)
+            {
+                int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+                acts[i] = (tokens[0], tokens[1]);
+            }
         }
 
-        Array.Sort(acts, (a, b) => a.time.CompareTo(b.time));
-
-        List<(int time, Behavior behavior)> refinedActs = new();
-        refinedActs.Capacity = n * 2;
-        for (int i = 0; i < acts.Length; ++i)
+        List<int> compressedCoords = new();
         {
-            var act = acts[i];
-
-            if (refinedActs.Count > 0)
+            List<int> coords = new();
+            for (int i = 0; i < acts.Length; ++i)
             {
-                if (refinedActs[refinedActs.Count - 1].time == act.time &&
-                    refinedActs[refinedActs.Count - 1].behavior != act.behavior)
+                coords.Add(acts[i].enteringTime);
+                coords.Add(acts[i].exitingTime);
+            }
+            coords.Sort();
+            
+            for (int i = 0; i < coords.Count; ++i)
+            {
+                int coord = coords[i];
+                if ((i == 0) ||
+                    (i > 0 && compressedCoords[compressedCoords.Count - 1] != coord))
                 {
-                    refinedActs.RemoveAt(refinedActs.Count - 1);
-                }
-                else
-                {
-                    refinedActs.Add(act);
+                    compressedCoords.Add(coord);
                 }
             }
-            else
+        }
+
+        int[] prefixSum = new int[compressedCoords.Count];
+        {
+            for (int i = 0; i < acts.Length; ++i)
             {
-                refinedActs.Add(act);
+                var act = acts[i];
+
+                int enteringTime = act.enteringTime;
+                int exitingTime = act.exitingTime;
+
+                int compressedEnteringTime = compressedCoords.BinarySearch(enteringTime);
+                int compressedExitingTime = compressedCoords.BinarySearch(exitingTime);
+
+                prefixSum[compressedEnteringTime] += 1;
+                prefixSum[compressedExitingTime] -= 1;
+            }
+
+            for (int i = 1; i < prefixSum.Length; ++i)
+            {
+                prefixSum[i] += prefixSum[i - 1];
             }
         }
 
         int maxCount = 0;
-        int enteringTimeOnMaxCount = 0;
-        int exitingTimeOnMaxCount = 0;
+        int compressedEnteringTimeOnMaxCount = 0;
         {
-            int count = 0;
-            bool enteredOnMaxCount = false;
-            for (int i = 0; i < refinedActs.Count; ++i)
+            for (int i = 0; i < prefixSum.Length; ++i)
             {
-                var element = refinedActs[i];
-                int time = element.time;
-                Behavior behavior = element.behavior;
+                int count = prefixSum[i];
 
-                if (behavior == Behavior.Enter)
+                if ((i == 0) ||
+                    (i > 0 && count > maxCount))
                 {
-                    ++count;
-
-                    if (count > maxCount)
-                    {
-                        maxCount = count;
-                        enteringTimeOnMaxCount = time;
-                        exitingTimeOnMaxCount = time;
-                        enteredOnMaxCount = true;
-                    }
-                }
-                else
-                {
-                    if (enteredOnMaxCount && count == maxCount)
-                    {
-                        exitingTimeOnMaxCount = time;
-                        enteredOnMaxCount = false;
-                    }
-
-                    --count;
+                    maxCount = count;
+                    compressedEnteringTimeOnMaxCount = i;
                 }
             }
         }
+
+        int compressedExitingTimeOnMaxCount = 0;
+        {
+            for (int i = compressedEnteringTimeOnMaxCount; i <= prefixSum.Length; ++i)
+            {
+                if (i == prefixSum.Length || maxCount != prefixSum[i])
+                {
+                    compressedExitingTimeOnMaxCount = i;
+                    break;
+                }
+            }
+        }
+
+        int enteringTimeOnMaxCount = compressedCoords[compressedEnteringTimeOnMaxCount];
+        int exitingTimeOnMaxCount = compressedCoords[compressedExitingTimeOnMaxCount];
+
         Console.WriteLine(maxCount);
         Console.WriteLine($"{enteringTimeOnMaxCount} {exitingTimeOnMaxCount}");
     }
