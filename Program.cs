@@ -16,15 +16,15 @@
         }
         Array.Sort(savours);
 
-        long sum = savours[0];
+        long sum = savours[tokens.Length - 1];
         {
-            for (int i = 0; i < k - 1; ++i)
+            for (int i = 0; i < (k - 1) / 2; ++i)
             {
-                int j = savours.Length - 1 - i;
-                if (j < 0)
+                int j = savours.Length - 2 - i;
+                if (j <= i)
                     break;
 
-                sum += savours[j] - savours[0];
+                sum += savours[j] - savours[i];
             }
         }
         Console.Write(sum);
