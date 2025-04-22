@@ -2,80 +2,38 @@
 {
     private static void Main(string[] args)
     {
-        const int MaxElement = 10;
+        int[] tokens = null!;
 
-        int n = int.Parse(Console.ReadLine()!); // [1, 1'000'000]
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 5'000]
+        int k = tokens[1]; // [1, 1'000'000'000]
 
-        // length = [1, n] = [1, 1'000'000]
-        // element = [1, 10]
-        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        int[] counts = new int[MaxElement + 1];
-
-        int maxStreak = 0;
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] weights = new int[tokens.Length];
+        for (int i = 0; i < weights.Length; ++i)
         {
-            int i = -1;
-            int j = -1;
-            int max = 10 + 1;
-            int min = 0;
-            while (true)
+            weights[i] = tokens[i];
+        }
+        Array.Sort(weights);
+
+        int answer = 0;
+        {
+            int i = 0;
+            int j = weights.Length - 1;
+            while (i < j)
             {
-                if (max - min > 2)
+                if (weights[i] + weights[j] > k)
                 {
-                    if (i >= 0 && i < sequence.Length)
-                    {
-                        --counts[sequence[i]];
-                    }
-
+                    --j;
+                }
+                else
+                {
+                    ++answer;
                     ++i;
-                    ++j;
-
-                    if (j >= 0 && j < sequence.Length)
-                    {
-                        ++counts[sequence[j]];
-                    }
-                }
-                else
-                {
-                    ++j;
-
-                    if (j >= 0 && j < sequence.Length)
-                    {
-                        ++counts[sequence[j]];
-                    }
-                }
-
-                for (int k = 1; k < counts.Length; ++k)
-                {
-                    if (counts[k] > 0)
-                    {
-                        min = k;
-                        break;
-                    }
-                }
-
-                for (int k = counts.Length - 1; k >= 0; --k)
-                {
-                    if (counts[k] > 0)
-                    {
-                        max = k;
-                        break;
-                    }
-                }
-
-                if (j < sequence.Length)
-                {
-                    if (max - min <= 2)
-                    {
-                        maxStreak = Math.Max(maxStreak, j - i + 1);
-                    }
-                }
-                else
-                {
-                    break;
+                    --j;
                 }
             }
         }
-        Console.Write(maxStreak);
+        Console.Write(answer);
     }
 }
