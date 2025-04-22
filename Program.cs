@@ -18,13 +18,16 @@
 
         long sum = savours[tokens.Length - 1];
         {
-            for (int i = 0; i < (k - 1) / 2; ++i)
+            int i = 0;
+            int j = tokens.Length - 2;
+            k -= 1;
+            while (i < j && k > 1)
             {
-                int j = savours.Length - 2 - i;
-                if (j <= i)
-                    break;
-
                 sum += savours[j] - savours[i];
+
+                ++i;
+                --j;
+                k -= 2;
             }
         }
         Console.Write(sum);
