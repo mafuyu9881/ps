@@ -3,37 +3,30 @@
     private static void Main(string[] args)
     {
         int[] tokens = null!;
+        
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 300'000]
+        int k = tokens[1]; // [1, n] = [1, 300'000]
 
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 5'000]
-        int k = tokens[1]; // [1, 1'000'000'000]
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int[] weights = new int[tokens.Length];
-        for (int i = 0; i < weights.Length; ++i)
+        int[] savours = new int[tokens.Length];
+        for (int i = 0; i < savours.Length; ++i)
         {
-            weights[i] = tokens[i];
+            savours[i] = tokens[i];
         }
-        Array.Sort(weights);
+        Array.Sort(savours);
 
-        int answer = 0;
+        long sum = savours[0];
         {
-            int i = 0;
-            int j = weights.Length - 1;
-            while (i < j)
+            for (int i = 0; i < k - 1; ++i)
             {
-                if (weights[i] + weights[j] > k)
-                {
-                    --j;
-                }
-                else
-                {
-                    ++answer;
-                    ++i;
-                    --j;
-                }
+                int j = savours.Length - 1 - i;
+                if (j < 0)
+                    break;
+
+                sum += savours[j] - savours[0];
             }
         }
-        Console.Write(answer);
+        Console.Write(sum);
     }
 }
