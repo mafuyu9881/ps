@@ -2,34 +2,41 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
-        
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 300'000]
-        int k = tokens[1]; // [1, n] = [1, 300'000]
+        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int[] savours = new int[tokens.Length];
-        for (int i = 0; i < savours.Length; ++i)
-        {
-            savours[i] = tokens[i];
-        }
-        Array.Sort(savours);
+        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        long sum = savours[tokens.Length - 1];
+        int k = int.Parse(Console.ReadLine()!); // [1, 1'000'000'000]
+
+        int pairs = 0;
         {
             int i = 0;
-            int j = tokens.Length - 2;
-            k -= 1;
-            while (i < j && k > 1)
+            int j = -1;
+            int sum = 0;
+            while (true)
             {
-                sum += savours[j] - savours[i];
+                if (sum > k)
+                {
+                    sum -= sequence[i];
+                    ++i;
+                    ++j;
+                }
+                else
+                {
+                    ++j;
+                }
 
-                ++i;
-                --j;
-                k -= 2;
+                if (j > sequence.Length - 1)
+                    break;
+
+                sum += sequence[j];
+
+                if (sum > k)
+                {
+                    pairs += (sequence.Length - 1) - (j) + 1;
+                }
             }
         }
-        Console.Write(sum);
+        Console.Write(pairs);
     }
 }
