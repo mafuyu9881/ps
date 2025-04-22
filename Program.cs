@@ -10,31 +10,33 @@
 
         int pairs = 0;
         {
-            int i = 0;
-            int j = -1;
-            int sum = 0;
-            while (true)
+            int right = 0;
+            int sum = sequence[0];
+
+            for (int left = 0; left < sequence.Length; ++left)
             {
-                if (sum > k)
+                while (true)
                 {
-                    sum -= sequence[i];
-                    ++i;
-                    ++j;
-                }
-                else
-                {
-                    ++j;
+                    if (sum > k)
+                    {
+                        pairs += (sequence.Length - 1) - (right) + 1;
+                        break;
+                    }
+                    else
+                    {
+                        if (right < sequence.Length - 1)
+                        {
+                            ++right;
+                            sum += sequence[right];
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
 
-                if (j > sequence.Length - 1)
-                    break;
-
-                sum += sequence[j];
-
-                if (sum > k)
-                {
-                    pairs += (sequence.Length - 1) - (j) + 1;
-                }
+                sum -= sequence[left];
             }
         }
         Console.Write(pairs);
