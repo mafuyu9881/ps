@@ -8,7 +8,7 @@
 
         int k = int.Parse(Console.ReadLine()!); // [1, 1'000'000'000]
 
-        int pairs = 0;
+        long pairs = 0;
         {
             int right = 0;
             int sum = sequence[0];
