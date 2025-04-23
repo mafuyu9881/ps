@@ -2,76 +2,42 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [2, 30'000]
-        int d = tokens[1]; // [2, 3'000]
-        int k = tokens[2]; // [2, 3'000]
-        int c = tokens[3]; // [1, d] = [1, 3'000]
+        const int Ryan = 1;
 
-        int[] dishes = new int[n];
+        int[] tokens = null!;
+
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 1'000'000]
+        int k = tokens[1]; // [1, n] = [1, 1'000'000]
+
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] dolls = new int[n];
+        for (int i = 0; i < dolls.Length; ++i)
         {
-            for (int i = 0; i < n; ++i)
+            dolls[i] = tokens[i];
+        }
+
+        List<int> ryanIndices = new(dolls.Length);
+        for (int i = 0; i < dolls.Length; ++i)
+        {
+            if (dolls[i] == Ryan)
             {
-                dishes[i] = int.Parse(Console.ReadLine()!);
+                ryanIndices.Add(i);
             }
         }
 
-        int maxDiversity = 0;
+        const int Invalid = -1;
+        int minLength = Invalid;
         {
-            int diversity = 1; // coupon count
-            
-            int[] counts = new int[d + 1];
-            Action<int> AddCount = (dish) =>
+            for (int i = 0; i + k - 1 < ryanIndices.Count; ++i)
             {
-                if (counts[dish] < 1)
+                int length = ryanIndices[i + k - 1] - ryanIndices[i] + 1;
+                if (minLength == Invalid || minLength > length)
                 {
-                    ++diversity;
-
-                    if (dish == c)
-                    {
-                        --diversity;
-                    }
+                    minLength = length;
                 }
-                
-                ++counts[dish];
-            };
-            Action<int> RemoveCount = (dish) =>
-            {
-                --counts[dish];
-
-                if (counts[dish] < 1)
-                {
-                    --diversity;
-
-                    if (dish == c)
-                    {
-                        ++diversity;
-                    }
-                }
-            };
-
-            int right = 0;
-            for (int i = 0; i < k; ++i)
-            {
-                right = (0 + i) % dishes.Length;
-                int dish = dishes[right];
-                AddCount(dish);
-            }
-
-            maxDiversity = Math.Max(maxDiversity, diversity);
-
-            for (int left = 0; left < dishes.Length; ++left)
-            {
-                int leftDish = dishes[left];
-                RemoveCount(leftDish);
-
-                right = (right + 1) % dishes.Length;
-                int rightDish = dishes[right];
-                AddCount(rightDish);
-
-                maxDiversity = Math.Max(maxDiversity, diversity);
             }
         }
-        Console.Write(maxDiversity);
+        Console.Write(minLength);
     }
 }
