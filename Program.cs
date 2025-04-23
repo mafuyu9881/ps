@@ -24,10 +24,13 @@
 
             while (true)
             {
-                if (usedVolume < m)
+                if (usedVolume <= m)
                 {
                     maxUsedVolume = Math.Max(maxUsedVolume, usedVolume);
-
+                }
+                
+                if (usedVolume < m)
+                {
                     ++j;
                     if (j < holes.Length)
                     {
