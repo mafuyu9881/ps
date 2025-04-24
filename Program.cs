@@ -5,7 +5,7 @@ internal class Program
     private static void Main(string[] args)
     {
         const char Mine = '*';
-        
+
         const int Offsets = 8;
         int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0, -1, -1, 1, 1 };
         int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1, -1, 1, -1, 1 };
