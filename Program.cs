@@ -47,7 +47,7 @@
                 int trainIndex = tokens[1]; // [1, n]
                 for (int seatIndex = 1; seatIndex < SeatCount; ++seatIndex)
                 {
-                    trains[trainIndex][seatIndex] = trains[trainIndex][seatIndex - 1];
+                    trains[trainIndex][seatIndex] = trains[trainIndex][seatIndex + 1];
                 }
                 trains[trainIndex][SeatCount] = false;
             }
