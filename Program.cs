@@ -1,94 +1,84 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        const char Mine = '*';
-        
-        const int Offsets = 8;
-        int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0, -1, -1, 1, 1 };
-        int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1, -1, 1, -1, 1 };
+        const int SeatCount = 20;
 
-        int n = int.Parse(Console.ReadLine()!); // [1, 10]
+        int[] tokens = null!;
 
-        char[,] map = new char[n, n];
-        for (int row = 0; row < n; ++row)
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int trainCount = tokens[0]; // [1, 100'000]
+        int commandCount = tokens[1]; // [1, 100'000]
+
+        bool[][] trains = new bool[trainCount + 1][];
+        for (int i = 1; i < trains.Length; ++i)
         {
-            string s = Console.ReadLine()!;
-            for (int col = 0; col < n; ++col)
+            trains[i] = new bool[SeatCount + 1];
+        }
+
+        for (int i = 0; i < commandCount; ++i)
+        {
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            int command = tokens[0]; // [1, 4]
+            if (command == 1)
             {
-                map[row, col] = s[col];
+                int trainIndex = tokens[1]; // [1, n]
+                int seatIndex = tokens[2]; // [1, TrainLength] = [1, 20]
+                trains[trainIndex][seatIndex] = true;
+            }
+            else if (command == 2)
+            {
+                int trainIndex = tokens[1]; // [1, n]
+                int seatIndex = tokens[2]; // [1, TrainLength] = [1, 20]
+                trains[trainIndex][seatIndex] = false;
+            }
+            else if (command == 3)
+            {
+                int trainIndex = tokens[1]; // [1, n]
+                for (int seatIndex = SeatCount; seatIndex > 1; --seatIndex)
+                {
+                    trains[trainIndex][seatIndex] = trains[trainIndex][seatIndex - 1];
+                }
+                trains[trainIndex][1] = false;
+            }
+            else // if (command == 4)
+            {
+                int trainIndex = tokens[1]; // [1, n]
+                for (int seatIndex = 1; seatIndex < SeatCount; ++seatIndex)
+                {
+                    trains[trainIndex][seatIndex] = trains[trainIndex][seatIndex - 1];
+                }
+                trains[trainIndex][SeatCount] = false;
             }
         }
 
-        bool exploded = false;
-        char[,] simulated = new char[n, n];
-        for (int row = 0; row < n; ++row) // max tc = 10
+        int[] bitPackedTrains = new int[trains.Length];
+        for (int i = 1; i < bitPackedTrains.Length; ++i)
         {
-            string s = Console.ReadLine()!;
-            for (int col = 0; col < n; ++col) // max tc = 10
+            bool[] train = trains[i];
+            for (int j = 1; j < train.Length; ++j)
             {
-                char attr;
-                if (s[col] == 'x')
+                if (train[j])
                 {
-                    if (map[row, col] == Mine)
-                    {
-                        attr = Mine;
-                        exploded = true;
-                    }
-                    else
-                    {
-                        int count = 0;
-                        for (int i = 0; i < Offsets; ++i) // max tc = 8
-                        {
-                            int adjRow = row + RowOffsets[i];
-                            if (adjRow < 0 || adjRow > n - 1)
-                                continue;
-
-                            int adjCol = col + ColOffsets[i];
-                            if (adjCol < 0 || adjCol > n - 1)
-                                continue;
-
-                            if (map[adjRow, adjCol] != Mine)
-                                continue;
-
-                            ++count;
-                        }
-                        attr = (char)(count + '0');
-                    }
-                }
-                else
-                {
-                    attr = '.';
-                }
-                simulated[row, col] = attr;
-            }
-        }
-
-        if (exploded)
-        {
-            for (int row = 0; row < n; ++row)
-            {
-                for (int col = 0; col < n; ++col)
-                {
-                    if (map[row, col] == Mine)
-                    {
-                        simulated[row, col] = Mine;
-                    }
+                    bitPackedTrains[i] |= 1 << (j - 1);
                 }
             }
         }
 
-        StringBuilder sb = new();
-        for (int row = 0; row < n; ++row)
+        int crossables = 0;
         {
-            for (int col = 0; col < n; ++col)
+            SortedSet<int> crossed = new();
+            for (int trainIndex = 1; trainIndex < trains.Length; ++trainIndex)
             {
-                sb.Append(simulated[row, col]);
+                int bitPackedTrain = bitPackedTrains[trainIndex];
+                if (crossed.Contains(bitPackedTrain))
+                    continue;
+
+                crossed.Add(bitPackedTrain);
+                ++crossables;
             }
-            sb.AppendLine();
         }
-        Console.Write(sb);
+        Console.Write(crossables);
     }
 }
