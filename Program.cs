@@ -2,44 +2,18 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int n = int.Parse(Console.ReadLine()!);
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 100'000]
-        int m = tokens[1]; // [1, 1'000'000'000]
+        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(sequence);
 
-        // length = [1, n] = [1, 100'000]
-        // element = [1, 1'000'000'000]
-        int[] stats = new int[n];
+        for (int i = 1; i < sequence.Length; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int i = 0; i < stats.Length; ++i)
+            if (sequence[i] == sequence[i - 1])
             {
-                stats[i] = tokens[i];
-            }
-            Array.Sort(stats);
-        }
-
-        int teams = 0;
-        {
-            int i = 0;
-            int j = stats.Length - 1;
-
-            while (i < j)
-            {
-                int sum = stats[i] + stats[j];
-                if (sum < m)
-                {
-                    ++i;
-                }
-                else
-                {
-                    ++teams;
-                    ++i;
-                    --j;
-                }
+                Console.Write(sequence[i]);
+                break;
             }
         }
-        Console.Write(teams);
     }
 }
