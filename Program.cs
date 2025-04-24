@@ -54,6 +54,9 @@
                 if (adjX < 0 || adjX > width)
                     continue;
 
+                if (adjX > height && adjY > width - adjX)
+                    continue;
+
                 int adjV = adjY * (width + 1) + adjX;
                 if (map[adjV])
                     continue;
