@@ -9,35 +9,26 @@ internal class Program
         BitArray bits = new(10000000 + 1);
 
         int number = 0;
-        bool building = false;
 
         while (true)
         {
             int c = Console.Read();
-            if (c == -1)
-                break;
-            
-            if (c == ' ')
+            if (c == ' ' || c == -1)
             {
-                if (building)
+                if (bits[number])
                 {
-                    if (bits[number])
-                    {
-                        Console.Write(number);
-                        break;
-                    }
-                    else
-                    {
-                        bits[number] = true;
-                    }
-                    number = 0;
-                    building = false;
+                    Console.Write(number);
+                    break;
                 }
+                else
+                {
+                    bits[number] = true;
+                }
+                number = 0;
             }
             else
             {
                 number = number * 10 + c - '0';
-                building = true;
             }
         }
     }
