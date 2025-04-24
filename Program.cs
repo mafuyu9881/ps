@@ -68,9 +68,16 @@
 
                 highestHeights[adjV] = newHeight;
                 frontier.Enqueue((adjV, newHeight));
+
+                if (newHeight >= height)
+                {
+                    highestHeights[0 * (width + 1) + width] = newHeight;
+                    goto Print;
+                }
             }
         }
 
+Print:
         Console.Write(highestHeights[0 * (width + 1) + width]);
     }
 }
