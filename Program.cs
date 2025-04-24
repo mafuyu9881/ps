@@ -1,18 +1,37 @@
-﻿internal class Program
+﻿using System.Collections;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(sequence);
+        BitArray bits = new(10000000 + 1);
 
-        for (int i = 1; i < sequence.Length; ++i)
+        int number = 0;
+
+        while (true)
         {
-            if (sequence[i] == sequence[i - 1])
-            {
-                Console.Write(sequence[i]);
+            int c = Console.Read();
+            if (c == -1)
                 break;
+            
+            if (c == ' ')
+            {
+                if (bits[number])
+                {
+                    Console.Write(number);
+                    break;
+                }
+                else
+                {
+                    bits[number] = true;
+                }
+                number = 0;
+            }
+            else
+            {
+                number = number * 10 + c - '0';
             }
         }
     }
