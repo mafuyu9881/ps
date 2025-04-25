@@ -36,14 +36,21 @@ internal class Program
             }
 
             bool[,] visited = new bool[h + 1, w + 1];
-            
-            Action<int, int, int> DFS = null!;
-            DFS = (row, col, remainForce) =>
-            {
-                if (remainForce < 1)
-                    return;
+            Queue<(int row, int col, int remainForce)> frontier = new();
 
+            visited[sRow, sCol] = true;
+            frontier.Enqueue((sRow, sCol, f));
+
+            while (frontier.Count > 0)
+            {
+                var element = frontier.Dequeue();
+                int row = element.row;
+                int col = element.col;
+                int remainForce = element.remainForce;
                 int l = map[row, col];
+
+                if (remainForce < 1)
+                    continue;
 
                 for (int j = 0; j < Offsets; ++j)
                 {
@@ -63,22 +70,10 @@ internal class Program
                         continue;
 
                     visited[adjRow, adjCol] = true;
-
-                    DFS(adjRow, adjCol, remainForce - 1);
-
-                    if (visited[eRow, eCol])
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        visited[adjRow, adjCol] = false;
-                    }
+                    frontier.Enqueue((adjRow, adjCol, remainForce - 1));
                 }
-            };
+            }
 
-            visited[sRow, sCol] = true;
-            DFS(sRow, sCol, f);
             sb.AppendLine(visited[eRow, eCol] ? "잘했어!!" : "인성 문제있어??");
         }
         Console.Write(sb);
