@@ -3,7 +3,7 @@
     private static void Main(string[] args)
     {
         const int Offsets = 2;
-        int[] YOffsets = new int[Offsets] { -1, 1 };
+        int[] YOffsets = new int[Offsets] { 1, -1 };
         int[] XOffsets = new int[Offsets] { 1, 1 };
 
         int[] tokens = null!;
@@ -62,22 +62,15 @@
                     continue;
 
                 int oldHeight = highestHeights[adjV];
-                int newHeight = Math.Max(adjY, highestHeight);
-                if (oldHeight >= newHeight)
+                if (oldHeight != InvalidHeight)
                     continue;
 
+                int newHeight = Math.Max(adjY, highestHeight);
                 highestHeights[adjV] = newHeight;
                 frontier.Enqueue((adjV, newHeight));
-
-                if (newHeight >= height)
-                {
-                    highestHeights[0 * (width + 1) + width] = newHeight;
-                    goto Print;
-                }
             }
         }
 
-Print:
         Console.Write(highestHeights[0 * (width + 1) + width]);
     }
 }
