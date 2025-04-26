@@ -1,116 +1,83 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int lineCount = int.Parse(Console.ReadLine()!); // [2, 10]
+        long[] longTokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        int width = (int)longTokens[0]; // [1, 1'000'000'000]
+        int height = (int)longTokens[1]; // [1, 1'000'000'000]
+        long maxPiece = longTokens[2]; // [1, 1'000'000'000^2]
 
-        int[] tokens = null!;
+        int[] integerTokens = null!;
 
-        // length = [2, 10]
-        // element = [1, 50]
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int[] stationCounts = new int[lineCount + 1];
-        for (int lineNumber = 1; lineNumber <= lineCount; ++lineNumber)
+        int[] verticalSegments = null!;
         {
-            stationCounts[lineNumber] = tokens[lineNumber - 1];
-        }
+            int horizontalCutCount = int.Parse(Console.ReadLine()!); // [1, 1'100'000]
 
-        int transferStationCount = int.Parse(Console.ReadLine()!); // [1, 250]
+            verticalSegments = new int[horizontalCutCount + 1];
 
-        LinkedList<(int line, int station)>[][] adjList = new LinkedList<(int, int)>[lineCount + 1][];
-        for (int line = 1; line <= lineCount; ++line)
-        {
-            int stationCount = stationCounts[line];
+            integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-            adjList[line] = new LinkedList<(int, int)>[stationCount + 1];
-            for (int station = 1; station <= stationCount; ++station)
+            int horizontalCutBegin = 0;
+            for (int i = 0; i < horizontalCutCount; ++i) // max tc = 1'100'000
             {
-                adjList[line][station] = new();
+                int horizontalCutEnd = integerTokens[i];
 
-                if (station > 1)
-                {
-                    adjList[line][station].AddLast((line, station - 1));
-                }
+                verticalSegments[i] = horizontalCutEnd - horizontalCutBegin;
 
-                if (station < stationCount)
-                {
-                    adjList[line][station].AddLast((line, station + 1));
-                }
+                horizontalCutBegin = horizontalCutEnd;
             }
+
+            verticalSegments[horizontalCutCount] = height - horizontalCutBegin;
+
+            Array.Sort(verticalSegments);
         }
 
-        for (int i = 0; i < transferStationCount; ++i)
+        int[] horizontalSegments = null!;
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int p1 = tokens[0];
-            int p2 = tokens[1];
-            int q1 = tokens[2];
-            int q2 = tokens[3];
-            adjList[p1][p2].AddLast((q1, q2));
-            adjList[q1][q2].AddLast((p1, p2));
-        }
+            int verticalCutCount = int.Parse(Console.ReadLine()!); // [1, 1'100'000]
 
-        int k = int.Parse(Console.ReadLine()!); // [1, 1'000]
+            horizontalSegments = new int[verticalCutCount + 1];
 
-        const int InvalidCost = -1;
+            integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        StringBuilder sb = new();
-        for (int i = 0; i < k; ++i)
-        {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int t = tokens[0];
-            int sLine = tokens[1];
-            int sStation = tokens[2];
-            int eLine = tokens[3];
-            int eStation = tokens[4];
-
-            int[][] minCost = new int[lineCount + 1][];
-            for (int line = 1; line <= lineCount; ++line)
+            int verticalCutBegin = 0;
+            for (int i = 0; i < verticalCutCount; ++i) // max tc = 1'100'000
             {
-                int stationCount = stationCounts[line];
+                int verticalCutEnd = integerTokens[i];
 
-                minCost[line] = new int[stationCount + 1];
-                for (int station = 1; station <= stationCount; ++station)
-                {
-                    minCost[line][station] = InvalidCost;
-                }
+                horizontalSegments[i] = verticalCutEnd - verticalCutBegin;
+
+                verticalCutBegin = verticalCutEnd;
             }
-            PriorityQueue<(int line, int station, int cost), int> pq = new();
 
-            minCost[sLine][sStation] = 0;
-            pq.Enqueue((sLine, sStation, 0), 0);
+            horizontalSegments[verticalCutCount] = width - verticalCutBegin;
 
-            while (pq.Count > 0)
+            Array.Sort(horizontalSegments);
+        }
+
+        long shareableCount = 0;
+        for (int i = 0; i < verticalSegments.Length; ++i)
+        {
+            int verticalSegment = verticalSegments[i];
+
+            int lo = 0 - 1;
+            int hi = (horizontalSegments.Length - 1) + 1;
+            while (lo < hi - 1)
             {
-                var element = pq.Dequeue();
-                int line = element.line;
-                int station = element.station;
-                int cost = element.cost;
+                int mid = (lo + hi) / 2;
 
-                if (cost > minCost[line][station])
-                    continue;
-
-                var adjs = adjList[line][station];
-                for (var lln = adjs.First; lln != null; lln = lln.Next)
+                if (verticalSegment * (long)horizontalSegments[mid] > maxPiece)
                 {
-                    int adjLine = lln.Value.line;
-                    int adjStation = lln.Value.station;
-                    int adjCost = (line != adjLine) ? t : 1;
-                    
-                    int oldAdjMinCost = minCost[adjLine][adjStation];
-                    int newAdjMinCost = cost + adjCost;
-                    if (oldAdjMinCost == InvalidCost || newAdjMinCost < oldAdjMinCost)
-                    {
-                        minCost[adjLine][adjStation] = newAdjMinCost;
-                        pq.Enqueue((adjLine, adjStation, newAdjMinCost), newAdjMinCost);
-                    }
+                    hi = mid;
+                }
+                else
+                {
+                    lo = mid;
                 }
             }
 
-            sb.AppendLine($"{minCost[eLine][eStation]}");
+            shareableCount += lo + 1;
         }
-        Console.Write(sb);
+        Console.Write(shareableCount);
     }
 }
