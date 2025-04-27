@@ -1,83 +1,73 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        long[] longTokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
-        int width = (int)longTokens[0]; // [1, 1'000'000'000]
-        int height = (int)longTokens[1]; // [1, 1'000'000'000]
-        long maxPiece = longTokens[2]; // [1, 1'000'000'000^2]
+        int q = int.Parse(Console.ReadLine()!); // [3, 500'000]
 
-        int[] integerTokens = null!;
+        LinkedList<int> ll = new();
 
-        int[] verticalSegments = null!;
+        StringBuilder sb = new();
+        for (int i = 0; i < q; ++i)
         {
-            int horizontalCutCount = int.Parse(Console.ReadLine()!); // [1, 1'100'000]
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int command = tokens[0]; // [1, 2]
 
-            verticalSegments = new int[horizontalCutCount + 1];
-
-            integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            int horizontalCutBegin = 0;
-            for (int i = 0; i < horizontalCutCount; ++i) // max tc = 1'100'000
+            if (command == 1)
             {
-                int horizontalCutEnd = integerTokens[i];
-
-                verticalSegments[i] = horizontalCutEnd - horizontalCutBegin;
-
-                horizontalCutBegin = horizontalCutEnd;
+                int x = tokens[1]; // [1, 1'000]
+                ll.AddLast(x);
             }
-
-            verticalSegments[horizontalCutCount] = height - horizontalCutBegin;
-
-            Array.Sort(verticalSegments);
-        }
-
-        int[] horizontalSegments = null!;
-        {
-            int verticalCutCount = int.Parse(Console.ReadLine()!); // [1, 1'100'000]
-
-            horizontalSegments = new int[verticalCutCount + 1];
-
-            integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-            int verticalCutBegin = 0;
-            for (int i = 0; i < verticalCutCount; ++i) // max tc = 1'100'000
+            else // if (command == 2)
             {
-                int verticalCutEnd = integerTokens[i];
+                int leftSum = 0;
+                int rightSum = 0;
 
-                horizontalSegments[i] = verticalCutEnd - verticalCutBegin;
-
-                verticalCutBegin = verticalCutEnd;
-            }
-
-            horizontalSegments[verticalCutCount] = width - verticalCutBegin;
-
-            Array.Sort(horizontalSegments);
-        }
-
-        long shareableCount = 0;
-        for (int i = 0; i < verticalSegments.Length; ++i)
-        {
-            int verticalSegment = verticalSegments[i];
-
-            int lo = 0 - 1;
-            int hi = (horizontalSegments.Length - 1) + 1;
-            while (lo < hi - 1)
-            {
-                int mid = (lo + hi) / 2;
-
-                if (verticalSegment * (long)horizontalSegments[mid] > maxPiece)
+                int counter = 1;
+                for (var lln = ll.First; lln != null; lln = lln.Next)
                 {
-                    hi = mid;
+                    if (counter > ll.Count / 2)
+                    {
+                        rightSum += lln.Value;
+                    }
+                    else
+                    {
+                        leftSum += lln.Value;
+                    }
+                    ++counter;
+                }
+
+                if (leftSum <= rightSum)
+                {
+                    sb.AppendLine($"{leftSum}");
+
+                    int loops = ll.Count / 2;
+                    while (loops > 0)
+                    {
+                        ll.RemoveFirst();
+                        --loops;
+                    }
                 }
                 else
                 {
-                    lo = mid;
+                    sb.AppendLine($"{rightSum}");
+
+                    int loops = ll.Count - ll.Count / 2;
+                    while (loops > 0)
+                    {
+                        ll.RemoveLast();
+                        --loops;
+                    }
                 }
             }
-
-            shareableCount += lo + 1;
         }
-        Console.Write(shareableCount);
+
+        for (var lln = ll.First; lln != null; lln = lln.Next)
+        {
+            sb.Append($"{lln.Value} ");
+        }
+
+        Console.Write(sb);
     }
 }
