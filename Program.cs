@@ -4,70 +4,45 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int q = int.Parse(Console.ReadLine()!); // [3, 500'000]
+        int g = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
-        LinkedList<int> ll = new();
-
-        StringBuilder sb = new();
-        for (int i = 0; i < q; ++i)
+        List<int> list = new(50000);
+        for (int i = 2; i * i - (i - 1) * (i - 1) <= g; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int command = tokens[0]; // [1, 2]
-
-            if (command == 1)
+            int lo = 1 - 1;
+            int hi = (i - 1) + 1;
+            while (lo < hi - 1)
             {
-                int x = tokens[1]; // [1, 1'000]
-                ll.AddLast(x);
-            }
-            else // if (command == 2)
-            {
-                int leftSum = 0;
-                int rightSum = 0;
+                int mid = (lo + hi) / 2;
 
-                int counter = 1;
-                for (var lln = ll.First; lln != null; lln = lln.Next)
+                if (i * i - mid * mid >= g)
                 {
-                    if (counter > ll.Count / 2)
-                    {
-                        rightSum += lln.Value;
-                    }
-                    else
-                    {
-                        leftSum += lln.Value;
-                    }
-                    ++counter;
-                }
-
-                if (leftSum <= rightSum)
-                {
-                    sb.AppendLine($"{leftSum}");
-
-                    int loops = ll.Count / 2;
-                    while (loops > 0)
-                    {
-                        ll.RemoveFirst();
-                        --loops;
-                    }
+                    lo = mid;
                 }
                 else
                 {
-                    sb.AppendLine($"{rightSum}");
-
-                    int loops = ll.Count - ll.Count / 2;
-                    while (loops > 0)
-                    {
-                        ll.RemoveLast();
-                        --loops;
-                    }
+                    hi = mid;
                 }
+            }
+
+            if (i * i - lo * lo == g)
+            {
+                list.Add(i);
             }
         }
 
-        for (var lln = ll.First; lln != null; lln = lln.Next)
+        StringBuilder sb = new();
+        if (list.Count < 1)
         {
-            sb.Append($"{lln.Value} ");
+            sb.AppendLine($"{-1}");
         }
-
+        else
+        {
+            for (int i = 0; i < list.Count; ++i)
+            {
+            sb.AppendLine($"{list[i]}");
+            }
+        }
         Console.Write(sb);
     }
 }
