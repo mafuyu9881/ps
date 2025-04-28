@@ -25,7 +25,7 @@ internal class Program
                 }
             }
 
-            if (i * i - lo * lo == g)
+            if (lo > 0 && i * i - lo * lo == g)
             {
                 list.Add(i);
             }
