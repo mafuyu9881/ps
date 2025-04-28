@@ -40,7 +40,7 @@ internal class Program
         {
             for (int i = 0; i < list.Count; ++i)
             {
-            sb.AppendLine($"{list[i]}");
+                sb.AppendLine($"{list[i]}");
             }
         }
         Console.Write(sb);
