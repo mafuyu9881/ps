@@ -17,7 +17,7 @@
         {
             int i = 0;
             int j = 0;
-            while (j < sequence.Length)
+            while (i < sequence.Length && j < sequence.Length)
             {
                 int diff = sequence[j] - sequence[i];
                 if (diff >= m)
