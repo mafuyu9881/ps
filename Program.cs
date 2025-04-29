@@ -125,6 +125,6 @@
             }
         }
 
-        Console.Write($"{answerPair.solution1} {answerPair.solution2}");
+        Console.Write($"{Math.Min(answerPair.solution1, answerPair.solution2)} {Math.Max(answerPair.solution1, answerPair.solution2)}");
     }
 }
