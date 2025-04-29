@@ -67,48 +67,6 @@
             }
         }
 
-        if (alkalineSolutions.Count > 0)
-        {
-            for (int i = 0; i < acidicSolutions.Count; ++i)
-            {
-                int acidicSolution = acidicSolutions[i];
-
-                int lo = 0 - 1;
-                int hi = (alkalineSolutions.Count - 1) + 1;
-                while (lo < hi - 1)
-                {
-                    int mid = (lo + hi) / 2;
-
-                    int mixed = alkalineSolutions[mid] + acidicSolution;
-
-                    if (mixed > 0) // |acidicSolution| > |alkalineSolution|
-                    {
-                        lo = mid;
-                    }
-                    else if (mixed < 0)
-                    {
-                        hi = mid;
-                    }
-                    else
-                    {
-                        lo = mid;
-                        hi = mid;
-                        break;
-                    }
-                }
-
-                if (lo > -1 && Math.Abs(acidicSolution + alkalineSolutions[lo]) < Math.Abs(answerPair.solution1 + answerPair.solution2))
-                {
-                    answerPair = new(acidicSolution, alkalineSolutions[lo]);
-                }
-
-                if (hi < alkalineSolutions.Count && Math.Abs(acidicSolution + alkalineSolutions[hi]) < Math.Abs(answerPair.solution1 + answerPair.solution2))
-                {
-                    answerPair = new(acidicSolution, alkalineSolutions[hi]);
-                }
-            }
-        }
-
         if (alkalineSolutions.Count >= 2)
         {
             if (Math.Abs(alkalineSolutions[0] + alkalineSolutions[1]) < Math.Abs(answerPair.solution1 + answerPair.solution2))
