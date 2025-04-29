@@ -20,9 +20,14 @@
             while (i < sequence.Length && j < sequence.Length)
             {
                 int diff = sequence[j] - sequence[i];
+
                 if (diff >= m)
                 {
                     minDiff = Math.Min(minDiff, diff);
+                }
+
+                if (diff > m)
+                {
                     ++i;
                 }
                 else
