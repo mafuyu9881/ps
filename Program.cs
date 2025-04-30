@@ -2,40 +2,44 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 100'000]
-        int m = tokens[1]; // [0, 2'000'000'000]
+        int n = int.Parse(Console.ReadLine()!); // [2, 100'000]
 
-        int[] sequence = new int[n];
-        for (int i = 0; i < n; ++i)
-        {
-            sequence[i] = int.Parse(Console.ReadLine()!);
-        }
-        Array.Sort(sequence);
-
-        int minDiff = 2000000000;
+        // length = [2, 100'000]
+        // element = [-1'000'000'000, 1'000'000'000]
+        int[] sols = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(sols);
+        
+        (int sol1, int sol2) answerPair = (1000000000, 1000000000);
         {
             int i = 0;
-            int j = 0;
-            while (i < sequence.Length && j < sequence.Length)
-            {
-                int diff = sequence[j] - sequence[i];
+            int j = sols.Length - 1;
 
-                if (diff >= m)
+            while (i < j)
+            {
+                int sol1 = sols[i];
+                int sol2 = sols[j];
+                int mixed = sol1 + sol2;
+
+                if (Math.Abs(mixed) < Math.Abs(answerPair.sol1 + answerPair.sol2))
                 {
-                    minDiff = Math.Min(minDiff, diff);
+                    answerPair = (sol1, sol2);
                 }
 
-                if (diff > m)
+                if (mixed < 0)
                 {
                     ++i;
                 }
+                else if (mixed > 0)
+                {
+                    --j;
+                }
                 else
                 {
-                    ++j;
+                    answerPair = (sol1, sol2);
+                    break;
                 }
             }
         }
-        Console.Write(minDiff);
+        Console.Write($"{answerPair.sol1} {answerPair.sol2}");
     }
 }
