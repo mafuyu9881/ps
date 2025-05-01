@@ -1,45 +1,67 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [2, 100'000]
-
-        // length = [2, 100'000]
-        // element = [-1'000'000'000, 1'000'000'000]
-        int[] sols = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(sols);
-        
-        (int sol1, int sol2) answerPair = (1000000000, 1000000000);
+        StringBuilder sb = new();
+        while (true)
         {
-            int i = 0;
-            int j = sols.Length - 1;
+            string? line = Console.ReadLine();
+            if (string.IsNullOrEmpty(line))
+                break;
 
-            while (i < j)
+            int x = int.Parse(line) * 10000000; // 1cm = 10'000'000nm
+
+            int n = int.Parse(Console.ReadLine()!); // [0, 1'000'000]
+
+            int[] legos = new int[n]; // [1, 100'000'000]
+            for (int i = 0; i < n; ++i) // max tc = 1'000'000
             {
-                int sol1 = sols[i];
-                int sol2 = sols[j];
-                int mixed = sol1 + sol2;
+                legos[i] = int.Parse(Console.ReadLine()!);
+            }
+            Array.Sort(legos);
 
-                if (Math.Abs(mixed) < Math.Abs(answerPair.sol1 + answerPair.sol2))
-                {
-                    answerPair = (sol1, sol2);
-                }
+            (int lego1, int lego2)? answer = null;
+            {
+                int lo = 0;
+                int hi = n - 1;
 
-                if (mixed < 0)
+                while (lo < hi)
                 {
-                    ++i;
-                }
-                else if (mixed > 0)
-                {
-                    --j;
-                }
-                else
-                {
-                    answerPair = (sol1, sol2);
-                    break;
+                    int lego1 = legos[lo];
+                    int lego2 = legos[hi];
+                    int sum = lego1 + lego2;
+
+                    if (sum == x)
+                    {
+                        answer = (lego1, lego2);
+                    }
+
+                    if (sum < n)
+                    {
+                        ++lo;
+                    }
+                    else if (sum > n)
+                    {
+                        --hi;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
+
+            if (answer == null)
+            {
+                sb.AppendLine("danger");
+            }
+            else
+            {
+                sb.AppendLine($"yes {answer.Value.lego1} {answer.Value.lego2}");
+            }
         }
-        Console.Write($"{answerPair.sol1} {answerPair.sol2}");
+        Console.Write(sb);
     }
 }
