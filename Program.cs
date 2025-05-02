@@ -33,33 +33,29 @@ internal class Program
                     int lego2 = legos[hi];
                     int sum = lego1 + lego2;
 
-                    if (sum == x)
-                    {
-                        answer = (lego1, lego2);
-                    }
-
-                    if (sum < n)
+                    if (sum < x)
                     {
                         ++lo;
                     }
-                    else if (sum > n)
+                    else if (sum > x)
                     {
                         --hi;
                     }
                     else
                     {
+                        answer = (lego1, lego2);
                         break;
                     }
                 }
             }
 
-            if (answer == null)
+            if (answer.HasValue)
             {
-                sb.AppendLine("danger");
+                sb.AppendLine($"yes {answer.Value.lego1} {answer.Value.lego2}");
             }
             else
             {
-                sb.AppendLine($"yes {answer.Value.lego1} {answer.Value.lego2}");
+                sb.AppendLine("danger");
             }
         }
         Console.Write(sb);
