@@ -40,8 +40,13 @@ internal class Program
                     {
                         ++lo;
                     }
+                    else if (sum > k)
+                    {
+                        --hi;
+                    }
                     else
                     {
+                        ++lo;
                         --hi;
                     }
                 }
