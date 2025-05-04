@@ -16,7 +16,7 @@ internal class Program
             int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
             Array.Sort(sequence);
 
-            int minDistance = Math.Abs(k - sequence[0] + sequence[n - 1]);
+            int minDistance = Math.Abs(k - (sequence[0] + sequence[n - 1]));
             int cases = 0;
             {
                 int lo = 0;
