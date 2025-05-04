@@ -4,59 +4,49 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        int t = int.Parse(Console.ReadLine()!);
+        
         StringBuilder sb = new();
-        while (true)
+        for (int i = 0; i < t; ++i)
         {
-            string? line = Console.ReadLine();
-            if (string.IsNullOrEmpty(line))
-                break;
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int n = tokens[0]; // [2, 1'000'000]
+            int k = tokens[1]; // [-100'000'000, 100'000'000]
 
-            int x = int.Parse(line) * 10000000; // 1cm = 10'000'000nm
+            int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            Array.Sort(sequence);
 
-            int n = int.Parse(Console.ReadLine()!); // [0, 1'000'000]
-
-            int[] legos = new int[n]; // [1, 100'000'000]
-            for (int i = 0; i < n; ++i) // max tc = 1'000'000
-            {
-                legos[i] = int.Parse(Console.ReadLine()!);
-            }
-            Array.Sort(legos);
-
-            (int lego1, int lego2)? answer = null;
+            int minDistance = Math.Abs(k - sequence[0] + sequence[n - 1]);
+            int cases = 0;
             {
                 int lo = 0;
                 int hi = n - 1;
-
                 while (lo < hi)
                 {
-                    int lego1 = legos[lo];
-                    int lego2 = legos[hi];
-                    int sum = lego1 + lego2;
+                    int sum = sequence[lo] + sequence[hi];
+                    int distance = Math.Abs(k - sum);
 
-                    if (sum < x)
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        cases = 1;
+                    }
+                    else if (distance == minDistance)
+                    {
+                        ++cases;
+                    }
+                    
+                    if (sum < k)
                     {
                         ++lo;
                     }
-                    else if (sum > x)
+                    else
                     {
                         --hi;
                     }
-                    else
-                    {
-                        answer = (lego1, lego2);
-                        break;
-                    }
                 }
             }
-
-            if (answer.HasValue)
-            {
-                sb.AppendLine($"yes {answer.Value.lego1} {answer.Value.lego2}");
-            }
-            else
-            {
-                sb.AppendLine("danger");
-            }
+            sb.AppendLine($"{cases}");
         }
         Console.Write(sb);
     }
