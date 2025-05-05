@@ -7,9 +7,9 @@
         // length = [2, 100'000]
         // element = [-100'000'000, 100'000'000]
         int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(sequence);
+        //Array.Sort(sequence);
 
-        int nearest = 200000000;
+        int nearest = 200000001;
         {
             int lo = 0;
             int hi = n - 1;
