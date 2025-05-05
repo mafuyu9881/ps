@@ -1,58 +1,41 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
-        
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
+        int n = int.Parse(Console.ReadLine()!); // [2, 100'000]
+
+        // length = [2, 100'000]
+        // element = [-100'000'000, 100'000'000]
+        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(sequence);
+
+        int nearest = 200000000;
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int n = tokens[0]; // [2, 1'000'000]
-            int k = tokens[1]; // [-100'000'000, 100'000'000]
-
-            int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            Array.Sort(sequence);
-
-            int minDistance = Math.Abs(k - (sequence[0] + sequence[n - 1]));
-            int cases = 0;
+            int lo = 0;
+            int hi = n - 1;
+            while (lo < hi)
             {
-                int lo = 0;
-                int hi = n - 1;
-                while (lo < hi)
-                {
-                    int sum = sequence[lo] + sequence[hi];
-                    int distance = Math.Abs(k - sum);
+                int mixed = sequence[lo] + sequence[hi];
 
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                        cases = 1;
-                    }
-                    else if (distance == minDistance)
-                    {
-                        ++cases;
-                    }
-                    
-                    if (sum < k)
-                    {
-                        ++lo;
-                    }
-                    else if (sum > k)
-                    {
-                        --hi;
-                    }
-                    else
-                    {
-                        ++lo;
-                        --hi;
-                    }
+                if (Math.Abs(nearest) > Math.Abs(mixed))
+                {
+                    nearest = mixed;
+                }
+
+                if (mixed < 0)
+                {
+                    ++lo;
+                }
+                else if (mixed > 0)
+                {
+                    --hi;
+                }
+                else
+                {
+                    break;
                 }
             }
-            sb.AppendLine($"{cases}");
         }
-        Console.Write(sb);
+        Console.Write(nearest);
     }
 }
