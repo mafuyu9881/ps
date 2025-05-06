@@ -36,6 +36,7 @@ internal class Program
                         }
                         else
                         {
+                            type = 2;
                             break;
                         }
 
