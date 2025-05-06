@@ -1,41 +1,62 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [2, 100'000]
+        int t = int.Parse(Console.ReadLine()!);
 
-        // length = [2, 100'000]
-        // element = [-100'000'000, 100'000'000]
-        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        //Array.Sort(sequence);
-
-        int nearest = 200000001;
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
         {
-            int lo = 0;
-            int hi = n - 1;
-            while (lo < hi)
+            string s = Console.ReadLine()!;
+
+            // 0: palindrome
+            // 1: pseudo palindrome
+            // 2: nothing
+            int type = 0;
             {
-                int mixed = sequence[lo] + sequence[hi];
+                int lo = 0;
+                int hi = s.Length - 1;
+                while (lo < hi)
+                {
+                    char loC = s[lo];
+                    char hiC = s[hi];
 
-                if (Math.Abs(nearest) > Math.Abs(mixed))
-                {
-                    nearest = mixed;
-                }
+                    if (loC == hiC)
+                    {
+                        ++lo;
+                        --hi;
+                    }
+                    else
+                    {
+                        if (type == 0)
+                        {
+                            type = 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
 
-                if (mixed < 0)
-                {
-                    ++lo;
-                }
-                else if (mixed > 0)
-                {
-                    --hi;
-                }
-                else
-                {
-                    break;
+                        if (s[lo + 1] == s[hi])
+                        {
+                            ++lo;
+                        }
+                        else if (s[lo] == s[hi - 1])
+                        {
+                            --hi;
+                        }
+                        else
+                        {
+                            type = 2;
+                            break;
+                        }
+                    }
                 }
             }
+            sb.AppendLine($"{type}");
         }
-        Console.Write(nearest);
+        Console.Write(sb);
     }
 }
