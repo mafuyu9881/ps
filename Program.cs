@@ -1,63 +1,90 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 5'000]
+        int c = tokens[1]; // [1, 100'000'000]
 
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
+        // length = [1, 5'000]
+        // element = [1, 100'000'000]
+        int[] weights = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(weights);
+
+        int satisfied = 0;
         {
-            string s = Console.ReadLine()!;
-
-            // 0: palindrome
-            // 1: pseudo palindrome
-            // 2: nothing
-            int type = 0;
+            for (int i = 0; i < n; ++i) // max tc = 5'000
             {
-                int lo = 0;
-                int hi = s.Length - 1;
-                while (lo < hi)
+                if (weights[i] == c)
                 {
-                    char loC = s[lo];
-                    char hiC = s[hi];
+                    satisfied = 1;
+                    goto End;
+                }
+            }
 
-                    if (loC == hiC)
+            int s = 0;
+            int e = n - 1;
+            while (s < e) // max tc = 5'000
+            {
+                int sum = weights[s] + weights[e];
+                if (sum > c)
+                {
+                    --e;
+                }
+                else if (sum < c)
+                {
+                    ++s;
+                }
+                else
+                {
+                    satisfied = 1;
+                    goto End;
+                }
+            }
+            
+            Func<int, int, int, bool> BinarySearch = (pair, lo, hi) =>
+            {
+                while (lo < hi - 1) // max tc = log2(5'000) = 12.xxxx
+                {
+                    int mid = (lo + hi) / 2;
+                        
+                    int tuple = pair + weights[mid];
+
+                    if (tuple < c)
                     {
-                        ++lo;
-                        --hi;
+                        lo = mid;
+                    }
+                    else if (tuple > c)
+                    {
+                        hi = mid;
                     }
                     else
                     {
-                        if (type == 0)
-                        {
-                            type = 1;
-                        }
-                        else
-                        {
-                            type = 2;
-                            break;
-                        }
-
-                        if (s[lo + 1] == s[hi])
-                        {
-                            ++lo;
-                        }
-                        else if (s[lo] == s[hi - 1])
-                        {
-                            --hi;
-                        }
-                        else
-                        {
-                            type = 2;
-                            break;
-                        }
+                        satisfied = 1;
+                        return true;
                     }
                 }
+
+                return false;
+            };
+
+            for (int i = 0; i < n; ++i) // max tc = 5'000
+            {
+                for (int j = i + 1; j < n; ++j) // max tc = 5'000
+                {
+                    int pair = weights[i] + weights[j];
+                    if (pair > c)
+                        break;
+
+                    if (BinarySearch(pair, (i + 1) - 1, (j - 1) + 1))
+                        goto End;
+
+                    if (BinarySearch(pair, (j + 1) + 1, (n - 1) + 1))
+                        goto End;
+                }
             }
-            sb.AppendLine($"{type}");
         }
-        Console.Write(sb);
+End:
+        Console.Write(satisfied);
     }
 }
