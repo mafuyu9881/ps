@@ -1,66 +1,45 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        int[] typed = new int[128];
-        int typedCharacters = 0;
+        int[] tokens = null!;
+        
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 100]
+        int r = tokens[1]; // [1, 100]
 
-        StringBuilder sb = new();
-        while (true)
+        (int x, int y)[] grains = new (int, int)[n];
+        for (int i = 0; i < n; ++i) // max tc = 100
         {
-            int m = int.Parse(Console.ReadLine()!); // [1, 128]
-            if (m == 0)
-                break;
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int x = tokens[0]; // [-100, 100]
+            int y = tokens[1]; // [-100, 100]
+            grains[i] = (x, y);
+        }
 
-            string s = Console.ReadLine()!;
-
-            int maxLength = 0;
+        int maxCaptured = 0;
+        (int x, int y) maxCapturedCoord = (0, 0);
+        for (int x = -100; x <= 100; ++x) // tc = 200 + 1
+        {
+            for (int y = -100; y <= 100; ++y) // tc = 200 + 1
             {
-                for (int i = 0; i < typed.Length; ++i)
+                int captured = 0;
+                for (int i = 0; i < n; ++i) // max tc = 100
                 {
-                    typed[i] = 0;
+                    var grain = grains[i];
+                    if ((grain.x - x) * (grain.x - x) + (grain.y - y) * (grain.y - y) <= r * r)
+                    {
+                        ++captured;
+                    }
                 }
-                typedCharacters = 0;
 
-                int lo = 0;
-                int hi = 0;
-                int length = 0;
-                while (hi < s.Length)
+                if (captured > maxCaptured)
                 {
-                    char newCharacter = s[hi];
-
-                    if (typed[newCharacter] < 1)
-                    {
-                        ++typedCharacters;
-                    }
-
-                    ++typed[newCharacter];
-
-                    while (typedCharacters > m)
-                    {
-                        char oldCharacter = s[lo];
-
-                        --typed[oldCharacter];
-
-                        if (typed[oldCharacter] < 1)
-                        {
-                            --typedCharacters;
-                        }
-
-                        --length;
-                        ++lo;
-                    }
-
-                    ++length;
-                    ++hi;
-
-                    maxLength = Math.Max(maxLength, length);
+                    maxCaptured = captured;
+                    maxCapturedCoord = (x, y);
                 }
             }
-            sb.AppendLine($"{maxLength}");
         }
-        Console.Write(sb);
+        Console.Write($"{maxCapturedCoord.x} {maxCapturedCoord.y}");
     }
 }
