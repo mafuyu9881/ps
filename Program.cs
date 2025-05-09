@@ -2,51 +2,66 @@
 {
     private static void Main(string[] args)
     {
-        string s = Console.ReadLine()!;
+        int n = int.Parse(Console.ReadLine()!); // [1, 30'000]
 
-        for (int digit = 1; digit <= 3; ++digit)
+        // length = [1, 30'000]
+        // element = [0, 1'000'000]
+        int[] coords = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        string output = "권병장님, 중대장님이 찾으십니다";
+        if (n > 1)
         {
-            int reader = 0;
+            int endCoord = coords[n - 1];
 
-            int startN = 0;
-            while (reader < digit)
+            // length = [1, 30'000 - 1]
+            // element = [0, 1'000'000]
+            int[] ranges = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+            //(int coord, int range)[] pairs = new (int, int)[n];
+            //for (int i = 0; i < n - 1; ++i)
+            //{
+            //    pairs[i] = (coords[i], ranges[i]);
+            //}
+            ////pairs[n - 1] = (coords[n - 1], 0);
+            //Array.Sort(pairs, (x, y) => x.coord.CompareTo(y.coord));
+
+            // pre-processed
+            int[] ppPrefixSum = new int[endCoord + 2];
+            for (int i = 0; i < n - 1; ++i)
             {
-                startN *= 10;
-                startN += s[reader] - '0';
-                ++reader;
+                int coord = coords[i];
+                int range = ranges[i];
+
+                int s = Math.Max(coord - range, 0);
+                int e = Math.Min(coord + range, endCoord);
+
+                ppPrefixSum[s] += 1;
+                ppPrefixSum[e + 1] -= 1;
             }
 
-            int objectiveN = startN + 1;
-            
-            bool succeeded = true;
-            while (reader < s.Length)
+            for (int i = 1; i < ppPrefixSum.Length; ++i)
             {
-                string objectiveNS = objectiveN.ToString();
+                ppPrefixSum[i] += ppPrefixSum[i - 1];
+            }
 
-                int parsedN = 0;
-                for (int i = 0; i < objectiveNS.Length && reader < s.Length; ++i)
+            int x = 0;
+            while (x < ppPrefixSum.Length)
+            {
+                if (ppPrefixSum[x] > 0)
                 {
-                    parsedN *= 10;
-                    parsedN += s[reader] - '0';
-                    ++reader;
-                }
-
-                if (objectiveN == parsedN)
-                {
-                    ++objectiveN;
+                    ++x;
                 }
                 else
                 {
-                    succeeded = false;
                     break;
                 }
             }
 
-            if (succeeded)
+            if (x < endCoord)
             {
-                Console.Write($"{startN} {objectiveN - 1}");
-                break;
+                output = "엄마 나 전역 늦어질 것 같아";
             }
         }
+        Console.Write(output);
     }
 }
