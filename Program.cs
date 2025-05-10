@@ -5,72 +5,83 @@
         int[] tokens = null!;
 
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [2, 300'000]
-        int m = tokens[1]; // [0, 300'000]
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int s = tokens[0]; // [1, 300'000]
-        int e = tokens[1]; // [1, 300'000]
-
-        LinkedList<int>[] adjList = new LinkedList<int>[n + 1];
-        for (int i = 1; i <= n; ++i)
+        int height = tokens[0]; // [1, 500]
+        int width = tokens[1]; // [1, 500]
+        int k = tokens[2]; // [1, 1'000'000'000]
+        
+        Func<int, int, int> ConvertIndex2DTo1D = (row, col) =>
         {
-            adjList[i] = new();
-        }
-        for (int i = 0; i < m; ++i)
+            return row * width + col;
+        };
+
+        int[] map = new int[height * width];
+        LinkedList<int> candidates = new();
+        for (int row = 0; row < height; ++row)
         {
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int x = tokens[0]; // [1, 300'000]
-            int y = tokens[1]; // [1, 300'000]
-            adjList[x].AddLast(y);
-            adjList[y].AddLast(x);
-        }
-        for (int i = 1; i <= n; ++i)
-        {
-            int prev = i - 1;
-            int next = i + 1;
-            if (prev >= 1)
+            for (int col = 0; col < width; ++col)
             {
-                adjList[i].AddLast(prev);
-            }
-            if (next <= n)
-            {
-                adjList[i].AddLast(next);
+                int index = ConvertIndex2DTo1D(row, col);
+                map[index] = tokens[col];
+                candidates.AddLast(index);
             }
         }
 
-        const int InvalidCost = -1;
-
-        int[] minCost = new int[n + 1];
-        for (int i = 0; i < minCost.Length; ++i)
+        LinkedList<LinkedList<int>> ccs = new();
+        LinkedList<int> cc = null!;
         {
-            minCost[i] = InvalidCost;
-        }
-        
-        Queue<(int v, int cost)> frontier = new();
-        
-        minCost[s] = 0;
-        frontier.Enqueue((s, minCost[s]));
-        while (frontier.Count > 0)
-        {
-            var element = frontier.Dequeue();
-            int v = element.v;
-            int cost = element.cost;
+            const int Offsets = 4;
+            int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
+            int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
 
-            var adjs = adjList[v];
-            for (var lln = adjs.First; lln != null; lln = lln.Next)
+            bool[] visited = new bool[height * width];
+
+            Queue<int> frontier = new();
+
+            while (candidates.Count > 0)
             {
-                int adjV = lln.Value;
+                if (frontier.Count < 1)
+                {
+                    int candidate = candidates.First!.Value;
+                    candidates.RemoveFirst();
 
-                int oldMinCost = minCost[adjV];
-                int newMinCost = cost + 1;
-                if (oldMinCost != InvalidCost && oldMinCost <= newMinCost)
-                    continue;
+                    if (visited[candidate])
+                        continue;
 
-                minCost[adjV] = newMinCost;
-                frontier.Enqueue((adjV, minCost[adjV]));
+                    cc = new();
+                    ccs.AddLast(cc);
+
+                    visited[candidate] = true;
+                    frontier.Enqueue(candidate);
+                }
+
+                int index = frontier.Dequeue();
+                int row = index / width;
+                int col = index % width;
+                
+                for (int i = 0; i < Offsets; ++i)
+                {
+                    int adjRow = row + RowOffsets[i];
+                    if (adjRow < 0 || adjRow > height - 1)
+                        continue;
+
+                    int adjCol = col + ColOffsets[i];
+                    if (adjCol < 0 || adjCol > width - 1)
+                        continue;
+
+                    int adjIndex = ConvertIndex2DTo1D(adjRow, adjCol);
+                    if (visited[adjIndex])
+                        continue;
+
+                    if (Math.Abs(map[index] - map[adjIndex]) > k)
+                        continue;
+
+                    cc.AddLast(adjIndex);
+                    visited[adjIndex] = true;
+                    frontier.Enqueue(adjIndex);
+                }
             }
         }
-        Console.Write(minCost[e]);
+        Console.Write(ccs.Count);
     }
 }
