@@ -2,86 +2,57 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
+        string token = Console.ReadLine()!; // [1, 999'999'999]
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = tokens[0]; // [1, 500]
-        int width = tokens[1]; // [1, 500]
-        int k = tokens[2]; // [1, 1'000'000'000]
-        
-        Func<int, int, int> ConvertIndex2DTo1D = (row, col) =>
+        int minOddCount = int.MaxValue;
+        int maxOddCount = 0;
+
+        Action<string, int> Operate = null!;
+        Operate = (sn, oddCount) =>
         {
-            return row * width + col;
+            oddCount += CountOdd(sn);
+
+            if (sn.Length == 1)
+            {
+                minOddCount = Math.Min(minOddCount, oddCount);
+                maxOddCount = Math.Max(maxOddCount, oddCount);
+            }
+            else if (sn.Length == 2)
+            {
+                int a = int.Parse(sn.Substring(0, 1));
+                int b = int.Parse(sn.Substring(1, 1));
+                Operate((a + b).ToString(), oddCount);
+            }
+            else
+            {
+                for (int l0 = 1; l0 < sn.Length - 1; ++l0)
+                {
+                    for (int l1 = 1; l0 + l1 < sn.Length; ++l1)
+                    {
+                        int a = int.Parse(sn.Substring(0, l0));
+                        int b = int.Parse(sn.Substring(l0, l1));
+                        int c = int.Parse(sn.Substring(l0 + l1));
+                        Operate((a + b + c).ToString(), oddCount);
+                    }
+                }
+            }
         };
 
-        int[] map = new int[height * width];
-        LinkedList<int> candidates = new();
-        for (int row = 0; row < height; ++row)
+        Operate(token, 0);
+
+        Console.Write($"{minOddCount} {maxOddCount}");
+    }
+    
+    private static int CountOdd(string sn)
+    {
+        int oddCount = 0;
+        for (int i = 0; i < sn.Length; ++i)
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < width; ++col)
+            if (int.Parse(sn.Substring(i, 1)) % 2 == 1)
             {
-                int index = ConvertIndex2DTo1D(row, col);
-                map[index] = tokens[col];
-                candidates.AddLast(index);
+                ++oddCount;
             }
         }
-
-        LinkedList<LinkedList<int>> ccs = new();
-        LinkedList<int> cc = null!;
-        {
-            const int Offsets = 4;
-            int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
-            int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
-
-            bool[] visited = new bool[height * width];
-
-            Queue<int> frontier = new();
-
-            while (candidates.Count > 0)
-            {
-                if (frontier.Count < 1)
-                {
-                    int candidate = candidates.First!.Value;
-                    candidates.RemoveFirst();
-
-                    if (visited[candidate])
-                        continue;
-
-                    cc = new();
-                    ccs.AddLast(cc);
-
-                    visited[candidate] = true;
-                    frontier.Enqueue(candidate);
-                }
-
-                int index = frontier.Dequeue();
-                int row = index / width;
-                int col = index % width;
-                
-                for (int i = 0; i < Offsets; ++i)
-                {
-                    int adjRow = row + RowOffsets[i];
-                    if (adjRow < 0 || adjRow > height - 1)
-                        continue;
-
-                    int adjCol = col + ColOffsets[i];
-                    if (adjCol < 0 || adjCol > width - 1)
-                        continue;
-
-                    int adjIndex = ConvertIndex2DTo1D(adjRow, adjCol);
-                    if (visited[adjIndex])
-                        continue;
-
-                    if (Math.Abs(map[index] - map[adjIndex]) > k)
-                        continue;
-
-                    cc.AddLast(adjIndex);
-                    visited[adjIndex] = true;
-                    frontier.Enqueue(adjIndex);
-                }
-            }
-        }
-        Console.Write(ccs.Count);
+        return oddCount;
     }
 }
