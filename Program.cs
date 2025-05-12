@@ -1,58 +1,67 @@
-﻿internal class Program
+﻿using System.Text;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        string token = Console.ReadLine()!; // [1, 999'999'999]
+        string s1 = Console.ReadLine()!;
+        string s2 = Console.ReadLine()!;
 
-        int minOddCount = int.MaxValue;
-        int maxOddCount = 0;
-
-        Action<string, int> Operate = null!;
-        Operate = (sn, oddCount) =>
+        int[,] map = new int[s1.Length + 1, s2.Length + 1];
+        for (int i = 1; i <= s1.Length; ++i)
         {
-            oddCount += CountOdd(sn);
-
-            if (sn.Length == 1)
+            for (int j = 1; j <= s2.Length; ++j)
             {
-                minOddCount = Math.Min(minOddCount, oddCount);
-                maxOddCount = Math.Max(maxOddCount, oddCount);
-            }
-            else if (sn.Length == 2)
-            {
-                int a = int.Parse(sn.Substring(0, 1));
-                int b = int.Parse(sn.Substring(1, 1));
-                Operate((a + b).ToString(), oddCount);
-            }
-            else
-            {
-                for (int l0 = 1; l0 < sn.Length - 1; ++l0)
+                char c1 = s1[i - 1];
+                char c2 = s2[j - 1];
+                if (c1 == c2)
                 {
-                    for (int l1 = 1; l0 + l1 < sn.Length; ++l1)
+                    map[i, j] = map[i - 1, j - 1] + 1;
+                }
+                else
+                {
+                    map[i, j] = Math.Max(map[i - 1, j], map[i, j - 1]);
+                }
+            }
+        }
+        
+        StringBuilder sb = new();
+        {
+            LinkedList<char> ll = new();
+            {
+                int i = s1.Length;
+                int j = s2.Length;
+                while (i > 0 && j > 0)
+                {
+                    int curr = map[i, j];
+                    int t = map[i - 1, j];
+                    int l = map[i, j - 1];
+
+                    if (curr > t && curr > l)
                     {
-                        int a = int.Parse(sn.Substring(0, l0));
-                        int b = int.Parse(sn.Substring(l0, l1));
-                        int c = int.Parse(sn.Substring(l0 + l1));
-                        Operate((a + b + c).ToString(), oddCount);
+                        ll.AddFirst(s1[i - 1]);
+                        --i;
+                        --j;
+                    }
+                    else
+                    {
+                        if (t > l)
+                        {
+                            --i;
+                        }
+                        else
+                        {
+                            --j;
+                        }
                     }
                 }
             }
-        };
 
-        Operate(token, 0);
-
-        Console.Write($"{minOddCount} {maxOddCount}");
-    }
-    
-    private static int CountOdd(string sn)
-    {
-        int oddCount = 0;
-        for (int i = 0; i < sn.Length; ++i)
-        {
-            if (int.Parse(sn.Substring(i, 1)) % 2 == 1)
+            for (var lln = ll.First; lln != null; lln = lln.Next)
             {
-                ++oddCount;
+                sb.Append($"{lln.Value}");
             }
         }
-        return oddCount;
+        Console.Write(sb);
     }
 }
