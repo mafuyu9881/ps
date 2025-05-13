@@ -1,67 +1,58 @@
-﻿using System.Text;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
-        string s1 = Console.ReadLine()!;
-        string s2 = Console.ReadLine()!;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 100'000]
+        int k = tokens[1]; // [1, 100'000]
 
-        int[,] map = new int[s1.Length + 1, s2.Length + 1];
-        for (int i = 1; i <= s1.Length; ++i)
+        // length = [1, 100'000]
+        // [0, 20]
+        int[] scores = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        Func<int, bool> Condition = (objectiveScoreSum) =>
         {
-            for (int j = 1; j <= s2.Length; ++j)
+            int groups = 0;
+            int scoreSum = 0;
+
+            for (int i = 0; i < n; ++i)
             {
-                char c1 = s1[i - 1];
-                char c2 = s2[j - 1];
-                if (c1 == c2)
+                int score = scores[i];
+                if (scoreSum >= objectiveScoreSum)
                 {
-                    map[i, j] = map[i - 1, j - 1] + 1;
+                    ++groups;
+                    scoreSum = score;
                 }
                 else
                 {
-                    map[i, j] = Math.Max(map[i - 1, j], map[i, j - 1]);
+                    scoreSum += score;
                 }
             }
-        }
-        
-        StringBuilder sb = new();
+
+            if (scoreSum >= objectiveScoreSum)
+            {
+                ++groups;
+                scoreSum = 0;
+            }
+            
+            return groups >= k;
+        };
+
+        int lo = 0 - 1;
+        int hi = 20 * 100000 + 1;
+        while (lo < hi - 1)
         {
-            LinkedList<char> ll = new();
+            int mid = (lo + hi) / 2;
+            
+            if (Condition(mid))
             {
-                int i = s1.Length;
-                int j = s2.Length;
-                while (i > 0 && j > 0)
-                {
-                    int curr = map[i, j];
-                    int t = map[i - 1, j];
-                    int l = map[i, j - 1];
-
-                    if (curr > t && curr > l)
-                    {
-                        ll.AddFirst(s1[i - 1]);
-                        --i;
-                        --j;
-                    }
-                    else
-                    {
-                        if (t > l)
-                        {
-                            --i;
-                        }
-                        else
-                        {
-                            --j;
-                        }
-                    }
-                }
+                lo = mid;
             }
-
-            for (var lln = ll.First; lln != null; lln = lln.Next)
+            else
             {
-                sb.Append($"{lln.Value}");
+                hi = mid;
             }
         }
-        Console.Write(sb);
+        Console.Write(lo);
     }
 }
