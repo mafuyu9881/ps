@@ -3,56 +3,44 @@
     private static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 100'000]
-        int k = tokens[1]; // [1, 100'000]
+        int n = tokens[0]; // [2, 100'000]
+        int k = tokens[1]; // [2, 100'000]
+        int t = tokens[2]; // [0, 1'000'000'000]
 
-        // length = [1, 100'000]
-        // [0, 20]
-        int[] scores = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        // length = [2, n] = [2, 100'000]
+        // element = [0, k) = [0, 100'000)
+        int[] baskets = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(baskets);
 
-        Func<int, bool> Condition = (objectiveScoreSum) =>
+        int remains = 0;
+        for (int i = 0; i < n; ++i) // max tc = 100'000
         {
-            int groups = 0;
-            int scoreSum = 0;
+            remains += baskets[i];
+        }
 
-            for (int i = 0; i < n; ++i)
-            {
-                int score = scores[i];
-                if (scoreSum >= objectiveScoreSum)
-                {
-                    ++groups;
-                    scoreSum = score;
-                }
-                else
-                {
-                    scoreSum += score;
-                }
-            }
-
-            if (scoreSum >= objectiveScoreSum)
-            {
-                ++groups;
-                scoreSum = 0;
-            }
-            
-            return groups >= k;
-        };
-
-        int lo = 0 - 1;
-        int hi = 20 * 100000 + 1;
-        while (lo < hi - 1)
+        int moves = 0;
+        int l = 0;
+        int r = n - 1;
+        while (l < r)
         {
-            int mid = (lo + hi) / 2;
+            int moved = Math.Min(baskets[l], k - baskets[r]);
             
-            if (Condition(mid))
+            moves += moved;
+
+            baskets[l] -= moved;
+            if (baskets[l] == 0)
             {
-                lo = mid;
+                ++l;
             }
-            else
+
+            baskets[r] += moved;
+            if (baskets[r] == k)
             {
-                hi = mid;
+                remains -= k;
+                --r;
             }
         }
-        Console.Write(lo);
+
+        Console.Write((moves > t || remains > 0) ? "NO" : "YES");
     }
 }
