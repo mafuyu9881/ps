@@ -18,7 +18,7 @@
             remains += baskets[i];
         }
 
-        int moves = 0;
+        long moves = 0;
         int l = 0;
         int r = n - 1;
         while (l < r)
