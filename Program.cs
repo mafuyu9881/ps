@@ -55,7 +55,7 @@
                         int l = nearestIndex - 1;
                         int r = nearestIndex + 1;
 
-                        while (l > -1 || r < coords.Count)
+                        while ((l > -1 && l < coords.Count) || (r > -1 && r < coords.Count))
                         {
                             int lDistance = Infinity;
                             if (l > -1 && l < coords.Count)
