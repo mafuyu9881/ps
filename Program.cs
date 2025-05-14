@@ -58,13 +58,13 @@
                         while (l > -1 || r < coords.Count)
                         {
                             int lDistance = Infinity;
-                            if (l > -1)
+                            if (l > -1 && l < coords.Count)
                             {
                                 lDistance = Math.Abs(coords[l] - collectorX);
                             }
 
                             int rDistance = Infinity;
-                            if (r < coords.Count)
+                            if (r > -1 && r < coords.Count)
                             {
                                 rDistance = Math.Abs(coords[r] - collectorX);
                             }
