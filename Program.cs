@@ -3,7 +3,7 @@
     private static void Main(string[] args)
     {
         const int InvalidIndex = -1;
-        const int Infinity = 100000000 + 1;
+        const int Infinity = 200000000 + 1;
 
         int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
 
@@ -34,6 +34,11 @@
                     }
                     else
                     {
+                        if (nearestIndex < 0 || nearestIndex > coords.Count - 1)
+                        {
+                            throw new OverflowException();
+                        }
+
                         int collectorXToX = Math.Abs(x - collectorX);
                         int collectorXToNearestX = Math.Abs(coords[nearestIndex] - collectorX);
                         update = (collectorXToX < collectorXToNearestX) ||
@@ -49,6 +54,11 @@
                 {
                     if (nearestIndex != InvalidIndex)
                     {
+                        if (nearestIndex < 0 || nearestIndex > coords.Count - 1)
+                        {
+                            throw new PlatformNotSupportedException();
+                        }
+
                         traveled += Math.Abs(coords[nearestIndex] - collectorX);
                         collectorX = coords[nearestIndex];
 
@@ -71,12 +81,22 @@
 
                             if (lDistance <= rDistance)
                             {
+                                if (l < 0 || l > coords.Count)
+                                {
+                                    throw new InvalidOperationException();
+                                }
+
                                 collectorX = coords[l];
                                 traveled += lDistance;
                                 --l;
                             }
                             else
                             {
+                                if (r < 0 || r > coords.Count)
+                                {
+                                    throw new FormatException();
+                                }
+
                                 collectorX = coords[r];
                                 traveled += rDistance;
                                 ++r;
