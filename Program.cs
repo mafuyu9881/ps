@@ -2,98 +2,45 @@
 {
     private static void Main(string[] args)
     {
-        const int InvalidIndex = -1;
-        const int Infinity = 200000000 + 1;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 1'000]
+        int m = tokens[1]; // [1, n] = [1, 1'000]
 
-        int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
+        // length = n = [1, 1'000]
+        // element = [1, 1'000]
+        int[] waitings = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        long traveled = 0;
+        // length = m = [1, 1'000]
+        // element = [1, 1'000]
+        int[] friends = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        //bool[] friend = new bool[1000 + 1];
+        //for (int i = 0; i < m; ++i) // max tc = 1'000
+        //{
+        //    friend[friends[i]] = true;
+        //}
+
+        int exchanges = 0;
         {
-            int collectorX = 0;
-
-            List<int> coords = new();
-            int nearestXIndex = InvalidIndex;
-
-            for (int i = 0; i < n; ++i)
+            int remains = m;
+            for (int i = 0; i < n && remains > 0; ++i) // max tc = 1'000
             {
-                int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int command = tokens[0]; // [1, 2]
+                int waiting = waitings[i];
 
-                if (command == 1)
+                bool friend = false;
+                for (int j = 0; j < m; ++j) // max tc = 1'000
                 {
-                    int x = tokens[1]; // [-100'000'000, 100'000'000]
-
-                    coords.Add(x);
+                    friend |= (waiting == friends[j]);
                 }
-                else // if (command == 2)
+
+                if (friend == false)
                 {
-                    coords.Sort();
-
-                    for (int xIndex = 0; xIndex < coords.Count; ++xIndex)
-                    {
-                        int x = coords[xIndex];
-
-                        bool update = false;
-                        if (nearestXIndex == InvalidIndex)
-                        {
-                            update = true;
-                        }
-                        else
-                        {
-                            int collectorXToX = Math.Abs(x - collectorX);
-                            int collectorXToNearestX = Math.Abs(coords[nearestXIndex] - collectorX);
-                            update = (collectorXToX < collectorXToNearestX) ||
-                                     (collectorXToX == collectorXToNearestX && xIndex < nearestXIndex);
-                        }
-
-                        if (update)
-                        {
-                            nearestXIndex = xIndex;
-                        }
-                    }
-
-                    if (nearestXIndex != InvalidIndex)
-                    {
-                        traveled += Math.Abs(coords[nearestXIndex] - collectorX);
-                        collectorX = coords[nearestXIndex];
-
-                        int l = nearestXIndex - 1;
-                        int r = nearestXIndex + 1;
-
-                        while ((l > -1 && l < coords.Count) || (r > -1 && r < coords.Count))
-                        {
-                            int lDistance = Infinity;
-                            if (l > -1 && l < coords.Count)
-                            {
-                                lDistance = Math.Abs(coords[l] - collectorX);
-                            }
-
-                            int rDistance = Infinity;
-                            if (r > -1 && r < coords.Count)
-                            {
-                                rDistance = Math.Abs(coords[r] - collectorX);
-                            }
-
-                            if (lDistance <= rDistance)
-                            {
-                                collectorX = coords[l];
-                                traveled += lDistance;
-                                --l;
-                            }
-                            else
-                            {
-                                collectorX = coords[r];
-                                traveled += rDistance;
-                                ++r;
-                            }
-                        }
-
-                        coords.Clear();
-                        nearestXIndex = InvalidIndex;
-                    }
+                    ++exchanges;
                 }
+
+                --remains;
             }
         }
-        Console.Write(traveled);
+        Console.Write(exchanges);
     }
 }
