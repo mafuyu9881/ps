@@ -25,7 +25,7 @@ internal class Program
             }
         }
 
-        for (int i = length; i < 1000; ++i)
+        for (int i = Math.Max(1, length); i < 1000; ++i)
         {
             string word = ConvertNumberToWord(i);
 
