@@ -52,7 +52,7 @@ internal class Program
         {
             if (ns.Length == 3)
             {
-                char c = sb[0];
+                char c = ns[0];
                 if (c == '1')
                 {
                     sb.Append("onehundred");
