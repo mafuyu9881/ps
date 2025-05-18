@@ -4,221 +4,56 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 20]
+        int[] tokens = null!;
 
-        int length = 0;
-        int targetIndex = 0;
-        string[] tokens = new string[n];
-        for (int i = 0; i < n; ++i)
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [2, 200'000]
+        int q = tokens[1]; // [1, 200'000]
+
+        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        long[] prefixSums = new long[n];
+        prefixSums[0] = sequence[0];
+        for (int i = 1; i < n; ++i)
         {
-            string token = Console.ReadLine()!;
-
-            tokens[i] = token;
-
-            if (token == "$")
-            {
-                targetIndex = i;
-            }
-            else
-            {
-                length += token.Length;
-            }
+            prefixSums[i] = prefixSums[i - 1] + sequence[i];
         }
 
-        for (int i = Math.Max(1, length); i < 1000; ++i)
-        {
-            string word = ConvertNumberToWord(i);
-
-            if (length + word.Length == i)
-            {
-                tokens[targetIndex] = word;
-                break;
-            }
-        }
+        int head = 0;
 
         StringBuilder sb = new();
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < q; ++i)
         {
-            sb.Append($"{tokens[i]} ");
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int command = tokens[0];
+            if (command == 1)
+            {
+                int k = tokens[1];
+                head = (n + head - k) % n;
+            }
+            else if (command == 2)
+            {
+                int k = tokens[1];
+                head = (head + k) % n;
+            }
+            else // if (command == 3)
+            {
+                // convert to 0-based
+                int a = tokens[1] - 1;
+                int b = tokens[2] - 1;
+
+                int s = (head + a) % n;
+                int e = (head + b) % n;
+
+                if (s <= e)
+                {
+                    sb.AppendLine($"{prefixSums[e] - prefixSums[s] + sequence[s]}");
+                }
+                else
+                {
+                    sb.AppendLine($"{prefixSums[e] + prefixSums[n - 1] - prefixSums[s] + sequence[s]}");
+                }
+            }
         }
         Console.Write(sb);
-    }
-
-    private static string ConvertNumberToWord(int n)
-    {
-        string ns = n.ToString();
-
-        StringBuilder sb = new();
-        {
-            if (ns.Length == 3)
-            {
-                char c = ns[0];
-                if (c == '1')
-                {
-                    sb.Append("onehundred");
-                }
-                else if (c == '2')
-                {
-                    sb.Append("twohundred");
-                }
-                else if (c == '3')
-                {
-                    sb.Append("threehundred");
-                }
-                else if (c == '4')
-                {
-                    sb.Append("fourhundred");
-                }
-                else if (c == '5')
-                {
-                    sb.Append("fivehundred");
-                }
-                else if (c == '6')
-                {
-                    sb.Append("sixhundred");
-                }
-                else if (c == '7')
-                {
-                    sb.Append("sevenhundred");
-                }
-                else if (c == '8')
-                {
-                    sb.Append("eighthundred");
-                }
-                else
-                {
-                    sb.Append("ninehundred");
-                }
-                ns = ns.Substring(1);
-            }
-
-            if (ns.Length >= 2)
-            {
-                int c = ns[0];
-                if (ns == "10")
-                {
-                    sb.Append("ten");
-                }
-                else if (ns == "11")
-                {
-                    sb.Append("eleven");
-                }
-                else if (ns == "12")
-                {
-                    sb.Append("twelve");
-                }
-                else if (ns == "13")
-                {
-                    sb.Append("thirteen");
-                }
-                else if (ns == "14")
-                {
-                    sb.Append("fourteen");
-                }
-                else if (ns == "15")
-                {
-                    sb.Append("fifteen");
-                }
-                else if (ns == "16")
-                {
-                    sb.Append("sixteen");
-                }
-                else if (ns == "17")
-                {
-                    sb.Append("seventeen");
-                }
-                else if (ns == "18")
-                {
-                    sb.Append("eighteen");
-                }
-                else if (ns == "19")
-                {
-                    sb.Append("nineteen");
-                }
-                else if (c == '2')
-                {
-                    sb.Append("twenty");
-                }
-                else if (c == '3')
-                {
-                    sb.Append("thirty");
-                }
-                else if (c == '4')
-                {
-                    sb.Append("forty");
-                }
-                else if (c == '5')
-                {
-                    sb.Append("fifty");
-                }
-                else if (c == '6')
-                {
-                    sb.Append("sixty");
-                }
-                else if (c == '7')
-                {
-                    sb.Append("seventy");
-                }
-                else if (c == '8')
-                {
-                    sb.Append("eighty");
-                }
-                else if (c == '9')
-                {
-                    sb.Append("ninety");
-                }
-
-                if (c == '1')
-                {
-                    ns = "";
-                }
-                else
-                {
-                    ns = ns.Substring(1);
-                }
-            }
-
-            if (ns.Length >= 1)
-            {
-                char c = ns[0];
-                if (c == '1')
-                {
-                    sb.Append("one");
-                }
-                else if (c == '2')
-                {
-                    sb.Append("two");
-                }
-                else if (c == '3')
-                {
-                    sb.Append("three");
-                }
-                else if (c == '4')
-                {
-                    sb.Append("four");
-                }
-                else if (c == '5')
-                {
-                    sb.Append("five");
-                }
-                else if (c == '6')
-                {
-                    sb.Append("six");
-                }
-                else if (c == '7')
-                {
-                    sb.Append("seven");
-                }
-                else if (c == '8')
-                {
-                    sb.Append("eight");
-                }
-                else if (c == '9')
-                {
-                    sb.Append("nine");
-                }
-            }
-        }
-        return sb.ToString();
     }
 }
