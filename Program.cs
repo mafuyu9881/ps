@@ -73,11 +73,14 @@
                 tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
                 int u = tokens[0];
                 int v = tokens[1];
-                if (ds.United(u, v) == false)
+                if (ds.United(u, v))
+                {
+                    ++operations;
+                }
+                else
                 {
                     ds.Union(u, v);
                     root = u;
-                    ++operations;
                 }
             }
 
