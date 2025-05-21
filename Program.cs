@@ -2,58 +2,84 @@
 {
     private static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
-        // length = 3
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0]; // [-10'000, 10'000]
-        int b = tokens[1]; // [-10'000, 10'000]
-        int c = tokens[2]; // [-100'000, 100'000]
+        int[] prefixSums = new int[1000000 + 1];
 
-        // length = 4
-        // element = [-100'000, 100'000]
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int x1 = tokens[0];
-        int x2 = tokens[1];
-        int y1 = tokens[2];
-        int y2 = tokens[3];
-
-        const int Vertices = 4;
-        (int x, int y)[] coords = new (int, int)[Vertices]
+        for (int i = 0; i < n; ++i)
         {
-            (x1, y1),
-            (x1, y2),
-            (x2, y1),
-            (x2, y2),
-        };
+            string[] tokens = Console.ReadLine()!.Split();
+            int s = Parse(tokens[0]);
+            int e = Parse(tokens[1]);
+            prefixSums[s] += 1;
+            prefixSums[e + 1] -= 1;
+        }
 
-        int up = 0;
-        int down = 0;
-        for (int i = 0; i < Vertices; ++i)
+        for (int ym = 1; ym < prefixSums.Length; ++ym)
         {
-            int x = coords[i].x;
-            int y = coords[i].y;
+            prefixSums[ym] += prefixSums[ym - 1];
+        }
 
-            int j = a * x + b * y + c;
-
-            if (j >= 0)
+        int maxEarliestYM = 0;
+        {
+            int maxFriends = 0;
+            for (int ym = 0; ym < prefixSums.Length; ++ym)
             {
-                ++up;
-            }
-
-            if (j <= 0)
-            {
-                ++down;
+                int friends = prefixSums[ym];
+                if (friends > maxFriends)
+                {
+                    maxFriends = friends;
+                    maxEarliestYM = ym;
+                }
             }
         }
+        Console.Write(Serialize(maxEarliestYM));
+    }
 
-        if (up == Vertices || down == Vertices)
+    private static int Parse(string token)
+    {
+        string[] tokens = token.Split('-');
+        int y = int.Parse(tokens[0]);
+        int m = int.Parse(tokens[1]);
+        return y * 100 + m;
+    }
+
+    private static string Serialize(int ym)
+    {
+        //int m = 0;
+        //for (int i = 0; i < 2; ++i)
+        //{
+        //    int modulus = ExponentiationBySquaringIteratively(10, i + 1);
+        //    int divisor = ExponentiationBySquaringIteratively(10, i);
+        //    m += ((ym % modulus) / divisor) * ExponentiationBySquaringIteratively(10, i);
+        //}
+
+        //int y = 0;
+        //for (int i = 2; i < 6; ++i)
+        //{
+        //    int modulus = ExponentiationBySquaringIteratively(10, i + 1);
+        //    int divisor = ExponentiationBySquaringIteratively(10, i);
+        //    y += ((ym % modulus) / divisor) * ExponentiationBySquaringIteratively(10, i - 2);
+        //}
+
+        int m = ym % ExponentiationBySquaringIteratively(10, 2);
+        int y = ym / ExponentiationBySquaringIteratively(10, 2);
+
+        return $"{y.ToString("D4")}-{m.ToString("D2")}";
+    }
+
+    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
+    {
+        int output = 1;
+        while (exponent > 0)
         {
-            Console.Write("Lucky");
+            if (exponent % 2 == 1)
+            {
+                output *= basis;
+            }
+            basis *= basis;
+            exponent >>= 1;
         }
-        else
-        {
-            Console.Write("Poor");
-        }
+        return output;
     }
 }
