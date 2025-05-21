@@ -33,20 +33,20 @@
             if (aSetRepresentative == bSetRepresentative)
                 return;
 
-            int aSetRank = _ranks[a];
-            int bSetRank = _ranks[b];
+            int aSetRank = _ranks[aSetRepresentative];
+            int bSetRank = _ranks[bSetRepresentative];
             if (aSetRank > bSetRank)
             {
-                _parents[b] = a;
+                _parents[bSetRepresentative] = aSetRepresentative;
             }
             else if (aSetRank < bSetRank)
             {
-                _parents[a] = b;
+                _parents[aSetRepresentative] = bSetRepresentative;
             }
             else
             {
-                _parents[b] = a;
-                ++_ranks[a];
+                _parents[bSetRepresentative] = aSetRepresentative;
+                ++_ranks[aSetRepresentative];
             }
         }
 
