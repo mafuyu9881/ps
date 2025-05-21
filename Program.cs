@@ -1,85 +1,89 @@
 ﻿internal class Program
 {
+    private class DisjointSet
+    {
+        private int[] _parents = null!;
+        private int[] _ranks = null!;
+
+        public DisjointSet(int n)
+        {
+            _parents = new int[n];
+            for (int i = 0; i < _parents.Length; ++i)
+            {
+                _parents[i] = i;
+            }
+
+            _ranks = new int[n];
+        }
+
+        private int Find(int x)
+        {
+            int parent = _parents[x];
+            if (parent != x)
+            {
+                _parents[x] = Find(parent);
+            }
+            return _parents[x];
+        }
+
+        public void Union(int a, int b)
+        {
+            int aSetRepresentative = Find(a);
+            int bSetRepresentative = Find(b);
+            if (aSetRepresentative == bSetRepresentative)
+                return;
+
+            int aSetRank = _ranks[a];
+            int bSetRank = _ranks[b];
+            if (aSetRank > bSetRank)
+            {
+                _parents[b] = a;
+            }
+            else if (aSetRank < bSetRank)
+            {
+                _parents[a] = b;
+            }
+            else
+            {
+                _parents[b] = a;
+                ++_ranks[a];
+            }
+        }
+
+        public bool United(int a, int b)
+        {
+            return Find(a) == Find(b);
+        }
+    }
+
     private static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
+        int[] tokens = null!;
 
-        int[] prefixSums = new int[1000000 + 1];
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int vertices = tokens[0]; // [2, 100'000]
+        int edges = tokens[1]; // [1, 100'000]
 
-        for (int i = 0; i < n; ++i)
+        DisjointSet ds = new(vertices + 1);
+        int root = 0;
+        for (int i = 0; i < edges; ++i)
         {
-            string[] tokens = Console.ReadLine()!.Split();
-            int s = Parse(tokens[0]);
-            int e = Parse(tokens[1]);
-            prefixSums[s] += 1;
-            prefixSums[e + 1] -= 1;
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int u = tokens[0];
+            int v = tokens[1];
+            ds.Union(u, v);
+            root = u;
         }
 
-        for (int ym = 1; ym < prefixSums.Length; ++ym)
+        int operations = 0;
+        for (int i = 1; i <= vertices; ++i)
         {
-            prefixSums[ym] += prefixSums[ym - 1];
-        }
-
-        int maxEarliestYM = 0;
-        {
-            int maxFriends = 0;
-            for (int ym = 0; ym < prefixSums.Length; ++ym)
+            if (ds.United(root, i) == false)
             {
-                int friends = prefixSums[ym];
-                if (friends > maxFriends)
-                {
-                    maxFriends = friends;
-                    maxEarliestYM = ym;
-                }
+                ds.Union(root, i);
+                ++operations;
             }
         }
-        Console.Write(Serialize(maxEarliestYM));
-    }
-
-    private static int Parse(string token)
-    {
-        string[] tokens = token.Split('-');
-        int y = int.Parse(tokens[0]);
-        int m = int.Parse(tokens[1]);
-        return y * 100 + m;
-    }
-
-    private static string Serialize(int ym)
-    {
-        //int m = 0;
-        //for (int i = 0; i < 2; ++i)
-        //{
-        //    int modulus = ExponentiationBySquaringIteratively(10, i + 1);
-        //    int divisor = ExponentiationBySquaringIteratively(10, i);
-        //    m += ((ym % modulus) / divisor) * ExponentiationBySquaringIteratively(10, i);
-        //}
-
-        //int y = 0;
-        //for (int i = 2; i < 6; ++i)
-        //{
-        //    int modulus = ExponentiationBySquaringIteratively(10, i + 1);
-        //    int divisor = ExponentiationBySquaringIteratively(10, i);
-        //    y += ((ym % modulus) / divisor) * ExponentiationBySquaringIteratively(10, i - 2);
-        //}
-
-        int m = ym % ExponentiationBySquaringIteratively(10, 2);
-        int y = ym / ExponentiationBySquaringIteratively(10, 2);
-
-        return $"{y.ToString("D4")}-{m.ToString("D2")}";
-    }
-
-    private static int ExponentiationBySquaringIteratively(int basis, int exponent)
-    {
-        int output = 1;
-        while (exponent > 0)
-        {
-            if (exponent % 2 == 1)
-            {
-                output *= basis;
-            }
-            basis *= basis;
-            exponent >>= 1;
-        }
-        return output;
+        Console.Write(operations);
     }
 }
