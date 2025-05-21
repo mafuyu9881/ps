@@ -64,24 +64,30 @@
         int vertices = tokens[0]; // [2, 100'000]
         int edges = tokens[1]; // [1, 100'000]
 
-        DisjointSet ds = new(vertices + 1);
-        int root = 0;
-        for (int i = 0; i < edges; ++i)
-        {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int u = tokens[0];
-            int v = tokens[1];
-            ds.Union(u, v);
-            root = u;
-        }
-
         int operations = 0;
-        for (int i = 1; i <= vertices; ++i)
         {
-            if (ds.United(root, i) == false)
+            DisjointSet ds = new(vertices + 1);
+            int root = 0;
+            for (int i = 0; i < edges; ++i)
             {
-                ds.Union(root, i);
-                ++operations;
+                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+                int u = tokens[0];
+                int v = tokens[1];
+                if (ds.United(u, v) == false)
+                {
+                    ds.Union(u, v);
+                    root = u;
+                    ++operations;
+                }
+            }
+
+            for (int i = 1; i <= vertices; ++i)
+            {
+                if (ds.United(root, i) == false)
+                {
+                    ds.Union(root, i);
+                    ++operations;
+                }
             }
         }
         Console.Write(operations);
