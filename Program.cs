@@ -1,98 +1,34 @@
 ﻿internal class Program
 {
-    private class DisjointSet
-    {
-        private int[] _parents = null!;
-        private int[] _ranks = null!;
-
-        public DisjointSet(int n)
-        {
-            _parents = new int[n];
-            for (int i = 0; i < _parents.Length; ++i)
-            {
-                _parents[i] = i;
-            }
-
-            _ranks = new int[n];
-        }
-
-        private int Find(int x)
-        {
-            int parent = _parents[x];
-            if (parent != x)
-            {
-                _parents[x] = Find(parent);
-            }
-            return _parents[x];
-        }
-
-        public void Union(int a, int b)
-        {
-            int aSetRepresentative = Find(a);
-            int bSetRepresentative = Find(b);
-            if (aSetRepresentative == bSetRepresentative)
-                return;
-
-            int aSetRank = _ranks[aSetRepresentative];
-            int bSetRank = _ranks[bSetRepresentative];
-            if (aSetRank > bSetRank)
-            {
-                _parents[bSetRepresentative] = aSetRepresentative;
-            }
-            else if (aSetRank < bSetRank)
-            {
-                _parents[aSetRepresentative] = bSetRepresentative;
-            }
-            else
-            {
-                _parents[bSetRepresentative] = aSetRepresentative;
-                ++_ranks[aSetRepresentative];
-            }
-        }
-
-        public bool United(int a, int b)
-        {
-            return Find(a) == Find(b);
-        }
-    }
-
     private static void Main(string[] args)
     {
         int[] tokens = null!;
 
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int vertices = tokens[0]; // [2, 100'000]
-        int edges = tokens[1]; // [1, 100'000]
+        int width = tokens[0]; // [3, 100'000]
+        int walls = tokens[1]; // [0, N) = [0, 100'000)
+        int students = tokens[2]; // [1, 100'000]
 
-        int operations = 0;
+        int[] map = new int[width + 1];
+        long[] mapPrefixSums = new long[width + 1];
+        for (int i = 0; i < walls; ++i)
         {
-            DisjointSet ds = new(vertices + 1);
-            int root = 0;
-            for (int i = 0; i < edges; ++i)
-            {
-                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int u = tokens[0];
-                int v = tokens[1];
-                if (ds.United(u, v))
-                {
-                    ++operations;
-                }
-                else
-                {
-                    ds.Union(u, v);
-                    root = u;
-                }
-            }
-
-            for (int i = 1; i <= vertices; ++i)
-            {
-                if (ds.United(root, i) == false)
-                {
-                    ds.Union(root, i);
-                    ++operations;
-                }
-            }
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int pos = tokens[0]; // [1, N] = [1, 100'000]
+            int durability = tokens[1]; // [1, 100'000]
         }
-        Console.Write(operations);
+
+        for (int i = 1; i <= width; ++i)
+        {
+            mapPrefixSums[i] = mapPrefixSums[i - 1] + map[i];
+        }
+
+        for (int i = 0; i < students; ++i)
+        {
+            int pos = int.Parse(Console.ReadLine()!);
+
+            long leftDurabilities = mapPrefixSums[pos - 1];
+            long rightDurabilities = mapPrefixSums[width] - mapPrefixSums[pos];
+        }
     }
 }
