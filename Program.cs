@@ -20,15 +20,14 @@ internal class Program
             map[pos] = durability;
         }
 
-        long[] mapPrefixSumsFromLeft = new long[width + 1];
+        long[] mapPrefixSumsFromLeft = new long[width + 2];
         for (int i = 1; i <= width; ++i)
         {
             mapPrefixSumsFromLeft[i] = mapPrefixSumsFromLeft[i - 1] + map[i];
         }
 
-        long[] mapPrefixSumsFromRight = new long[width + 1];
-        mapPrefixSumsFromRight[width] = map[width];
-        for (int i = width - 1; i > 0; --i)
+        long[] mapPrefixSumsFromRight = new long[width + 2];
+        for (int i = width; i > 0; --i)
         {
             mapPrefixSumsFromRight[i] = mapPrefixSumsFromRight[i + 1] + map[i];
         }
