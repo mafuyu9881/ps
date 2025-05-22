@@ -80,14 +80,20 @@ internal class Program
             if (escapeToLeftward)
             {
                 sb.AppendLine($"{leftDurabilities}");
-                // brokenPosFromLeft = Math.Max(brokenPosFromLeft, pos);
-                brokenPosFromLeft = Math.Max(brokenPosFromLeft, pos - 1);
+                if (brokenPosFromLeft == InvalidBrokenPos ||
+                    pos > brokenPosFromLeft)
+                {
+                    brokenPosFromLeft = pos;
+                }
             }
             else
             {
                 sb.AppendLine($"{rightDurabilities}");
-                // brokenPosFromRight = Math.Min(brokenPosFromRight, pos);
-                brokenPosFromRight = Math.Min(brokenPosFromRight, pos + 1);
+                if (brokenPosFromRight == InvalidBrokenPos ||
+                    pos < brokenPosFromRight)
+                {
+                    brokenPosFromRight = pos;
+                }
             }
 
             if (brokenPosFromLeft != InvalidBrokenPos &&
