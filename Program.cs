@@ -1,28 +1,43 @@
-﻿using System.Text;
-
-namespace ConsoleApp1;
+﻿namespace ConsoleApp1;
 
 class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Before AwaitRead: " + Thread.CurrentThread.ManagedThreadId);
-        AwaitRead();
-        Console.ReadLine();
+        //var task3 = Method3Async();
+        //var task5 = Method5Async();
+
+        var task3 = Task.Factory.StartNew(() =>
+        {
+            Thread.Sleep(3000);
+            return 3;
+        });
+        var task5 = Task.Factory.StartNew(() =>
+        {
+            Thread.Sleep(5000);
+            return 5;
+        });
+
+        Task.WaitAll(task3, task5);
+
+        Console.WriteLine(task3.Result + task5.Result);
     }
 
-    private static async void AwaitRead()
+    private static Task<int> Method3Async()
     {
-        using (FileStream fs = new FileStream(@"C:\windows\system32\drivers\etc\services", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
+        return Task.Factory.StartNew(() =>
         {
-            byte[] buf = new byte[fs.Length];
+            Thread.Sleep(3000);
+            return 3;
+        });
+    }
 
-            Console.WriteLine("Before ReadAsync: " + Thread.CurrentThread.ManagedThreadId);
-            await fs.ReadAsync(buf, 0, buf.Length);
-            Console.WriteLine("After ReadAsync: " + Thread.CurrentThread.ManagedThreadId);
-
-            string txt = Encoding.UTF8.GetString(buf);
-            Console.WriteLine(txt);
-        }
+    private static Task<int> Method5Async()
+    {
+        return Task.Factory.StartNew(() =>
+        {
+            Thread.Sleep(5000);
+            return 5;
+        });
     }
 }
