@@ -1,22 +1,28 @@
 ﻿using System.Text;
 
-internal class Program
-{
-    private static void Main(string[] args)
-    {
-        StringBuilder sb = new();
-        while (true)
-        {
-            // length = 2
-            // element = [0, 5]
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int m = tokens[0];
-            int f = tokens[1];
-            if (m == 0 && f == 0)
-                break;
+namespace ConsoleApp1;
 
-            sb.AppendLine($"{m + f}");
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Before AwaitRead: " + Thread.CurrentThread.ManagedThreadId);
+        AwaitRead();
+        Console.ReadLine();
+    }
+
+    private static async void AwaitRead()
+    {
+        using (FileStream fs = new FileStream(@"C:\windows\system32\drivers\etc\services", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
+        {
+            byte[] buf = new byte[fs.Length];
+
+            Console.WriteLine("Before ReadAsync: " + Thread.CurrentThread.ManagedThreadId);
+            await fs.ReadAsync(buf, 0, buf.Length);
+            Console.WriteLine("After ReadAsync: " + Thread.CurrentThread.ManagedThreadId);
+
+            string txt = Encoding.UTF8.GetString(buf);
+            Console.WriteLine(txt);
         }
-        Console.Write(sb);
     }
 }
