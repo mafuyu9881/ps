@@ -1,7 +1,17 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        Console.Write($"{Console.ReadLine()!}??!");
+        int t = int.Parse(Console.ReadLine()!);
+
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
+        {
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            sb.AppendLine($"Case #{i + 1}: {tokens[0] + tokens[1]}");
+        }
+        Console.Write(sb);
     }
 }
