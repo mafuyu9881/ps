@@ -19,7 +19,7 @@
         while (lo < hi - 1 && earned < k)
         {
             int loEarned = tokens[lo + 1] * x;
-            int hiEarned = tokens[hi - 1] * x;
+            int hiEarned = tokens[hi - 1];
             if (loEarned < hiEarned)
             {
                 earned += hiEarned;
