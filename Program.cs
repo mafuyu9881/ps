@@ -13,30 +13,30 @@
         // element = [1, 1'000]
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int earned = 0;
-        int lo = 0 - 1;
-        int hi = (n - 1) + 1;
-        while (lo < hi - 1 && earned < k)
+        int[] prefixSums = new int[n + 1];
+        for (int i = 0; i < n; ++i)
         {
-            int loEarned = tokens[lo + 1] * x;
-            int hiEarned = tokens[hi - 1];
-            if (loEarned < hiEarned)
-            {
-                earned += hiEarned;
-                --hi;
-            }
-            else
-            {
-                earned += loEarned;
-                ++lo;
-            }
+            prefixSums[i + 1] = prefixSums[i] + tokens[i];
         }
 
-        int streak = hi - lo - 1;
-        if (streak < 1)
+        int entireSum = prefixSums[n];
+
+        int hi = 0;
+        int streak = 0;
+        for (int lo = 0; lo <= n; ++lo)
         {
-            streak = -1;
+            if (hi < lo)
+            {
+                hi = lo;
+            }
+
+            while (hi <= n && k <= (x * prefixSums[lo]) + (entireSum - prefixSums[hi]))
+            {
+                ++hi;
+            }
+
+            streak = Math.Max(streak, (hi - 1) - lo);
         }
-        Console.Write(streak);
+        Console.Write(streak != 0 ? streak : -1);
     }
 }
