@@ -29,13 +29,8 @@
                     int sum = sequence[lo] + sequence[hi];
                     if (sd.ContainsKey(sum))
                     {
-                        --sd[sum];
-                        ++goods;
-
-                        if (sd[sum] < 1)
-                        {
-                            sd.Remove(sum);
-                        }
+                        goods += sd[sum];
+                        sd.Remove(sum);
                     }
                 }
             }
