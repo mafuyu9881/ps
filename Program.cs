@@ -8,10 +8,10 @@
 
         int goods = 0;
         {
-            SortedSet<int> ss = new();
+            SortedDictionary<int, int> sd = new();
             for (int i = 0; i < n; ++i)
             {
-                ss.Add(sequence[i]);
+                sd.Add(sequence[i], 1);
             }
 
             for (int lo = 0; lo < n; ++lo)
@@ -19,10 +19,15 @@
                 for (int hi = lo + 1; hi < n; ++hi)
                 {
                     int sum = sequence[lo] + sequence[hi];
-                    if (ss.Contains(sum))
+                    if (sd.ContainsKey(sum))
                     {
-                        ss.Remove(sum);
+                        --sd[sum];
                         ++goods;
+
+                        if (sd[sum] < 1)
+                        {
+                            sd.Remove(sum);
+                        }
                     }
                 }
             }
