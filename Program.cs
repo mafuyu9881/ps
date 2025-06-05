@@ -11,7 +11,15 @@
             SortedDictionary<int, int> sd = new();
             for (int i = 0; i < n; ++i)
             {
-                sd.Add(sequence[i], 1);
+                int num = sequence[i];
+                if (sd.ContainsKey(num))
+                {
+                    ++sd[num];
+                }
+                else
+                {
+                    sd.Add(num, 1);
+                }
             }
 
             for (int lo = 0; lo < n; ++lo)
