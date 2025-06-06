@@ -5,6 +5,7 @@
         int n = int.Parse(Console.ReadLine()!);
 
         int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(sequence);
 
         int goods = 0;
         for (int i = 0; i < n; ++i)
