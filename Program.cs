@@ -2,45 +2,46 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [10, 100'000]
+        int s = tokens[1]; // [0, 100'000'000]
 
         int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(sequence);
-
-        int goods = 0;
-        for (int i = 0; i < n; ++i)
+        long[] prefixSums = new long[n];
+        prefixSums[0] = sequence[0];
+        for (int i = 1; i < n; ++i)
         {
-            int expected = sequence[i];
+            prefixSums[i] = prefixSums[i - 1] + sequence[i];
+        }
 
-            int lo = 0;
-            int hi = n - 1;
-            while (true)
+        int minLength = 100000 + 1;
+        {
+            long entireSum = prefixSums[n - 1];
+            if (entireSum < s)
             {
-                if (lo == i)
-                    ++lo;
-
-                if (hi == i)
-                    --hi;
-
-                if (lo >= hi)
-                    break;
-
-                int sum = sequence[lo] + sequence[hi];
-                if (sum < expected)
+                minLength = 0;
+            }
+            else
+            {
+                long sum = entireSum;
+                int lo = 0;
+                int hi = n - 1;
+                while (lo < hi && sum >= s)
                 {
-                    ++lo;
+                    if (sequence[lo] < sequence[hi])
+                    {
+                        sum -= sequence[lo];
+                        ++lo;
+                    }
+                    else
+                    {
+                        sum -= sequence[hi];
+                        --hi;
+                    }
                 }
-                else if (sum > expected)
-                {
-                    --hi;
-                }
-                else
-                {
-                    ++goods;
-                    break;
-                }
+                minLength = hi - lo + 2;
             }
         }
-        Console.Write(goods);
+        Console.Write(minLength);
     }
 }
