@@ -4,7 +4,7 @@
     {
         const int Max = 10000;
 
-        int[,] combination = new int[Max + 1, Max + 1];
+        long[,] combination = new long[Max + 1, Max + 1];
         for (int i = 0; i <= Max; ++i)
         {
             combination[i, 0] = 1;
@@ -76,8 +76,14 @@
         {
             if (uniqueSequence[i] % 2 == 0)
             {
-                // teams += counts[uniqueSequence[i] + Max] * (counts[-(uniqueSequence[i] / 2) + Max] / 2);
-                teams += counts[uniqueSequence[i] + Max] * combination[counts[-(uniqueSequence[i] / 2) + Max], 2];
+                if (uniqueSequence[i] == 0)
+                {
+                    teams += combination[counts[0 + Max], 3];
+                }
+                else
+                {
+                    teams += counts[uniqueSequence[i] + Max] * (long)combination[counts[-(uniqueSequence[i] / 2) + Max], 2];
+                }
             }
         }
         Console.Write(teams);
