@@ -4,19 +4,15 @@
     {
         const int Max = 10000;
 
-        long[,] combination = new long[Max + 1, Max + 1];
-        for (int i = 0; i <= Max; ++i)
+        Func<int, long> Combination2 = (n) =>
         {
-            combination[i, 0] = 1;
-            combination[i, i] = 1;
-        }
-        for (int row = 2; row <= Max; ++row)
+            return n * (n - 1) / 2;
+        };
+
+        Func<int, long> Combination3 = (n) =>
         {
-            for (int col = 1; col < row; ++col)
-            {
-                combination[row, col] = combination[row - 1, col - 1] + combination[row - 1, col];
-            }
-        }
+            return n * (n - 1) * (n - 2) / 6;
+        };
 
         int n = int.Parse(Console.ReadLine()!); // [1, 10'000]
 
@@ -78,11 +74,13 @@
             {
                 if (uniqueSequence[i] == 0)
                 {
-                    teams += combination[counts[0 + Max], 3];
+                    long num = counts[0 + Max];
+                    teams += num * (num - 1) * (num - 2) / 6;
                 }
                 else
                 {
-                    teams += counts[uniqueSequence[i] + Max] * (long)combination[counts[-(uniqueSequence[i] / 2) + Max], 2];
+                    int num = counts[-(uniqueSequence[i] / 2) + Max];
+                    teams += counts[uniqueSequence[i] + Max] * (long)(num * (num - 1) / 2);
                 }
             }
         }
