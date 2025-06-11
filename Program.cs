@@ -38,7 +38,7 @@
             }
         }
 
-        int teams = 0;
+        long teams = 0;
         for (int i = 0; i < uniqueSequence.Count; ++i)
         {
             int lo = 0;
