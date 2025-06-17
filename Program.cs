@@ -2,7 +2,7 @@
 {
     static void Main(string[] args)
     {
-        string token = Console.ReadLine()!;
-        Console.Write($"{token[2]}{token[1]}{token[0]}");
+        int x = int.Parse(Console.ReadLine()!);
+        Console.Write(x % 21);
     }
 }
