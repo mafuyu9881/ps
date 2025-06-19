@@ -29,7 +29,7 @@ class Program
             }
 
             int cases = 0;
-            for (int j = 0; j < n; ++j)
+            for (int j = 0; j < ((m == n) ? 1 : n); ++j)
             {
                 int s = j;
                 int e = (j + m - 1) % n;
