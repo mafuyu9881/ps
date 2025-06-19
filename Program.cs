@@ -4,92 +4,53 @@ class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [?, 2000]
+        int t = int.Parse(Console.ReadLine()!);
 
-        char[] s = new char[n];
-        for (int i = 0; i < n; ++i)
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
         {
-            s[i] = Console.ReadLine()![0];
-        }
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int n = tokens[0]; // [1, 100'000]
+            int m = tokens[1]; // [1, n] = [1, 100'000]
+            int k = tokens[2]; // [1, 1'000'000'000]
 
-        char[] t = new char[n];
-        {
-            int writingIndex = 0;
+            // length = [1, 100'000]
+            // element = [1, 10'000]
+            int[] town = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-            int lo = 0;
-            int hi = n - 1;
-            while (writingIndex < n)
+            int[] prefixSums = new int[n];
+            for (int j = 0; j < n; ++j)
             {
-                char loC = s[lo];
-                char hiC = s[hi];
+                prefixSums[j] = town[j];
+            }
+            for (int j = 1; j < n; ++j)
+            {
+                prefixSums[j] += prefixSums[j - 1];
+            }
 
-                if (loC < hiC)
+            int cases = 0;
+            for (int j = 0; j < n; ++j)
+            {
+                int s = j;
+                int e = (j + m - 1) % n;
+
+                int stolen = 0;
+                if (s > e)
                 {
-                    t[writingIndex] = loC;
-                    ++lo;
-                }
-                else if (loC > hiC)
-                {
-                    t[writingIndex] = hiC;
-                    --hi;
+                    stolen += prefixSums[n - 1] - prefixSums[s] + town[s];
+                    stolen += prefixSums[e] - prefixSums[0] + town[0];
                 }
                 else
                 {
-                    if (lo == hi)
-                    {
-                        t[writingIndex] = loC;
-                        ++lo;
-                    }
-                    else
-                    {
-                        bool writeLo = true;
-                        int l = lo;
-                        int r = hi;
-                        while (l < r)
-                        {
-                            char lC = s[l];
-                            char rC = s[r];
-                            if (lC < rC)
-                            {
-                                writeLo = true;
-                                break;
-                            }
-                            else if (lC > rC)
-                            {
-                                writeLo = false;
-                                break;
-                            }
-                            else
-                            {
-                                ++l;
-                                --r;
-                            }
-                        }
-
-                        if (writeLo)
-                        {
-                            t[writingIndex] = loC;
-                            ++lo;
-                        }
-                        else
-                        {
-                            t[writingIndex] = hiC;
-                            --hi;
-                        }
-                    }
+                    stolen += prefixSums[e] - prefixSums[s] + town[s];
                 }
-                ++writingIndex;
-            }
-        }
 
-        StringBuilder sb = new();
-        for (int i = 0; i < n; ++i)
-        {
-            if (i > 0 && i % 80 == 0)
-            {
-                sb.AppendLine();
+                if (stolen < k)
+                {
+                    ++cases;
+                }
             }
-            sb.Append(t[i]);
+            sb.AppendLine($"{cases}");
         }
         Console.Write(sb);
     }
