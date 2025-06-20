@@ -52,7 +52,7 @@
 
                 if (ws >= w)
                 {
-                    maxLength = Math.Max(maxLength, ws + b);
+                    maxLength = Math.Max(maxLength, ws + hi - lo);
                 }
             }
         }
