@@ -30,24 +30,15 @@
         {
             int[] wArr = wLL.ToArray();
             int ws = 0;
-            int hi = 0;
             int lo = 0;
-            while (hi < wArr.Length)
+            for (int hi = 0; hi < wArr.Length; ++hi)
             {
-                if (hi <= b)
-                {
-                    while (hi <= b && hi < wArr.Length)
-                    {
-                        ws += wArr[hi];
-                        ++hi;
-                    }
-                }
-                else
+                ws += wArr[hi];
+
+                if (hi - lo > b)
                 {
                     ws -= wArr[lo];
-                    ws += wArr[hi];
                     ++lo;
-                    ++hi;
                 }
 
                 if (ws >= w)
