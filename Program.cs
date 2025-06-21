@@ -3,50 +3,57 @@
     static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 300'000]
-        int b = tokens[1]; // [0, 300'000]
-        int w = tokens[2]; // [0, 300'000]
+        int n = tokens[0]; // [2, 3'000'000]
+        int d = tokens[1]; // [2, 3'000]
+        int k = tokens[2]; // [2, 3'000]
+        int c = tokens[3]; // [1, d] = [1, 3'000]
 
-        LinkedList<int> wLL = new();
+        int[] dishes = new int[n * 2];
+        for (int i = 0; i < n; ++i)
         {
-            wLL.AddLast(0);
-
-            string line = Console.ReadLine()!;
-            for (int i = 0; i < n; ++i)
-            {
-                char c = line[i];
-                if (c == 'W')
-                {
-                    ++wLL.Last!.ValueRef;
-                }
-                else
-                {
-                    wLL.AddLast(0);
-                }
-            }
+            dishes[i] = int.Parse(Console.ReadLine()!);
+        }
+        for (int i = 0; i < n; ++i)
+        {
+            dishes[n + i] = dishes[i];
         }
 
-        int maxLength = 0;
-        {
-            int[] wArr = wLL.ToArray();
-            int ws = 0;
-            int lo = 0;
-            for (int hi = 0; hi < wArr.Length; ++hi)
-            {
-                ws += wArr[hi];
+        bool[] occupied = new bool[3000 + 1];
 
-                if (hi - lo > b)
+        int maxDishes = 0;
+        {
+            int lo = 0;
+            int hi = 0;
+            while (hi < dishes.Length)
+            {
+                int newDish = dishes[hi];
+
+                if (occupied[newDish])
                 {
-                    ws -= wArr[lo];
+                    while (occupied[newDish])
+                    {
+                        int oldDish = dishes[lo];
+                        occupied[oldDish] = false;
+                        ++lo;
+                    }
+                }
+
+                occupied[newDish] = true;
+                ++hi;
+
+                while (hi - lo > k)
+                {
+                    int oldDish = dishes[lo];
+                    occupied[oldDish] = false;
                     ++lo;
                 }
 
-                if (ws >= w)
+                if (hi - lo == k)
                 {
-                    maxLength = Math.Max(maxLength, ws + hi - lo);
+                    maxDishes = Math.Max(maxDishes, occupied[c] ? k : k + 1);
                 }
             }
         }
-        Console.Write(maxLength);
+        Console.Write(maxDishes);
     }
 }
