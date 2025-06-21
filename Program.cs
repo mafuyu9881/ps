@@ -18,42 +18,47 @@
             dishes[n + i] = dishes[i];
         }
 
-        bool[] occupied = new bool[3000 + 1];
-
-        int maxDishes = 0;
+        int maxKinds = 0;
         {
+            int[] occupied = new int[d + 1];
             int lo = 0;
             int hi = 0;
+            int kinds = 0;
             while (hi < dishes.Length)
             {
-                int newDish = dishes[hi];
-
-                if (occupied[newDish])
+                if (hi < k)
                 {
-                    while (occupied[newDish])
+                    while (hi < k)
                     {
-                        int oldDish = dishes[lo];
-                        occupied[oldDish] = false;
-                        ++lo;
+                        int newDish = dishes[hi];
+                        if (occupied[newDish] == 0)
+                        {
+                            ++kinds;
+                        }
+                        ++occupied[newDish];
+                        ++hi;
                     }
                 }
-
-                occupied[newDish] = true;
-                ++hi;
-
-                while (hi - lo > k)
+                else
                 {
                     int oldDish = dishes[lo];
-                    occupied[oldDish] = false;
+                    --occupied[oldDish];
+                    if (occupied[oldDish] == 0)
+                    {
+                        --kinds;
+                    }
+                    int newDish = dishes[hi];
+                    if (occupied[newDish] == 0)
+                    {
+                        ++kinds;
+                    }
+                    ++occupied[newDish];
                     ++lo;
+                    ++hi;
                 }
-
-                if (hi - lo == k)
-                {
-                    maxDishes = Math.Max(maxDishes, occupied[c] ? k : k + 1);
-                }
+                maxKinds = Math.Max(maxKinds, (occupied[c] > 0) ? kinds : kinds + 1);
             }
         }
-        Console.Write(maxDishes);
+        Console.Write(maxKinds);
     }
 }
