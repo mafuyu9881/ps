@@ -4,78 +4,74 @@ class Program
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!); // [1, 5]
+        long[] counts = new long[100000 + 1];
+        for (int i = 2; i < counts.Length; ++i)
+        {
+            counts[i] = counts[i - 1] + (i - 2 + 1);
+        }
+
+        int t = int.Parse(Console.ReadLine()!); // [1, 10]
 
         StringBuilder sb = new();
         for (int i = 0; i < t; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int n = tokens[0]; // [2, 20]
-            int m = tokens[1]; // [2, 20]
-            int k = tokens[2]; // [2, min(n, m, 10)]
+            int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
 
             // length = n
-            // element = [1, 10^8]
-            int[] bSet = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            // length = m
-            // element = [1, 10^8]
-            int[] aSet = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            // element = [-1'000'000'000, 1'000'000'000]
+            int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-            List<int> bSetSums = new(1048576);
-            List<int> aSetSums = new(1048576);
-            ComputeSums(0, 0, 0, k, bSet, bSetSums);
-            ComputeSums(0, 0, 0, k, aSet, aSetSums);
-            bSetSums.Sort();
-            aSetSums.Sort();
-
-            int min = int.MaxValue;
+            // lo = [0, sequence.Length - 1]
+            // hi = [lo + 1, sequence.Length - 1]
+            Func<int, int, bool> Zigzag = (lo, hi) =>
             {
-                int j = 0;
-                int l = 0;
-                while (j < bSetSums.Count && l < aSetSums.Count)
+                if (hi - lo + 1 < 3)
                 {
-                    int bSetSum = bSetSums[j];
-                    int aSetSum = aSetSums[l];
+                    return sequence[hi] != sequence[hi - 1];
+                }
+                else
+                {
+                    if (sequence[hi] > sequence[hi - 1] && sequence[hi - 2] > sequence[hi - 1])
+                        return true;
+                    
+                    if (sequence[hi] < sequence[hi - 1] && sequence[hi - 2] < sequence[hi - 1])
+                        return true;
 
-                    min = Math.Min(min, Math.Abs(bSetSum - aSetSum));
+                    return false;
+                }
+            };
 
-                    if (bSetSum < aSetSum)
+            long count = 0;
+            int lo = 0;
+            int hi = 0;
+            while (true)
+            {
+                if (hi - lo + 1 < 2)
+                    hi = lo + 1;
+
+                if (hi > sequence.Length - 1)
+                    break;
+
+                long increment = 0;
+                while (hi < sequence.Length)
+                {
+                    if (Zigzag(lo, hi))
                     {
-                        ++j;
-                    }
-                    else if (bSetSum > aSetSum)
-                    {
-                        ++l;
+                        increment = counts[hi - lo + 1];
+                        ++hi;
                     }
                     else
                     {
                         break;
                     }
                 }
+                
+                count += increment;
+
+                lo = (increment > 0) ? hi - 1 : hi;
             }
-
-            int max = Math.Max(Math.Abs(bSetSums[0] - aSetSums[aSetSums.Count - 1]),
-                               Math.Abs(bSetSums[bSetSums.Count - 1] - aSetSums[0]));
-
-            sb.AppendLine($"{min} {max}");
+            sb.AppendLine($"{count}");
         }
         Console.Write(sb);
-    }
-
-    // tc <= 2^20
-    static void ComputeSums(int index, int taken, int setSum, int k, int[] set, List<int> setSums)
-    {
-        if (taken == k)
-        {
-            setSums.Add(setSum);
-        }
-        else
-        {
-            if (index < set.Length)
-            {
-                ComputeSums(index + 1, taken + 1, setSum + set[index], k, set, setSums);
-                ComputeSums(index + 1, taken, setSum, k, set, setSums);
-            }
-        }
     }
 }
