@@ -1,24 +1,16 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 50]
+        int n = int.Parse(Console.ReadLine()!);
 
-        string s = Console.ReadLine()!;
-
-        int vowels = 0;
-        for (int i = 0; i < s.Length; ++i)
+        StringBuilder sb = new();
+        for(int i = 0; i < n; ++i)
         {
-            char c = s[i];
-            if (c == 'a' ||
-                c == 'e' ||
-                c == 'i' ||
-                c == 'o' ||
-                c == 'u')
-            {
-                ++vowels;
-            }
+            sb.AppendLine("SciComLove");
         }
-        Console.Write(vowels);
+        Console.Write(sb);
     }
 }
