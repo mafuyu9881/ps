@@ -1,27 +1,24 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        List<int> prefixSum = new(100000);
-        prefixSum.Add(0);
-        prefixSum.Add(1);
+        int n = int.Parse(Console.ReadLine()!); // [1, 50]
 
-        StringBuilder sb = new();
-        while (true)
+        string s = Console.ReadLine()!;
+
+        int vowels = 0;
+        for (int i = 0; i < s.Length; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!);
-            if (n == 0)
-                break;
-
-            while (prefixSum.Count - 1 < n)
+            char c = s[i];
+            if (c == 'a' ||
+                c == 'e' ||
+                c == 'i' ||
+                c == 'o' ||
+                c == 'u')
             {
-                prefixSum.Add(prefixSum.Count + prefixSum[prefixSum.Count - 1]);
+                ++vowels;
             }
-
-            sb.AppendLine($"{prefixSum[n]}");
         }
-        Console.Write(sb);
+        Console.Write(vowels);
     }
 }
