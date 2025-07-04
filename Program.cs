@@ -20,7 +20,7 @@
                 if (prime[i] == false)
                     continue;
 
-                for (int j = i * i; j < MaxSqrt + 1; j += i)
+                for (int j = i * i; j < Max + 1; j += i)
                 {
                     prime[j] = false;
                 }
