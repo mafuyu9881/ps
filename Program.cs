@@ -2,28 +2,36 @@
 {
     static void Main(string[] args)
     {
-        string s = Console.ReadLine()!;
+        int wavelength = int.Parse(Console.ReadLine()!);
 
         string output;
-        if (s == "M")
+        if (wavelength >= 620 && wavelength <= 780)
         {
-            output = "MatKor";
+            output = "Red";
         }
-        else if (s == "W")
+        else if (wavelength >= 590 && wavelength < 620)
         {
-            output = "WiCys";
+            output = "Orange";
         }
-        else if (s == "C")
+        else if (wavelength >= 570 && wavelength < 590)
         {
-            output = "CyKor";
+            output = "Yellow";
         }
-        else if (s == "A")
+        else if (wavelength >= 495 && wavelength < 570)
         {
-            output = "AlKor";
+            output = "Green";
+        }
+        else if (wavelength >= 450 && wavelength < 495)
+        {
+            output = "Blue";
+        }
+        else if (wavelength >= 425 && wavelength < 450)
+        {
+            output = "Indigo";
         }
         else
         {
-            output = "$clear";
+            output = "Violet";
         }
         Console.Write(output);
     }
