@@ -1,21 +1,20 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0];
-        int a = tokens[1];
-        int b = tokens[2];
+        int n = int.Parse(Console.ReadLine()!); // [1, 100]
 
-        string output = "Anything";
-        if (a < b)
+        StringBuilder sb = new();
+        for (int i = 0; i < n; ++i)
         {
-            output = "Bus";
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int a = tokens[0]; // [100, 1'000]
+            int b = tokens[1]; // [100, 1'000]
+            int x = tokens[2]; // [1, 100]
+            sb.AppendLine($"{a * (x - 1) + b}");
         }
-        else if (a > b)
-        {
-            output = "Subway";
-        }
-        Console.Write(output);
+        Console.Write(sb);
     }
 }
