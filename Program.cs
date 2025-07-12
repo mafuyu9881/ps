@@ -31,10 +31,6 @@
                 candidates[1] = Solve(sRow + 0, sCol + width / 2 + 1, sRow + height / 2, sCol + width);
                 candidates[2] = Solve(sRow + height / 2 + 1, sCol + 0, sRow + height, sCol + width / 2);
                 candidates[3] = Solve(sRow + height / 2 + 1, sCol + width / 2 + 1, sRow + height, sCol + width);
-                //candidates[0] = Solve(sRow, sCol, eRow / 2, eCol / 2);
-                //candidates[1] = Solve(sRow, eCol / 2 + 1, eRow / 2, eCol);
-                //candidates[2] = Solve(eRow / 2 + 1, sCol, eRow, eCol / 2);
-                //candidates[3] = Solve(eRow / 2 + 1, eCol / 2 + 1, eRow, eCol);
                 Array.Sort(candidates);
                 return candidates[1];
             }
