@@ -2,28 +2,80 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [1, 100'000]
+        int[] tokens = null!;
 
-        int[] xs = new int[n];
-        int[] ys = new int[n];
-        for (int i = 0; i < n; ++i)
-        {
-            // length = 2
-            // element = [-1'000'000, 1'000'000]
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            xs[i] = tokens[0];
-            ys[i] = tokens[1];
-        }
-        Array.Sort(xs);
-        Array.Sort(ys);
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0]; // [1, 20]
+        int k = tokens[1]; // [1, 22]
 
-        long xMinDiffSum = 0;
-        long yMinDiffSum = 0;
-        for (int i = 0; i < n; ++i)
+        (int w, int s, int e)[] wses = new (int, int, int)[n];
+        for (int i = 0; i < n; ++i) // max tc = 20
         {
-            xMinDiffSum += Math.Abs(xs[i] - xs[n / 2]);
-            yMinDiffSum += Math.Abs(ys[i] - ys[n / 2]);
+            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int w = tokens[0]; // [1, 5]
+            int s = tokens[1]; // [1, 10]
+            int e = tokens[2]; // [1, 10]
+            wses[i] = (w, s, e);
         }
-        Console.Write(xMinDiffSum + yMinDiffSum);
+
+        int cases = 0;
+        {
+            int score = 0;
+
+            int[,] occupied = new int[4 + 1, 10 + 1];
+
+            Action<int> Solve = null!;
+            Solve = (int beginIndex) =>
+            {
+                for (int i = beginIndex; i < n; ++i) // max tc = 20
+                {
+                    var wse = wses[i];
+                    int w = wse.w;
+                    int s = wse.s;
+                    int e = wse.e;
+
+                    if (w == 5)
+                        continue;
+
+                    bool occupiable = true;
+                    for (int j = s; j <= e; ++j) // max tc = 10
+                    {
+                        if (occupied[w, j] > 0)
+                        {
+                            occupiable = false;
+                            break;
+                        }
+                    }
+
+                    if (occupiable)
+                    {
+                        int earned = e - s + 1;
+
+                        for (int j = s; j <= e; ++j) // max tc = 10
+                        {
+                            ++occupied[w, j];
+                        }
+                        score += earned;
+
+                        if (score == k)
+                        {
+                            ++cases;
+                        }
+                        else
+                        {
+                            Solve(i + 1);
+                        }
+
+                        score -= earned;
+                        for (int j = s; j <= e; ++j) // max tc = 10
+                        {
+                            --occupied[w, j];
+                        }
+                    }
+                }
+            };
+            Solve(0);
+        }
+        Console.Write(cases);
     }
 }
