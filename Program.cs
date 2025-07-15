@@ -4,78 +4,93 @@
     {
         int[] tokens = null!;
 
+        // length = 2
+        // element = [1, 50]
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0]; // [1, 20]
-        int k = tokens[1]; // [1, 22]
+        int height = tokens[0];
+        int width = tokens[1];
 
-        (int w, int s, int e)[] wses = new (int, int, int)[n];
-        for (int i = 0; i < n; ++i) // max tc = 20
+        int[] map = new int[height * width];
+        for (int row = 0; row < height; ++row) // max tc = 50
         {
+            // length = width
+            // element = [0, 9]
             tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int w = tokens[0]; // [1, 5]
-            int s = tokens[1]; // [1, 10]
-            int e = tokens[2]; // [1, 10]
-            wses[i] = (w, s, e);
+            for (int col = 0; col < width; ++col) // max tc = 50
+            {
+                map[row * width + col] = tokens[col];
+            }
         }
 
-        int cases = 0;
+        int password = 0;
         {
-            int score = 0;
+            const int Offsets = 4;
+            int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
+            int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
 
-            int[,] occupied = new int[4 + 1, 10 + 1];
+            bool[] visited = new bool[map.Length];
+            Queue<(int index, bool cycle, int pathLength)> frontier = new();
 
-            Action<int> Solve = null!;
-            Solve = (int beginIndex) =>
+            int maxPathLength = 0;
+
+            for (int s = 0; s < map.Length; ++s) // max tc = 2'500
             {
-                for (int i = beginIndex; i < n; ++i) // max tc = 20
+                if (map[s] == 0)
+                    continue;
+
+                for (int i = 0; i < visited.Length; ++i) // max tc = 2'500
                 {
-                    var wse = wses[i];
-                    int w = wse.w;
-                    int s = wse.s;
-                    int e = wse.e;
+                    visited[i] = false;
+                }
+                frontier.Clear();
 
-                    if (w == 5)
-                        continue;
+                visited[s] = true;
+                frontier.Enqueue((s, false, 0));
 
-                    bool occupiable = true;
-                    for (int j = s; j <= e; ++j) // max tc = 10
+                while (frontier.Count > 0)
+                {
+                    var element = frontier.Dequeue();
+                    int index = element.index;
+                    int row = index / width;
+                    int col = index % width;
+                    bool cycle = element.cycle;
+                    int pathLength = element.pathLength;
+
+                    for (int i = 0; i < Offsets; ++i) // tc = 4
                     {
-                        if (occupied[w, j] > 0)
-                        {
-                            occupiable = false;
-                            break;
-                        }
-                    }
+                        int adjRow = row + RowOffsets[i];
+                        if (adjRow < 0 || adjRow > height - 1)
+                            continue;
 
-                    if (occupiable)
-                    {
-                        int earned = e - s + 1;
+                        int adjCol = col + ColOffsets[i];
+                        if (adjCol < 0 || adjCol > width - 1)
+                            continue;
 
-                        for (int j = s; j <= e; ++j) // max tc = 10
-                        {
-                            ++occupied[w, j];
-                        }
-                        score += earned;
+                        int adjIndex = adjRow * width + adjCol;
+                        if (visited[adjIndex] ||
+                            (map[adjIndex] == 0) ||
+                            (cycle && adjIndex == s))
+                            continue;
 
-                        if (score == k)
+                        int candidate = map[s] + map[adjIndex];
+                        int newPassLength = pathLength + 1;
+                        if (newPassLength > maxPathLength)
                         {
-                            ++cases;
+                            password = candidate;
+                            maxPathLength = newPassLength;
                         }
-                        else
+                        else if (newPassLength == maxPathLength)
                         {
-                            Solve(i + 1);
+                            password = Math.Max(password, candidate);
+                            maxPathLength = newPassLength;
                         }
 
-                        score -= earned;
-                        for (int j = s; j <= e; ++j) // max tc = 10
-                        {
-                            --occupied[w, j];
-                        }
+                        visited[adjIndex] = true;
+                        frontier.Enqueue((adjIndex, adjIndex == s, newPassLength));
                     }
                 }
-            };
-            Solve(0);
+            }
         }
-        Console.Write(cases);
+        Console.Write(password);
     }
 }
