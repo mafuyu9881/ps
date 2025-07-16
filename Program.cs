@@ -2,95 +2,150 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int n = int.Parse(Console.ReadLine()!); // [5, 1'000]
 
-        // length = 2
-        // element = [1, 50]
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = tokens[0];
-        int width = tokens[1];
+        const int InvalidIndex = -1;
+        int barracksIndex = InvalidIndex;
+        LinkedList<int> deserterIndices = new();
 
-        int[] map = new int[height * width];
-        for (int row = 0; row < height; ++row) // max tc = 50
+        int[] map = new int[n * n];
+        for (int row = 0; row < n; ++row) // max tc = 1'000
         {
-            // length = width
-            // element = [0, 9]
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < width; ++col) // max tc = 50
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < n; ++col) // max tc = 1'000
             {
-                map[row * width + col] = tokens[col];
+                int index = row * n + col;
+                int attr = tokens[col];
+
+                if (attr == -1)
+                {
+                    barracksIndex = index;
+                }
+                else if (attr == 0)
+                {
+                    deserterIndices.AddLast(index);
+                }
+
+                map[index] = tokens[col];
             }
         }
 
-        int password = 0;
+        const int InvalidCost = -1;
+
+        int answerCost = InvalidCost;
+        if (deserterIndices.Count > 0)
         {
             const int Offsets = 4;
             int[] RowOffsets = new int[Offsets] { -1, 1, 0, 0 };
             int[] ColOffsets = new int[Offsets] { 0, 0, -1, 1 };
 
-            bool[] visited = new bool[map.Length];
-            Queue<(int index, bool cycle, int pathLength)> frontier = new();
-
-            int maxPathLength = 0;
-
-            for (int s = 0; s < map.Length; ++s) // max tc = 2'500
+            Func<int, int[]> ComputeMinCost = (int s) =>
             {
-                if (map[s] == 0)
-                    continue;
-
-                for (int i = 0; i < visited.Length; ++i) // max tc = 2'500
+                int[] minCost = new int[map.Length];
+                for (int i = 0; i < minCost.Length; ++i)
                 {
-                    visited[i] = false;
+                    minCost[i] = InvalidCost;
                 }
-                frontier.Clear();
 
-                visited[s] = true;
-                frontier.Enqueue((s, false, 0));
+                PriorityQueue<(int index, int cost), int> pq = new();
 
-                while (frontier.Count > 0)
+                minCost[s] = 0;
+                pq.Enqueue((s, 0), 0);
+
+                while (pq.Count > 0)
                 {
-                    var element = frontier.Dequeue();
+                    var element = pq.Dequeue();
                     int index = element.index;
-                    int row = index / width;
-                    int col = index % width;
-                    bool cycle = element.cycle;
-                    int pathLength = element.pathLength;
+                    int row = index / n;
+                    int col = index % n;
+                    int cost = element.cost;
 
-                    for (int i = 0; i < Offsets; ++i) // tc = 4
+                    if (minCost[index] != InvalidCost && minCost[index] < cost)
+                        continue;
+
+                    for (int i = 0; i < Offsets; ++i)
                     {
                         int adjRow = row + RowOffsets[i];
-                        if (adjRow < 0 || adjRow > height - 1)
+                        if (adjRow < 0 || adjRow > n - 1)
                             continue;
 
                         int adjCol = col + ColOffsets[i];
-                        if (adjCol < 0 || adjCol > width - 1)
+                        if (adjCol < 0 || adjCol > n - 1)
                             continue;
 
-                        int adjIndex = adjRow * width + adjCol;
-                        if (visited[adjIndex] ||
-                            (map[adjIndex] == 0) ||
-                            (cycle && adjIndex == s))
+                        int adjIndex = adjRow * n + adjCol;
+
+                        int oldAdjCost = minCost[adjIndex];
+                        int newAdjCost = cost + Math.Max(0, map[adjIndex]);
+                        if (oldAdjCost != InvalidCost && oldAdjCost <= newAdjCost)
                             continue;
 
-                        int candidate = map[s] + map[adjIndex];
-                        int newPassLength = pathLength + 1;
-                        if (newPassLength > maxPathLength)
-                        {
-                            password = candidate;
-                            maxPathLength = newPassLength;
-                        }
-                        else if (newPassLength == maxPathLength)
-                        {
-                            password = Math.Max(password, candidate);
-                            maxPathLength = newPassLength;
-                        }
-
-                        visited[adjIndex] = true;
-                        frontier.Enqueue((adjIndex, adjIndex == s, newPassLength));
+                        minCost[adjIndex] = newAdjCost;
+                        pq.Enqueue((adjIndex, newAdjCost), newAdjCost);
                     }
                 }
+
+                return minCost;
+            };
+
+            int[] deserterIndexArr = deserterIndices.ToArray();
+            Array.Sort(deserterIndexArr);
+
+            int[][] minCosts = new int[n * n][];
+            minCosts[barracksIndex] = ComputeMinCost(barracksIndex);
+            for (int i = 0; i < deserterIndexArr.Length; ++i)
+            {
+                int deserterIndex = deserterIndexArr[i];
+                minCosts[deserterIndex] = ComputeMinCost(deserterIndex);
             }
+
+            do
+            {
+                int cost = 0;
+
+                cost += minCosts[barracksIndex][deserterIndexArr[0]];
+
+                for (int i = 0; i < deserterIndexArr.Length - 1; ++i)
+                {
+                    cost += minCosts[deserterIndexArr[i]][deserterIndexArr[i + 1]];
+                }
+
+                cost += minCosts[deserterIndexArr[deserterIndexArr.Length - 1]][barracksIndex];
+
+                if (answerCost == InvalidCost || cost < answerCost)
+                {
+                    answerCost = cost;
+                }
+            }
+            while (NextPermutation(deserterIndexArr));
         }
-        Console.Write(password);
+        answerCost = Math.Max(answerCost, 0);
+        Console.Write(answerCost);
+    }
+
+    static bool NextPermutation(int[] arr)
+    {
+        // The index where the first monotonic increase occurs when scanning the array from its end
+        int i = arr.Length - 2;
+        while (i >= 0 && arr[i] >= arr[i + 1])
+        {
+            --i;
+        }
+
+        if (i < 0)
+            return false;
+
+        // The first index satisfying arr[i] < arr[j] when scanning the array from its end
+        int j = arr.Length - 1;
+        while (arr[j] <= arr[i])
+        {
+            --j;
+        }
+
+        (arr[i], arr[j]) = (arr[j], arr[i]);
+
+        Array.Reverse(arr, i + 1, arr.Length - (i + 1));
+
+        return true;
     }
 }
