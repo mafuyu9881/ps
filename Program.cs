@@ -4,48 +4,80 @@ class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = null!;
+        // length = 2
+        // element = [1, 100'000]
+        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = integerTokens[0];
+        int m = integerTokens[1];
+
+        // length = n
+        // element = [1, 10^18]
+        long[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        Array.Sort(sequence);
 
         StringBuilder sb = new();
-        while (true)
+        for (int l = 0; l < m; ++l) // max tc = 100'000
         {
-            tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int n = tokens[0]; // [1, 10'000]
-            int m = tokens[1]; // [1, 100]
-            if (n == 0 && m == 0)
-                break;
+            long[] longTokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+            long q = longTokens[0]; // [1, 3]
 
-            (int s, int e)[] calls = new (int, int)[n];
-            for (int i = 0; i < n; ++i) // max tc = 10'000
+            if (q == 1)
             {
-                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int source = tokens[0]; // [0, 10'000'000]
-                int destination = tokens[1]; // [0, 10'000'000]
-                int start = tokens[2]; // start + duration = [0, 2^31]
-                int duration = tokens[3]; // [1, 10'000]
-
-                calls[i] = (start, start + duration - 1);
+                long k = longTokens[1];
+                sb.AppendLine($"{(n - 1) - LowerBound(sequence, k) + 1}");
             }
-
-            for (int i = 0; i < m; ++i) // max tc = 100
+            else if (q == 2)
             {
-                tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int start = tokens[0];
-                int duration = tokens[1];
-                int s = start;
-                int e = start + duration - 1;
-
-                int detected = 0;
-                for (int j = 0; j < n; ++j)
-                {
-                    if ((e < calls[j].s || s > calls[j].e) == false)
-                    {
-                        ++detected;
-                    }
-                }
-                sb.AppendLine($"{detected}");
+                long k = longTokens[1];
+                sb.AppendLine($"{(n - 1) - LowerBound(sequence, k + 1) + 1}");
+            }
+            else // if (q == 3)
+            {
+                long i = longTokens[1];
+                long j = longTokens[2];
+                sb.AppendLine($"{(UpperBound(sequence, j) - 1) - LowerBound(sequence, i) + 1}");
             }
         }
         Console.Write(sb);
+    }
+
+    static int LowerBound(long[] sequence, long num)
+    {
+        int lo = 0 - 1;
+        int hi = (sequence.Length - 1) + 1;
+        while (lo < hi - 1)
+        {
+            int mid = (lo + hi) / 2;
+
+            if (sequence[mid] < num)
+            {
+                lo = mid;
+            }
+            else
+            {
+                hi = mid;
+            }
+        }
+        return hi;
+    }
+
+    static int UpperBound(long[] sequence, long num)
+    {
+        int lo = 0 - 1;
+        int hi = (sequence.Length - 1) + 1;
+        while (lo < hi - 1)
+        {
+            int mid = (lo + hi) / 2;
+
+            if (sequence[mid] <= num)
+            {
+                lo = mid;
+            }
+            else
+            {
+                hi = mid;
+            }
+        }
+        return hi;
     }
 }
