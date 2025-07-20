@@ -1,84 +1,85 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
+        int[] tokens = null!;
+
         // length = 2
-        // element = [1, 1'000]
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = tokens[0];
-        int width = tokens[1];
+        // element = [1, 1'000'000]
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int s = tokens[0];
+        int p = tokens[1];
 
-        StringBuilder sb = new();
-        if (height == 1 || width == 1)
+        string sequence = Console.ReadLine()!;
+
+        // length = 4
+        // element = [0, s]
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int requiredA = tokens[0];
+        int requiredC = tokens[1];
+        int requiredG = tokens[2];
+        int requiredT = tokens[3];
+
+        int variations = 0;
         {
-            sb.AppendLine($"{Math.Min(2, height * width)}");
-
-            if (height == 1)
+            int countA = 0;
+            int countC = 0;
+            int countG = 0;
+            int countT = 0;
+            int j = 0;
+            for (int i = 0; i < sequence.Length - (p - 1); ++i)
             {
-                for (int col = 0; col < width; ++col)
+                while (j - i + 1 <= p)
                 {
-                    if (col % 2 == 0)
+                    char c = sequence[j];
+                    if (c == 'A')
                     {
-                        sb.Append("1 ");
+                        ++countA;
                     }
-                    else
+                    else if (c == 'C')
                     {
-                        sb.Append("2 ");
+                        ++countC;
                     }
+                    else if (c == 'G')
+                    {
+                        ++countG;
+                    }
+                    else // if (c == 'T')
+                    {
+                        ++countT;
+                    }
+                    ++j;
                 }
-            }
-            else
-            {
-                for (int row = 0; row < height; ++row)
+
+                if (countA >= requiredA &&
+                    countC >= requiredC &&
+                    countG >= requiredG &&
+                    countT >= requiredT)
                 {
-                    if (row % 2 == 0)
+                    ++variations;
+                }
+
+                {
+                    char c = sequence[i];
+                    if (c == 'A')
                     {
-                        sb.AppendLine("1 ");
+                        --countA;
                     }
-                    else
+                    else if (c == 'C')
                     {
-                        sb.AppendLine("2 ");
+                        --countC;
+                    }
+                    else if (c == 'G')
+                    {
+                        --countG;
+                    }
+                    else // if (c == 'T')
+                    {
+                        --countT;
                     }
                 }
             }
         }
-        else
-        {
-            sb.AppendLine($"{Math.Min(4, height * width)}");
-
-            for (int row = 0; row < height; ++row) // max tc = 1'000
-            {
-                for (int col = 0; col < width; ++col) // max tc = 1'000
-                {
-                    if (row % 2 == 0)
-                    {
-                        if (col % 2 == 0)
-                        {
-                            sb.Append("1 ");
-                        }
-                        else
-                        {
-                            sb.Append("2 ");
-                        }
-                    }
-                    else
-                    {
-                        if (col % 2 == 0)
-                        {
-                            sb.Append("3 ");
-                        }
-                        else
-                        {
-                            sb.Append("4 ");
-                        }
-                    }
-                }
-                sb.AppendLine();
-            }
-        }
-
-        Console.Write(sb);
+        Console.Write(variations);
     }
 }
