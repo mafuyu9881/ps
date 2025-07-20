@@ -5,79 +5,80 @@ class Program
     static void Main(string[] args)
     {
         // length = 2
-        // element = [1, 100'000]
-        int[] integerTokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = integerTokens[0];
-        int m = integerTokens[1];
-
-        // length = n
-        // element = [1, 10^18]
-        long[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
-        Array.Sort(sequence);
+        // element = [1, 1'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = tokens[0];
+        int width = tokens[1];
 
         StringBuilder sb = new();
-        for (int l = 0; l < m; ++l) // max tc = 100'000
+        if (height == 1 || width == 1)
         {
-            long[] longTokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
-            long q = longTokens[0]; // [1, 3]
+            sb.AppendLine($"{Math.Min(2, height * width)}");
 
-            if (q == 1)
+            if (height == 1)
             {
-                long k = longTokens[1];
-                sb.AppendLine($"{(n - 1) - LowerBound(sequence, k) + 1}");
+                for (int col = 0; col < width; ++col)
+                {
+                    if (col % 2 == 0)
+                    {
+                        sb.Append("1 ");
+                    }
+                    else
+                    {
+                        sb.Append("2 ");
+                    }
+                }
             }
-            else if (q == 2)
+            else
             {
-                long k = longTokens[1];
-                sb.AppendLine($"{(n - 1) - LowerBound(sequence, k + 1) + 1}");
-            }
-            else // if (q == 3)
-            {
-                long i = longTokens[1];
-                long j = longTokens[2];
-                sb.AppendLine($"{(UpperBound(sequence, j) - 1) - LowerBound(sequence, i) + 1}");
+                for (int row = 0; row < height; ++row)
+                {
+                    if (row % 2 == 0)
+                    {
+                        sb.AppendLine("1 ");
+                    }
+                    else
+                    {
+                        sb.AppendLine("2 ");
+                    }
+                }
             }
         }
+        else
+        {
+            sb.AppendLine($"{Math.Min(4, height * width)}");
+
+            for (int row = 0; row < height; ++row) // max tc = 1'000
+            {
+                for (int col = 0; col < width; ++col) // max tc = 1'000
+                {
+                    if (row % 2 == 0)
+                    {
+                        if (col % 2 == 0)
+                        {
+                            sb.Append("1 ");
+                        }
+                        else
+                        {
+                            sb.Append("2 ");
+                        }
+                    }
+                    else
+                    {
+                        if (col % 2 == 0)
+                        {
+                            sb.Append("3 ");
+                        }
+                        else
+                        {
+                            sb.Append("4 ");
+                        }
+                    }
+                }
+                sb.AppendLine();
+            }
+        }
+
         Console.Write(sb);
-    }
-
-    static int LowerBound(long[] sequence, long num)
-    {
-        int lo = 0 - 1;
-        int hi = (sequence.Length - 1) + 1;
-        while (lo < hi - 1)
-        {
-            int mid = (lo + hi) / 2;
-
-            if (sequence[mid] < num)
-            {
-                lo = mid;
-            }
-            else
-            {
-                hi = mid;
-            }
-        }
-        return hi;
-    }
-
-    static int UpperBound(long[] sequence, long num)
-    {
-        int lo = 0 - 1;
-        int hi = (sequence.Length - 1) + 1;
-        while (lo < hi - 1)
-        {
-            int mid = (lo + hi) / 2;
-
-            if (sequence[mid] <= num)
-            {
-                lo = mid;
-            }
-            else
-            {
-                hi = mid;
-            }
-        }
-        return hi;
     }
 }
