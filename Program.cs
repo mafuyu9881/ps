@@ -2,84 +2,52 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = null!;
+        string formula = Console.ReadLine()!;
 
-        // length = 2
-        // element = [1, 1'000'000]
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int s = tokens[0];
-        int p = tokens[1];
+        const int delimiter = -1;
 
-        string sequence = Console.ReadLine()!;
-
-        // length = 4
-        // element = [0, s]
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int requiredA = tokens[0];
-        int requiredC = tokens[1];
-        int requiredG = tokens[2];
-        int requiredT = tokens[3];
-
-        int variations = 0;
+        Stack<int> stack = new();
+        for (int i = 0; i < formula.Length; ++i)
         {
-            int countA = 0;
-            int countC = 0;
-            int countG = 0;
-            int countT = 0;
-            int j = 0;
-            for (int i = 0; i < sequence.Length - (p - 1); ++i)
+            char c = formula[i];
+
+            if (c == 'H')
             {
-                while (j - i + 1 <= p)
+                stack.Push(1);
+            }
+            else if (c == 'C')
+            {
+                stack.Push(12);
+            }
+            else if (c == 'O')
+            {
+                stack.Push(16);
+            }
+            else if (c == '(')
+            {
+                stack.Push(delimiter);
+            }
+            else if (c == ')')
+            {
+                int sum = 0;
+                while (stack.Peek() != delimiter)
                 {
-                    char c = sequence[j];
-                    if (c == 'A')
-                    {
-                        ++countA;
-                    }
-                    else if (c == 'C')
-                    {
-                        ++countC;
-                    }
-                    else if (c == 'G')
-                    {
-                        ++countG;
-                    }
-                    else // if (c == 'T')
-                    {
-                        ++countT;
-                    }
-                    ++j;
+                    sum += stack.Pop();
                 }
-
-                if (countA >= requiredA &&
-                    countC >= requiredC &&
-                    countG >= requiredG &&
-                    countT >= requiredT)
-                {
-                    ++variations;
-                }
-
-                {
-                    char c = sequence[i];
-                    if (c == 'A')
-                    {
-                        --countA;
-                    }
-                    else if (c == 'C')
-                    {
-                        --countC;
-                    }
-                    else if (c == 'G')
-                    {
-                        --countG;
-                    }
-                    else // if (c == 'T')
-                    {
-                        --countT;
-                    }
-                }
+                stack.Pop();
+                stack.Push(sum);
+            }
+            else
+            {
+                stack.Push(stack.Pop() * (c - '0'));
             }
         }
-        Console.Write(variations);
+
+        int weight = 0;
+        while (stack.Count > 0)
+        {
+            weight += stack.Pop();
+        }
+        Console.Write(weight);
     }
 }
