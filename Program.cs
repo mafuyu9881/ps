@@ -1,16 +1,12 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-
-        StringBuilder sb = new();
-        for (int i = 1; i <= n; ++i)
+        int elapsed = 0;
+        for (int i = 0; i < 4; ++i)
         {
-            sb.AppendLine($"Hello World, Judge {i}!");
+            elapsed += int.Parse(Console.ReadLine()!);
         }
-        Console.Write(sb);
+        Console.Write((elapsed > 1500) ? "No" : "Yes");
     }
 }
