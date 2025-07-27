@@ -11,7 +11,12 @@
 
         month += 7 * (n - 1);
 
-        if (month > Years)
+        if (month % Years == 0)
+        {
+            year += (month - 1) / Years;
+            month = 12;
+        }
+        else
         {
             year += month / Years;
             month %= Years;
