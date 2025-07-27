@@ -2,26 +2,11 @@
 {
     static void Main(string[] args)
     {
-        const int Years = 12;
-
-        int n = int.Parse(Console.ReadLine()!); // [1, 5]
-
-        int year = 2024;
-        int month = 8;
-
-        month += 7 * (n - 1);
-
-        if (month % Years == 0)
-        {
-            year += (month - 1) / Years;
-            month = 12;
-        }
-        else
-        {
-            year += month / Years;
-            month %= Years;
-        }
-
-        Console.Write($"{year} {month}");
+        // length = 2
+        // element = [1, 10'000]
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int t1 = tokens[0];
+        int t2 = tokens[1];
+        Console.Write(Math.Min(t1, t2));
     }
 }
