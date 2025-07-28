@@ -2,11 +2,20 @@
 {
     static void Main(string[] args)
     {
-        // length = 2
-        // element = [1, 10'000]
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int t1 = tokens[0];
-        int t2 = tokens[1];
-        Console.Write(Math.Min(t1, t2));
+        int n = int.Parse(Console.ReadLine()!); // [1, 200'000]
+
+        // length = n
+        // element = [1, 1'000'000'000]
+        int[] stockPrices = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        int maxProfit = 0;
+        int minStockPrice = 1000000000;
+        for (int i = 0; i < n; ++i)
+        {
+            int stockPrice = stockPrices[i];
+            minStockPrice = Math.Min(minStockPrice, stockPrice);
+            maxProfit = Math.Max(maxProfit, Math.Max(0, stockPrice - minStockPrice));
+        }
+        Console.Write(maxProfit);
     }
 }
