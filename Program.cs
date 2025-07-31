@@ -4,7 +4,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        BigInteger n = BigInteger.Parse(Console.ReadLine()!);
-        Console.Write(n % 20000303);
+        BigInteger a = BigInteger.Parse(Console.ReadLine()!);
+        BigInteger b = BigInteger.Parse(Console.ReadLine()!);
+        Console.Write(a + b);
     }
 }
