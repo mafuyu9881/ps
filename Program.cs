@@ -1,17 +1,19 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        StringBuilder sb = new();
-        for (int i = 0; i < n; ++i)
+        char output = 'S';
+        for (int i = 0; i < sequence.Length; ++i)
         {
-            int number = int.Parse(Console.ReadLine()!);
-            sb.AppendLine($"{number} {number}");
+            int bit = sequence[i];
+            if (bit == 0 || bit == 1)
+                continue;
+
+            output = 'F';
+            break;
         }
-        Console.Write(sb);
+        Console.Write(output);
     }
 }
