@@ -2,18 +2,12 @@
 {
     static void Main(string[] args)
     {
-        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        string s = "WelcomeToSMUPC";
 
-        char output = 'S';
-        for (int i = 0; i < sequence.Length; ++i)
-        {
-            int bit = sequence[i];
-            if (bit == 0 || bit == 1)
-                continue;
+        int n = int.Parse(Console.ReadLine()!);
+        n %= 14;
+        n -= 1;
 
-            output = 'F';
-            break;
-        }
-        Console.Write(output);
+        Console.Write(s[n]);
     }
 }
