@@ -2,11 +2,8 @@
 {
     static void Main(string[] args)
     {
-        string s = "WelcomeToSMUPC";
-
-        int n = int.Parse(Console.ReadLine()!);
-        n = (n - 1) % 14;
-
-        Console.Write(s[n]);
+        int h = int.Parse(Console.ReadLine()!); // [0, 23]
+        int m = int.Parse(Console.ReadLine()!); // [0, 59]
+        Console.Write(60 * h + m);
     }
 }
