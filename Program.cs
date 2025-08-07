@@ -4,30 +4,176 @@ class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        const int Size = 3;
+        const char Blank = '-';
+        const int Invalid = -1;
 
-        var reverseComparer = Comparer<string>.Create((a, b) => string.Compare(b, a));
-        SortedSet<string> employees = new(reverseComparer);
-        for (int i = 0; i < n; ++i)
+        bool TryWinVertical(char[,] map, char desiredMark)
         {
-            string[] tokens = Console.ReadLine()!.Split();
-            string name = tokens[0];
-            string behaviour = tokens[1];
-
-            if (behaviour == "enter")
+            for (int col = 0; col < Size; ++col)
             {
-                employees.Add(name);
+                int desiredMarkCount = 0;
+                int blankCount = 0;
+                int blankRow = Invalid;
+                int blankCol = Invalid;
+                for (int row = 0; row < Size; ++row)
+                {
+                    char existingMark = map[row, col];
+                    if (existingMark == desiredMark)
+                    {
+                        ++desiredMarkCount;
+                    }
+                    else if (existingMark == Blank)
+                    {
+                        blankRow = row;
+                        blankCol = col;
+                        ++blankCount;
+                    }
+                }
+                if (desiredMarkCount == 2 && blankCount == 1)
+                {
+                    map[blankRow, blankCol] = desiredMark;
+                    return true;
+                }
             }
-            else
-            {
-                employees.Remove(name);
-            }
+            return false;
         }
 
-        StringBuilder sb = new();
-        foreach (string name in employees)
+        bool TryWinHorizontal(char[,] map, char desiredMark)
         {
-            sb.AppendLine(name);
+            for (int row = 0; row < Size; ++row)
+            {
+                int desiredMarkCount = 0;
+                int blankCount = 0;
+                int blankRow = Invalid;
+                int blankCol = Invalid;
+                for (int col = 0; col < Size; ++col)
+                {
+                    char existingMark = map[row, col];
+                    if (existingMark == desiredMark)
+                    {
+                        ++desiredMarkCount;
+                    }
+                    else if (existingMark == Blank)
+                    {
+                        blankRow = row;
+                        blankCol = col;
+                        ++blankCount;
+                    }
+                }
+                if (desiredMarkCount == 2 && blankCount == 1)
+                {
+                    map[blankRow, blankCol] = desiredMark;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        bool TryWinLeftDiagonal(char[,] map, char desiredMark)
+        {
+            int desiredMarkCount = 0;
+            int blankCount = 0;
+            int blankRow = Invalid;
+            int blankCol = Invalid;
+            for (int offset = 0; offset < Size; ++offset)
+            {
+                int row = offset;
+                int col = (Size - 1) - offset;
+                char existingMark = map[row, col];
+                if (existingMark == desiredMark)
+                {
+                    ++desiredMarkCount;
+                }
+                else if (existingMark == Blank)
+                {
+                    blankRow = row;
+                    blankCol = col;
+                    ++blankCount;
+                }
+            }
+            if (desiredMarkCount == 2 && blankCount == 1)
+            {
+                map[blankRow, blankCol] = desiredMark;
+                return true;
+            }
+            return false;
+        }
+
+        bool TryWinRightDiagonal(char[,] map, char desiredMark)
+        {
+            int desiredMarkCount = 0;
+            int blankCount = 0;
+            int blankRow = Invalid;
+            int blankCol = Invalid;
+            for (int offset = 0; offset < Size; ++offset)
+            {
+                int row = offset;
+                int col = offset;
+                char existingMark = map[row, col];
+                if (existingMark == desiredMark)
+                {
+                    ++desiredMarkCount;
+                }
+                else if (existingMark == Blank)
+                {
+                    blankRow = row;
+                    blankCol = col;
+                    ++blankCount;
+                }
+            }
+            if (desiredMarkCount == 2 && blankCount == 1)
+            {
+                map[blankRow, blankCol] = desiredMark;
+                return true;
+            }
+            return false;
+        }
+
+        int t = int.Parse(Console.ReadLine()!);
+
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i) // max tc = ?
+        {
+            char[,] map = new char[Size, Size];
+            for (int row = 0; row < Size; ++row) // max tc = 3
+            {
+                string line = Console.ReadLine()!;
+                for (int col = 0; col < Size; ++col) // max tc = 3
+                {
+                    map[row, col] = line[col];
+                }
+            }
+
+            char newMark = Console.ReadLine()![0];
+
+            bool won = false;
+            if (won == false)
+            {
+                won = TryWinVertical(map, newMark);
+            }
+            if (won == false)
+            {
+                won = TryWinHorizontal(map, newMark);
+            }
+            if (won == false)
+            {
+                won = TryWinLeftDiagonal(map, newMark);
+            }
+            if (won == false)
+            {
+                won = TryWinRightDiagonal(map, newMark);
+            }
+
+            sb.AppendLine($"Case {i + 1}:");
+            for (int row = 0; row < Size; ++row)
+            {
+                for (int col = 0; col < Size; ++col)
+                {
+                    sb.Append($"{map[row, col]}");
+                }
+                sb.AppendLine();
+            }
         }
         Console.Write(sb);
     }
