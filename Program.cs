@@ -2,8 +2,7 @@
 {
     static void Main(string[] args)
     {
-        int a = int.Parse(Console.ReadLine()!);
-        int b = int.Parse(Console.ReadLine()!);
-        Console.Write(a * 10 + b);
+        int x = int.Parse(Console.ReadLine()!) % 7;
+        Console.Write(x == 2 ? 1 : 0);
     }
 }
