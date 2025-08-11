@@ -2,7 +2,9 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!); // [0, 1'000]
-        Console.Write(n / 10);
+        int r = int.Parse(Console.ReadLine()!);
+        int g = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        Console.Write(r * 3 + g * 4 + b * 5);
     }
 }
