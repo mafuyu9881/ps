@@ -2,7 +2,8 @@
 {
     static void Main(string[] args)
     {
-        int a = int.Parse(Console.ReadLine()!);
-        Console.Write(a / 5);
+        int t = int.Parse(Console.ReadLine()!);
+        int v = int.Parse(Console.ReadLine()!);
+        Console.Write(t * v);
     }
 }
