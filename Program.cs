@@ -2,8 +2,7 @@
 {
     static void Main(string[] args)
     {
-        int a = int.Parse(Console.ReadLine()!);
-        int b = int.Parse(Console.ReadLine()!);
-        Console.Write(a * 1000 + b * 10000);
+        int n = int.Parse(Console.ReadLine()!);
+        Console.Write((n / 10 == n % 10) ? 1 : 0);
     }
 }
