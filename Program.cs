@@ -2,8 +2,8 @@
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
-        int v = int.Parse(Console.ReadLine()!);
-        Console.Write(t * v);
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        Console.Write(a * 1000 + b * 10000);
     }
 }
