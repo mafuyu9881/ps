@@ -2,7 +2,9 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        Console.Write((n / 10 == n % 10) ? 1 : 0);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int hh = tokens[0];
+        int mm = tokens[1];
+        Console.Write((hh - 9) * 60 + mm);
     }
 }
