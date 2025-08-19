@@ -2,9 +2,11 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int hh = tokens[0];
-        int mm = tokens[1];
-        Console.Write((hh - 9) * 60 + mm);
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        string output = "0";
+        if (a > b) output = "1";
+        else if (a < b) output = "-1";
+        Console.Write(output);
     }
 }
