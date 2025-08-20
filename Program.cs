@@ -3,6 +3,7 @@
     static void Main(string[] args)
     {
         int x = int.Parse(Console.ReadLine()!);
-        Console.Write(x * 24);
+        int y = int.Parse(Console.ReadLine()!);
+        Console.Write(x + y + 3);
     }
 }
