@@ -2,8 +2,9 @@
 {
     static void Main(string[] args)
     {
-        int x = int.Parse(Console.ReadLine()!);
-        int y = int.Parse(Console.ReadLine()!);
-        Console.Write(x + y + 3);
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        int c = int.Parse(Console.ReadLine()!);
+        Console.Write(a * b + c);
     }
 }
