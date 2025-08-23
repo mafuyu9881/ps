@@ -1,10 +1,12 @@
-﻿class Program
+﻿using System.Numerics;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int a = int.Parse(Console.ReadLine()!);
-        int b = int.Parse(Console.ReadLine()!);
-        int c = int.Parse(Console.ReadLine()!);
+        BigInteger a = BigInteger.Parse(Console.ReadLine()!);
+        BigInteger b = BigInteger.Parse(Console.ReadLine()!);
+        BigInteger c = BigInteger.Parse(Console.ReadLine()!);
         Console.Write((b - c) / a);
     }
 }
