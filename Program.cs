@@ -2,9 +2,7 @@
 {
     static void Main(string[] args)
     {
-        int a = int.Parse(Console.ReadLine()!);
-        int b = int.Parse(Console.ReadLine()!);
-        int c = int.Parse(Console.ReadLine()!);
-        Console.Write(a * b + c);
+        float x = float.Parse(Console.ReadLine()!);
+        Console.Write((int)x);
     }
 }
