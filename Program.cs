@@ -2,6 +2,9 @@
 {
     static void Main(string[] args)
     {
-        Console.Write(1);
+        int n = int.Parse(Console.ReadLine()!);
+        Console.WriteLine(n * (n + 1) / 2);
+        Console.WriteLine(n * (n + 1) / 2 * n * (n + 1) / 2);
+        Console.WriteLine(n * (n + 1) / 2 * n * (n + 1) / 2);
     }
 }
