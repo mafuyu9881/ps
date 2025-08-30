@@ -1,8 +1,19 @@
-﻿class Program
+﻿using System.Numerics;
+using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        Console.Write($"{(n + 1) * 2} {(n + 1) * 3}");
+        BigInteger s = BigInteger.Parse(Console.ReadLine()!);
+        BigInteger d = BigInteger.Parse(Console.ReadLine()!);
+
+        BigInteger k = (s + d) / 2;
+        BigInteger n = (s - d) / 2;
+
+        StringBuilder sb = new();
+        sb.AppendLine($"{k}");
+        sb.AppendLine($"{n}");
+        Console.Write(sb);
     }
 }
