@@ -1,19 +1,36 @@
-﻿using System.Numerics;
-using System.Text;
+﻿using System.Text;
 
 class Program
 {
     static void Main(string[] args)
     {
-        BigInteger s = BigInteger.Parse(Console.ReadLine()!);
-        BigInteger d = BigInteger.Parse(Console.ReadLine()!);
+        StringBuilder output = new();
+        while (true)
+        {
+            string s = Console.ReadLine()!;
+            if (s == "#")
+                break;
 
-        BigInteger k = (s + d) / 2;
-        BigInteger n = (s - d) / 2;
-
-        StringBuilder sb = new();
-        sb.AppendLine($"{k}");
-        sb.AppendLine($"{n}");
-        Console.Write(sb);
+            int count = 0;
+            for (int i = 0; i < s.Length; ++i)
+            {
+                char c = s[i];
+                if (c == 'a' ||
+                    c == 'e' ||
+                    c == 'i' ||
+                    c == 'o' ||
+                    c == 'u' ||
+                    c == 'A' ||
+                    c == 'E' ||
+                    c == 'I' ||
+                    c == 'O' ||
+                    c == 'U')
+                {
+                    ++count;
+                }
+            }
+            output.AppendLine($"{count}");
+        }
+        Console.Write(output);
     }
 }
