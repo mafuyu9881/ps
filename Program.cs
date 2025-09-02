@@ -7,29 +7,14 @@ class Program
         StringBuilder output = new();
         while (true)
         {
-            string s = Console.ReadLine()!;
-            if (s == "#")
+            string[] tokens = Console.ReadLine()!.Split();
+            string name = tokens[0];
+            int age = int.Parse(tokens[1]);
+            int weight = int.Parse(tokens[2]);
+            if (name == "#" && age == 0 && weight == 0)
                 break;
 
-            int count = 0;
-            for (int i = 0; i < s.Length; ++i)
-            {
-                char c = s[i];
-                if (c == 'a' ||
-                    c == 'e' ||
-                    c == 'i' ||
-                    c == 'o' ||
-                    c == 'u' ||
-                    c == 'A' ||
-                    c == 'E' ||
-                    c == 'I' ||
-                    c == 'O' ||
-                    c == 'U')
-                {
-                    ++count;
-                }
-            }
-            output.AppendLine($"{count}");
+            output.AppendLine($"{name} {((age > 17 || weight >= 80) ? "Senior" : "Junior")}");
         }
         Console.Write(output);
     }
