@@ -4,18 +4,16 @@ class Program
 {
     static void Main(string[] args)
     {
-        StringBuilder output = new();
-        while (true)
+        int n = int.Parse(Console.ReadLine()!);
+        StringBuilder sb = new();
+        for (int i = 0; i < n; ++i)
         {
-            string[] tokens = Console.ReadLine()!.Split();
-            string name = tokens[0];
-            int age = int.Parse(tokens[1]);
-            int weight = int.Parse(tokens[2]);
-            if (name == "#" && age == 0 && weight == 0)
-                break;
-
-            output.AppendLine($"{name} {((age > 17 || weight >= 80) ? "Senior" : "Junior")}");
+            for (int j = 0; j < n - i; ++j)
+            {
+                sb.Append("*");
+            }
+            sb.AppendLine();
         }
-        Console.Write(output);
+        Console.Write(sb);
     }
 }
