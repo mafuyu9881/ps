@@ -4,12 +4,12 @@ class Program
 {
     static void Main(string[] args)
     {
-        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(sequence);
+        int n = int.Parse(Console.ReadLine()!);
+
         StringBuilder sb = new();
-        for (int i = 0; i < sequence.Length; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            sb.Append($"{sequence[i]} ");
+            sb.AppendLine($"{i + 1}. {Console.ReadLine()!}");
         }
         Console.Write(sb);
     }
