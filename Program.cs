@@ -1,16 +1,39 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] sequence = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        StringBuilder sb = new();
-        for (int i = 0; i < n; ++i)
+        int a = sequence[0];
+        int b = sequence[1];
+        int c = sequence[2];
+
+        int output;
+        if (a == b && b == c)
         {
-            sb.AppendLine($"{i + 1}. {Console.ReadLine()!}");
+            output = 10000 + a * 1000;
         }
-        Console.Write(sb);
+        else if (a != b && b != c && c != a)
+        {
+            output = Math.Max(a, Math.Max(b, c)) * 100;
+        }
+        else
+        {
+            int face;
+            if (a == b)
+            {
+                face = a;
+            }
+            else if (b == c)
+            {
+                face = b;
+            }
+            else //if (c == a)
+            {
+                face = c;
+            }
+            output = 1000 + face * 100;
+        }
+        Console.Write(output);
     }
 }
