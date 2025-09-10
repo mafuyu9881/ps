@@ -2,18 +2,12 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int b = tokens[1];
-        int c = tokens[2];
-        int d = int.Parse(Console.ReadLine()!);
-
-        int minuteInSeconds = 60;
-        int hourInSeconds = minuteInSeconds * minuteInSeconds;
-        int dayInSeconds = hourInSeconds * 24;
-
-        int oldTotalSeconds = a * hourInSeconds + b * minuteInSeconds + c;
-        int newTotalSeconds = (oldTotalSeconds + d) % dayInSeconds;
-        Console.Write($"{newTotalSeconds / hourInSeconds} {(newTotalSeconds % hourInSeconds) / minuteInSeconds} {newTotalSeconds % minuteInSeconds}");
+        int[] tokens = null!;
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int l = tokens[0];
+        int p = tokens[1];
+        int participants = l * p;
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Console.Write($"{tokens[0] - participants} {tokens[1] - participants} {tokens[2] - participants} {tokens[3] - participants} {tokens[4] - participants}");
     }
 }
