@@ -2,13 +2,21 @@
 {
     static void Main(string[] args)
     {
-        int l = int.Parse(Console.ReadLine()!);
-        int a = int.Parse(Console.ReadLine()!);
-        int b = int.Parse(Console.ReadLine()!);
-        int c = int.Parse(Console.ReadLine()!);
-        int d = int.Parse(Console.ReadLine()!);
-        int p = a / c + ((a % c > 0) ? 1 : 0);
-        int q = b / d + ((b % d > 0) ? 1 : 0);
-        Console.Write(l - ((p > q) ? p : q));
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int sum = tokens[0];
+        int diff = tokens[1];
+
+        string output;
+        if ((sum >= diff) && (sum % 2 == diff % 2))
+        {
+            int a = (sum + diff) / 2;
+            int b = (sum - diff) / 2;
+            output = $"{a} {b}";
+        }
+        else
+        {
+            output = "-1";
+        }
+        Console.Write(output);
     }
 }
