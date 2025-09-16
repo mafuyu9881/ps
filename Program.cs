@@ -1,15 +1,21 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        StringBuilder sb = new();
-        for (int i = 0; i < n; ++i)
+        const int MaxPrice = 2000;
+
+        int burger = MaxPrice;
+        for (int i = 0; i < 3; ++i)
         {
-            sb.AppendLine(Console.ReadLine()!.ToLower());
+            burger = Math.Min(burger, int.Parse(Console.ReadLine()!));
         }
-        Console.Write(sb);
+
+        int beverage = MaxPrice;
+        for (int i = 0; i < 2; ++i)
+        {
+            beverage = Math.Min(beverage, int.Parse(Console.ReadLine()!));
+        }
+
+        Console.Write(burger + beverage - 50);
     }
 }
