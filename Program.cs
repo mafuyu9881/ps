@@ -2,11 +2,8 @@
 {
     static void Main(string[] args)
     {
-        int spent = int.Parse(Console.ReadLine()!);
-        for (int i = 0; i < 9; ++i)
-        {
-            spent -= int.Parse(Console.ReadLine()!);
-        }
-        Console.Write(spent);
+        int[] tokens0 = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] tokens1 = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Console.Write(Math.Max(tokens0.Sum(), tokens1.Sum()));
     }
 }
