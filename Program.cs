@@ -1,9 +1,17 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens0 = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int[] tokens1 = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Console.Write(Math.Max(tokens0.Sum(), tokens1.Sum()));
+        int t = int.Parse(Console.ReadLine()!);
+
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
+        {
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            sb.AppendLine($"Case {i + 1}: {tokens[0] + tokens[1]}");
+        }
+        Console.Write(sb);
     }
 }
