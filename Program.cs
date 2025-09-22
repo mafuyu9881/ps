@@ -1,17 +1,13 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
-
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
+        const int Students = 5;
+        int sum = 0;
+        for (int i = 0; i < Students; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            sb.AppendLine($"Case {i + 1}: {tokens[0] + tokens[1]}");
+            sum += Math.Max(40, int.Parse(Console.ReadLine()!));
         }
-        Console.Write(sb);
+        Console.Write(sum / Students);
     }
 }
