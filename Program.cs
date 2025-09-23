@@ -2,12 +2,30 @@
 {
     static void Main(string[] args)
     {
-        const int Students = 5;
-        int sum = 0;
-        for (int i = 0; i < Students; ++i)
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        int c = int.Parse(Console.ReadLine()!);
+
+        string output;
+        if (a + b + c == 180)
         {
-            sum += Math.Max(40, int.Parse(Console.ReadLine()!));
+            if (a == b && b == c)
+            {
+                output = "Equilateral";
+            }
+            else if (a == b || b == c || c == a)
+            {
+                output = "Isosceles";
+            }
+            else
+            {
+                output = "Scalene";
+            }
         }
-        Console.Write(sum / Students);
+        else
+        {
+            output = "Error";
+        }
+        Console.Write(output);
     }
 }
