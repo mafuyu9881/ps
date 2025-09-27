@@ -1,17 +1,22 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        string line = Console.ReadLine()!;
 
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
+        int vowels = 0;
+        for (int i = 0; i < line.Length; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            sb.AppendLine($"{2 - (tokens[0] - tokens[1])}");
+            char c = line[i];
+            if (c == 'a' ||
+                c == 'e' ||
+                c == 'i' ||
+                c == 'o' ||
+                c == 'u')
+            {
+                ++vowels;
+            }
         }
-        Console.Write(sb);
+        Console.Write(vowels);
     }
 }
