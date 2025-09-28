@@ -2,16 +2,19 @@
 {
     static void Main(string[] args)
     {
+        int month = int.Parse(Console.ReadLine()!);
         int day = int.Parse(Console.ReadLine()!);
 
-        int answer = 0;
-        int[] cars = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        for (int i = 0; i < cars.Length; ++i)
+        string answer = "Special";
+        if ((month < 2) ||
+            (month == 2 && day < 18))
         {
-            if (cars[i] % 10 == day)
-            {
-                ++answer;
-            }
+            answer = "Before";
+        }
+        else if ((month > 2) ||
+                 (month == 2 && day > 18))
+        {
+            answer = "After";
         }
         Console.Write(answer);
     }
