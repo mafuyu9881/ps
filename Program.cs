@@ -2,21 +2,17 @@
 {
     static void Main(string[] args)
     {
-        string line = Console.ReadLine()!;
+        int day = int.Parse(Console.ReadLine()!);
 
-        int vowels = 0;
-        for (int i = 0; i < line.Length; ++i)
+        int answer = 0;
+        int[] cars = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        for (int i = 0; i < cars.Length; ++i)
         {
-            char c = line[i];
-            if (c == 'a' ||
-                c == 'e' ||
-                c == 'i' ||
-                c == 'o' ||
-                c == 'u')
+            if (cars[i] % 10 == day)
             {
-                ++vowels;
+                ++answer;
             }
         }
-        Console.Write(vowels);
+        Console.Write(answer);
     }
 }
