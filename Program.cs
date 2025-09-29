@@ -1,21 +1,23 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int month = int.Parse(Console.ReadLine()!);
-        int day = int.Parse(Console.ReadLine()!);
+        string s = Console.ReadLine()!;
 
-        string answer = "Special";
-        if ((month < 2) ||
-            (month == 2 && day < 18))
+        int[] counts = new int['z' - 'a' + 1];
+
+        for (int i = 0; i < s.Length; ++i)
         {
-            answer = "Before";
+            ++counts[s[i] - 'a'];
         }
-        else if ((month > 2) ||
-                 (month == 2 && day > 18))
+
+        StringBuilder sb = new();
+        for (int i = 0; i < counts.Length; ++i)
         {
-            answer = "After";
+            sb.Append($"{counts[i]} ");
         }
-        Console.Write(answer);
+        Console.Write(sb);
     }
 }
