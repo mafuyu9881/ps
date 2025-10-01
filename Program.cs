@@ -1,8 +1,12 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        Console.Write((char)(0xAC00 + (n - 1)));
+        Console.InputEncoding = Encoding.UTF8;
+        Console.OutputEncoding = Encoding.UTF8;
+        string s = Console.ReadLine()!;
+        Console.Write(s[0] - 0xAC00 + 1);
     }
 }
