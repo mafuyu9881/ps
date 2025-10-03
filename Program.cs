@@ -4,9 +4,19 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.InputEncoding = Encoding.UTF8;
-        Console.OutputEncoding = Encoding.UTF8;
-        string s = Console.ReadLine()!;
-        Console.Write(s[0] - 0xAC00 + 1);
+        StringBuilder sb = new();
+        while (true)
+        {
+            string s = Console.ReadLine()!;
+            if (s == "END")
+                break;
+
+            for (int i = s.Length - 1; i >= 0; --i)
+            {
+                sb.Append(s[i]);
+            }
+            sb.AppendLine();
+        }
+        Console.Write(sb);
     }
 }
