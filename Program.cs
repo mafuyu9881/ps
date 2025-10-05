@@ -1,22 +1,9 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        StringBuilder sb = new();
-        while (true)
-        {
-            string s = Console.ReadLine()!;
-            if (s == "END")
-                break;
-
-            for (int i = s.Length - 1; i >= 0; --i)
-            {
-                sb.Append(s[i]);
-            }
-            sb.AppendLine();
-        }
-        Console.Write(sb);
+        int[] tokens0 = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int[] tokens1 = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Console.Write(Math.Min(tokens0[0] + tokens1[1], tokens0[1] + tokens1[0]));
     }
 }
