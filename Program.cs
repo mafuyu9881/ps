@@ -1,23 +1,27 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0];
-        int m = tokens[1];
-
-        StringBuilder sb = new();
-        for (int i = 0; i < n; ++i)
+        int[] scienceScores = new int[4];
+        for (int i = 0; i < scienceScores.Length; ++i)
         {
-            string s = Console.ReadLine()!;
-            for (int j = 0; j < m; ++j)
-            {
-                sb.Append(s[m - 1 - j]);
-            }
-            sb.AppendLine();
+            scienceScores[i] = int.Parse(Console.ReadLine()!);
         }
-        Console.Write(sb);
+        Array.Sort(scienceScores);
+
+        int[] socialScores = new int[2];
+        for (int i = 0; i < socialScores.Length; ++i)
+        {
+            socialScores[i] = int.Parse(Console.ReadLine()!);
+        }
+        Array.Sort(socialScores);
+
+        int sum = 0;
+        for (int i = 0; i < 3; ++i)
+        {
+            sum += scienceScores[scienceScores.Length - 1 - i];
+        }
+        sum += socialScores[socialScores.Length - 1];
+        Console.Write(sum);
     }
 }
