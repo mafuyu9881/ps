@@ -2,26 +2,23 @@
 {
     static void Main(string[] args)
     {
-        int[] scienceScores = new int[4];
-        for (int i = 0; i < scienceScores.Length; ++i)
+        SortedDictionary<int, int> sd = new();
         {
-            scienceScores[i] = int.Parse(Console.ReadLine()!);
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int i = 0; i < tokens.Length; ++i)
+            {
+                sd.Add(tokens[i], i + 1);
+            }
         }
-        Array.Sort(scienceScores);
 
-        int[] socialScores = new int[2];
-        for (int i = 0; i < socialScores.Length; ++i)
+        int intersected = 0;
         {
-            socialScores[i] = int.Parse(Console.ReadLine()!);
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            if (sd.TryGetValue(tokens[0], out int value))
+            {
+                intersected = value;
+            }
         }
-        Array.Sort(socialScores);
-
-        int sum = 0;
-        for (int i = 0; i < 3; ++i)
-        {
-            sum += scienceScores[scienceScores.Length - 1 - i];
-        }
-        sum += socialScores[socialScores.Length - 1];
-        Console.Write(sum);
+        Console.Write(intersected);
     }
 }
