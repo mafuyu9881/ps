@@ -1,24 +1,18 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        SortedDictionary<int, int> sd = new();
+        StringBuilder sb = new();
+        while (true)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int i = 0; i < tokens.Length; ++i)
-            {
-                sd.Add(tokens[i], i + 1);
-            }
-        }
+            string? line = Console.ReadLine();
+            if (line == null)
+                break;
 
-        int intersected = 0;
-        {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            if (sd.TryGetValue(tokens[0], out int value))
-            {
-                intersected = value;
-            }
+            sb.AppendLine(line);
         }
-        Console.Write(intersected);
+        Console.Write(sb);
     }
 }
