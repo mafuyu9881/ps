@@ -4,15 +4,21 @@ class Program
 {
     static void Main(string[] args)
     {
-        StringBuilder sb = new();
-        while (true)
-        {
-            double n = double.Parse(Console.ReadLine()!);
-            if (n < 0)
-                break;
+        int n = int.Parse(Console.ReadLine()!);
 
-            sb.AppendLine($"Objects weighing {n:F2} on Earth will weigh {n * 0.167:F2} on the moon.");
+        StringBuilder sb = new();
+
+        for (int i = 1; i <= n; ++i)
+        {
+            sb.Append($"{i} ");
+
+            if ((i % 6 == 0) ||
+                (i == n))
+            {
+                sb.Append("Go! ");
+            }
         }
+        
         Console.Write(sb);
     }
 }
