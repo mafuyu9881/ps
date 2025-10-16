@@ -6,19 +6,24 @@ class Program
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        StringBuilder sb = new();
+        StringBuilder output = new();
 
-        for (int i = 1; i <= n; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            sb.Append($"{i} ");
+            string redundant = Console.ReadLine()!;
 
-            if ((i % 6 == 0) ||
-                (i == n))
+            StringBuilder deduped = new();
+            for (int j = 0; j < redundant.Length; ++j)
             {
-                sb.Append("Go! ");
+                char newChar = redundant[j];
+                if (deduped.Length < 1 || deduped[deduped.Length - 1] != newChar)
+                {
+                    deduped.Append(newChar);
+                }
             }
+            output.AppendLine(deduped.ToString());
         }
         
-        Console.Write(sb);
+        Console.Write(output);
     }
 }
