@@ -4,26 +4,38 @@ class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-
         StringBuilder output = new();
 
-        for (int i = 0; i < n; ++i)
+        while (true)
         {
-            string redundant = Console.ReadLine()!;
+            string? name = Console.ReadLine();
+            if (name == null || name == "")
+                break;
 
-            StringBuilder deduped = new();
-            for (int j = 0; j < redundant.Length; ++j)
+            for (int i = 0; i < name.Length; ++i)
             {
-                char newChar = redundant[j];
-                if (deduped.Length < 1 || deduped[deduped.Length - 1] != newChar)
+                char c = name[i];
+                if (c == 'e')
                 {
-                    deduped.Append(newChar);
+                    c = 'i';
                 }
+                else if (c == 'i')
+                {
+                    c = 'e';
+                }
+                else if (c == 'E')
+                {
+                    c = 'I';
+                }
+                else if (c == 'I')
+                {
+                    c = 'E';
+                }
+                output.Append(c);
             }
-            output.AppendLine(deduped.ToString());
+            output.AppendLine();
         }
-        
+
         Console.Write(output);
     }
 }
