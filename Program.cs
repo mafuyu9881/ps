@@ -4,38 +4,18 @@ class Program
 {
     static void Main(string[] args)
     {
-        StringBuilder output = new();
+        const int MinuteSeconds = 60;
+        const int HourSeconds = 60 * MinuteSeconds;
 
-        while (true)
+        StringBuilder sb = new();
+        for (int i = 0; i < 3; ++i)
         {
-            string? name = Console.ReadLine();
-            if (name == null || name == "")
-                break;
-
-            for (int i = 0; i < name.Length; ++i)
-            {
-                char c = name[i];
-                if (c == 'e')
-                {
-                    c = 'i';
-                }
-                else if (c == 'i')
-                {
-                    c = 'e';
-                }
-                else if (c == 'E')
-                {
-                    c = 'I';
-                }
-                else if (c == 'I')
-                {
-                    c = 'E';
-                }
-                output.Append(c);
-            }
-            output.AppendLine();
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int start = tokens[0] * HourSeconds + tokens[1] * MinuteSeconds + tokens[2];
+            int end = tokens[3] * HourSeconds + tokens[4] * MinuteSeconds + tokens[5];
+            int interval = end - start;
+            sb.AppendLine($"{interval / HourSeconds} {interval % HourSeconds / MinuteSeconds} {interval % MinuteSeconds}");
         }
-
-        Console.Write(output);
+        Console.Write(sb);
     }
 }
