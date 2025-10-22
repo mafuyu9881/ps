@@ -2,32 +2,27 @@
 {
     static void Main(string[] args)
     {
-        int limit = int.Parse(Console.ReadLine()!);
-        int recorded = int.Parse(Console.ReadLine()!);
-        int over = recorded - limit;
-
-        int fine = 0;
-        if (over > 30)
-        {
-            fine = 500;
-        }
-        else if (over > 20)
-        {
-            fine = 270;
-        }
-        else if (over > 1)
-        {
-            fine = 100;
-        }
+        int depth0 = int.Parse(Console.ReadLine()!);
+        int depth1 = int.Parse(Console.ReadLine()!);
+        int depth2 = int.Parse(Console.ReadLine()!);
+        int depth3 = int.Parse(Console.ReadLine()!);
 
         string output;
-        if (fine > 0)
+        if (depth0 < depth1 && depth1 < depth2 && depth2 < depth3)
         {
-            output = $"You are speeding and your fine is ${fine}.";
+            output = "Fish Rising";
+        }
+        else if (depth0 > depth1 && depth1 > depth2 && depth2 > depth3)
+        {
+            output = "Fish Diving";
+        }
+        else if (depth0 == depth1 && depth1 == depth2 && depth2 == depth3)
+        {
+            output = "Fish At Constant Depth";
         }
         else
         {
-            output = "Congratulations, you are within the speed limit!";
+            output = "No Fish";
         }
         Console.Write(output);
     }
