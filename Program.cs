@@ -1,29 +1,25 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int depth0 = int.Parse(Console.ReadLine()!);
-        int depth1 = int.Parse(Console.ReadLine()!);
-        int depth2 = int.Parse(Console.ReadLine()!);
-        int depth3 = int.Parse(Console.ReadLine()!);
+        int antenna = int.Parse(Console.ReadLine()!);
+        int eyes = int.Parse(Console.ReadLine()!);
 
-        string output;
-        if (depth0 < depth1 && depth1 < depth2 && depth2 < depth3)
+        StringBuilder sb = new();
+        if (antenna >= 3 && eyes <= 4)
         {
-            output = "Fish Rising";
+            sb.AppendLine("TroyMartian");
         }
-        else if (depth0 > depth1 && depth1 > depth2 && depth2 > depth3)
+        if (antenna <= 6 && eyes >= 2)
         {
-            output = "Fish Diving";
+            sb.AppendLine("VladSaturnian");
         }
-        else if (depth0 == depth1 && depth1 == depth2 && depth2 == depth3)
+        if (antenna <= 2 && eyes <= 3)
         {
-            output = "Fish At Constant Depth";
+            sb.AppendLine("GraemeMercurian");
         }
-        else
-        {
-            output = "No Fish";
-        }
-        Console.Write(output);
+        Console.Write(sb);
     }
 }
