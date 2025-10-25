@@ -1,25 +1,23 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int antenna = int.Parse(Console.ReadLine()!);
-        int eyes = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!);
 
-        StringBuilder sb = new();
-        if (antenna >= 3 && eyes <= 4)
+        char[] responses = new char[n];
+        for (int i = 0; i < n; ++i)
         {
-            sb.AppendLine("TroyMartian");
+            responses[i] = Console.ReadLine()![0];
         }
-        if (antenna <= 6 && eyes >= 2)
+
+        int corrects = 0;
+        for (int i = 0; i < n; ++i)
         {
-            sb.AppendLine("VladSaturnian");
+            if (responses[i] == Console.ReadLine()![0])
+            {
+                ++corrects;
+            }
         }
-        if (antenna <= 2 && eyes <= 3)
-        {
-            sb.AppendLine("GraemeMercurian");
-        }
-        Console.Write(sb);
+        Console.Write(corrects);
     }
 }
