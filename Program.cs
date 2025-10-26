@@ -2,22 +2,25 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        string a = Console.ReadLine()!;
+        string b = Console.ReadLine()!;
+        string c = Console.ReadLine()!;
 
-        char[] responses = new char[n];
-        for (int i = 0; i < n; ++i)
-        {
-            responses[i] = Console.ReadLine()![0];
-        }
+        string isbn = "9780921418" + a + b + c;
 
-        int corrects = 0;
-        for (int i = 0; i < n; ++i)
+        int sum = 0;
+        for (int i = 0; i < isbn.Length; ++i)
         {
-            if (responses[i] == Console.ReadLine()![0])
+            int digit = isbn[i] - '0';
+            if (i % 2 == 0)
             {
-                ++corrects;
+                sum += digit * 1;
+            }
+            else
+            {
+                sum += digit * 3;
             }
         }
-        Console.Write(corrects);
+        Console.Write($"The 1-3-sum is {sum}");
     }
 }
