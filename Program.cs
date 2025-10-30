@@ -4,13 +4,21 @@ class Program
 {
     static void Main(string[] args)
     {
-        int x = int.Parse(Console.ReadLine()!);
-        int y = int.Parse(Console.ReadLine()!);
-
         StringBuilder sb = new();
-        for (int i = x; i <= y; i += 60)
+        while (true)
         {
-            sb.AppendLine($"All positions change in year {i}");
+            int n = int.Parse(Console.ReadLine()!);
+            if (n == 0)
+                break;
+
+            for (int i = 1; i <= n; ++i)
+            {
+                for (int j = 1; j <= i; ++j)
+                {
+                    sb.Append('*');
+                }
+                sb.AppendLine();
+            }
         }
         Console.Write(sb);
     }
