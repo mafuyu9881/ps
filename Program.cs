@@ -4,21 +4,17 @@ class Program
 {
     static void Main(string[] args)
     {
-        StringBuilder sb = new();
-        while (true)
-        {
-            int n = int.Parse(Console.ReadLine()!);
-            if (n == 0)
-                break;
+        int n = int.Parse(Console.ReadLine()!);
 
-            for (int i = 1; i <= n; ++i)
+        StringBuilder sb = new();
+        for (int i = 0; i < n; ++i)
+        {
+            int k = int.Parse(Console.ReadLine()!);
+            for (int j = 0; j < k; ++j)
             {
-                for (int j = 1; j <= i; ++j)
-                {
-                    sb.Append('*');
-                }
-                sb.AppendLine();
+                sb.Append('=');
             }
+            sb.AppendLine();
         }
         Console.Write(sb);
     }
