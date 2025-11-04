@@ -2,17 +2,23 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        int c = int.Parse(Console.ReadLine()!);
+        int d = int.Parse(Console.ReadLine()!);
+        int e = int.Parse(Console.ReadLine()!);
 
-        int a = tokens[0];
-        int b = tokens[1];
-        int c = tokens[2];
-        int d = tokens[3];
+        int elapsedTime = 0;
 
-        int diff0 = Math.Abs((a + b) - (c + d));
-        int diff1 = Math.Abs((a + c) - (b + d));
-        int diff2 = Math.Abs((a + d) - (b + c));
+        if (a < 0)
+        {
+            elapsedTime += (0 - a) * c;
+            elapsedTime += d;
+            a = 0;
+        }
 
-        Console.Write(Math.Min(diff0, Math.Min(diff1, diff2)));
+        elapsedTime += (b - a) * e;
+
+        Console.Write(elapsedTime);
     }
 }
