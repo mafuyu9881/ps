@@ -1,24 +1,25 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int a = int.Parse(Console.ReadLine()!);
-        int b = int.Parse(Console.ReadLine()!);
-        int c = int.Parse(Console.ReadLine()!);
-        int d = int.Parse(Console.ReadLine()!);
-        int e = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!);
 
-        int elapsedTime = 0;
-
-        if (a < 0)
+        StringBuilder sb = new();
+        for (int i = 0; i < n; ++i)
         {
-            elapsedTime += (0 - a) * c;
-            elapsedTime += d;
-            a = 0;
+            int x = int.Parse(Console.ReadLine()!);
+
+            if (x % 2 == 0)
+            {
+                sb.AppendLine($"{x} is even");
+            }
+            else
+            {
+                sb.AppendLine($"{x} is odd");
+            }
         }
-
-        elapsedTime += (b - a) * e;
-
-        Console.Write(elapsedTime);
+        Console.Write(sb);
     }
 }
