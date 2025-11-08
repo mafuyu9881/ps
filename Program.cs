@@ -2,35 +2,18 @@
 {
     static void Main(string[] args)
     {
-        string input = Console.ReadLine()!;
+        int t = int.Parse(Console.ReadLine()!);
 
-        int inputLength = input.Length;
-
-        int a;
-        int b;
-        if (inputLength == 2)
+        int[] answers = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        
+        int correctAnswers = 0;
+        for (int i = 0; i < answers.Length; ++i)
         {
-            a = input[0] - '0';
-            b = input[1] - '0';
-        }
-        else if (inputLength == 3)
-        {
-            if (input[1] == '0')
+            if (answers[i] == t)
             {
-                a = 10;
-                b = input[2] - '0';
-            }
-            else
-            {
-                a = input[0] - '0';
-                b = 10;
+                ++correctAnswers;
             }
         }
-        else // if (inputLength == 4)
-        {
-            a = 10;
-            b = 10;
-        }
-        Console.Write(a + b);
+        Console.Write(correctAnswers);
     }
 }
