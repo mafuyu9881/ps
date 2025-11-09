@@ -1,19 +1,17 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
         int t = int.Parse(Console.ReadLine()!);
 
-        int[] answers = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        
-        int correctAnswers = 0;
-        for (int i = 0; i < answers.Length; ++i)
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
         {
-            if (answers[i] == t)
-            {
-                ++correctAnswers;
-            }
+            string[] tokens = Console.ReadLine()!.Split();
+            sb.AppendLine((tokens[0] == tokens[1]) ? "OK" : "ERROR");
         }
-        Console.Write(correctAnswers);
+        Console.Write(sb);
     }
 }
