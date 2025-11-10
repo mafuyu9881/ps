@@ -1,17 +1,22 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
+        int c1 = 0;
+        int c2 = 0;
+        for (int i = 0; i < tokens.Length; ++i)
         {
-            string[] tokens = Console.ReadLine()!.Split();
-            sb.AppendLine((tokens[0] == tokens[1]) ? "OK" : "ERROR");
+            if (tokens[i] == 1)
+            {
+                ++c1;
+            }
+            else
+            {
+                ++c2;
+            }
         }
-        Console.Write(sb);
+        Console.Write((c1 > c2) ? 1 : 2);
     }
 }
