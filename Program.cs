@@ -2,21 +2,22 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        int c = int.Parse(Console.ReadLine()!);
+        int d = int.Parse(Console.ReadLine()!);
 
-        int c1 = 0;
-        int c2 = 0;
-        for (int i = 0; i < tokens.Length; ++i)
+        string output;
+        if ((a == 8 || a == 9) &&
+            (d == 8 || d == 9) &&
+            (b == c))
         {
-            if (tokens[i] == 1)
-            {
-                ++c1;
-            }
-            else
-            {
-                ++c2;
-            }
+            output = "ignore";
         }
-        Console.Write((c1 > c2) ? 1 : 2);
+        else
+        {
+            output = "answer";
+        }
+        Console.Write(output);
     }
 }
