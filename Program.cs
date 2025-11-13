@@ -2,12 +2,12 @@
 {
     static void Main(string[] args)
     {
-        string input = Console.ReadLine()!;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int a = input[0] - '0';
-        int b = input[4] - '0';
-        int c = input[8] - '0';
+        int a = tokens[0];
+        int b = tokens[1];
+        int c = tokens[2];
 
-        Console.Write((a + b == c) ? "YES" : "NO");
+        Console.Write(Math.Max(Math.Max(a + b, b + c), c + a));
     }
 }
