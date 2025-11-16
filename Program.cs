@@ -1,39 +1,21 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0];
+        int m = tokens[1];
+        int k = tokens[2];
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int birthYear = tokens[0];
-        int birthMonth = tokens[1];
-        int birthDay = tokens[2];
+        int oCardCount = m;
+        int xCardCount = n - m;
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int currYear = tokens[0];
-        int currMonth = tokens[1];
-        int currDay = tokens[2];
+        int oCount = k;
+        int xCount = n - k;
 
-        int standard = currYear - birthYear;
-        if (currYear > birthYear)
-        {
-            if ((currMonth < birthMonth) ||
-                (currMonth == birthMonth && currDay < birthDay))
-            {
-                --standard;
-            }
-        }
-        
-        int count = currYear - birthYear + 1;
-
-        int year = currYear - birthYear;
-
-        StringBuilder output = new();
-        output.AppendLine($"{standard}");
-        output.AppendLine($"{count}");
-        output.AppendLine($"{year}");
+        int output = 0;
+        output += Math.Min(oCardCount, oCount);
+        output += Math.Min(xCardCount, xCount);
         Console.Write(output);
     }
 }
