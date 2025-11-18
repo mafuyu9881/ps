@@ -5,25 +5,43 @@
         int[] tokens = null!;
 
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a1 = tokens[0];
-        int p1 = tokens[1];
-        double ratio1 = (double)a1 / p1;
+        int p1 = tokens[0];
+        int s1 = tokens[1];
 
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int r1 = tokens[0];
+        int s2 = tokens[0];
         int p2 = tokens[1];
-        double a2 = r1 * r1 * 3.141592653589793;
+
+        int pSum = p1 + p2;
+        int sSum = s1 + s2;
         
-        double ratio2 = a2 / p2;
+        const string Persepolis = "Persepolis";
+        const string Esteghlal = "Esteghlal";
+        const string Penalty = "Penalty";
 
         string output;
-        if (ratio1 > ratio2)
+        if (pSum > sSum)
         {
-            output = "Slice of pizza";
+            output = Persepolis;
+        }
+        else if (pSum == sSum)
+        {
+            if (p2 > s1)
+            {
+                output = Persepolis;
+            }
+            else if (p2 == s1)
+            {
+                output = Penalty;
+            }
+            else
+            {
+                output = Esteghlal;
+            }
         }
         else
         {
-            output = "Whole pizza";
+            output = Esteghlal;
         }
         Console.Write(output);
     }
