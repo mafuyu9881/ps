@@ -2,47 +2,30 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = null!;
+        int aSum = 0;
+        aSum += int.Parse(Console.ReadLine()!) * 3;
+        aSum += int.Parse(Console.ReadLine()!) * 2;
+        aSum += int.Parse(Console.ReadLine()!) * 1;
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int p1 = tokens[0];
-        int s1 = tokens[1];
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int s2 = tokens[0];
-        int p2 = tokens[1];
-
-        int pSum = p1 + p2;
-        int sSum = s1 + s2;
-        
-        const string Persepolis = "Persepolis";
-        const string Esteghlal = "Esteghlal";
-        const string Penalty = "Penalty";
+        int bSum = 0;
+        bSum += int.Parse(Console.ReadLine()!) * 3;
+        bSum += int.Parse(Console.ReadLine()!) * 2;
+        bSum += int.Parse(Console.ReadLine()!) * 1;
 
         string output;
-        if (pSum > sSum)
+        if (aSum > bSum)
         {
-            output = Persepolis;
+            output = "A";
         }
-        else if (pSum == sSum)
+        else if (aSum < bSum)
         {
-            if (p2 > s1)
-            {
-                output = Persepolis;
-            }
-            else if (p2 == s1)
-            {
-                output = Penalty;
-            }
-            else
-            {
-                output = Esteghlal;
-            }
+            output = "B";
         }
         else
         {
-            output = Esteghlal;
+            output = "T";
         }
+
         Console.Write(output);
     }
 }
