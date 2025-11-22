@@ -1,31 +1,22 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int aSum = 0;
-        aSum += int.Parse(Console.ReadLine()!) * 3;
-        aSum += int.Parse(Console.ReadLine()!) * 2;
-        aSum += int.Parse(Console.ReadLine()!) * 1;
-
-        int bSum = 0;
-        bSum += int.Parse(Console.ReadLine()!) * 3;
-        bSum += int.Parse(Console.ReadLine()!) * 2;
-        bSum += int.Parse(Console.ReadLine()!) * 1;
-
-        string output;
-        if (aSum > bSum)
+        int l = int.Parse(Console.ReadLine()!);
+        StringBuilder output = new();
+        for (int i = 0; i < l; ++i)
         {
-            output = "A";
+            string[] tokens = Console.ReadLine()!.Split();
+            int n = int.Parse(tokens[0]);
+            string x = tokens[1];
+            for (int j = 0; j < n; ++j)
+            {
+                output.Append(x);
+            }
+            output.AppendLine();
         }
-        else if (aSum < bSum)
-        {
-            output = "B";
-        }
-        else
-        {
-            output = "T";
-        }
-
         Console.Write(output);
     }
 }
