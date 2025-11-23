@@ -1,44 +1,19 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        StringBuilder output = new();
-        while (true)
-        {
-            float[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), float.Parse);
-            float x = tokens[0];
-            float y = tokens[1];
+        int[] tokens = null!;
 
-            string area;
-            if (x == 0 || y == 0)
-            {
-                area = "AXIS";
-            }
-            else if (x > 0 && y > 0)
-            {
-                area = "Q1";
-            }
-            else if (x < 0 && y > 0)
-            {
-                area = "Q2";
-            }
-            else if (x < 0 && y < 0)
-            {
-                area = "Q3";
-            }
-            else// if (x > 0 && y < 0)
-            {
-                area = "Q4";
-            }
-            output.AppendLine(area);
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int ax = tokens[0];
+        int ay = tokens[1];
+        int az = tokens[2];
 
-            if (x == 0 && y == 0)
-            {
-                break;
-            }
-        }
-        Console.Write(output);
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int cx = tokens[0];
+        int cy = tokens[1];
+        int cz = tokens[2];
+        
+        Console.Write($"{cx - az} {cy / ay} {cz - ax}");
     }
 }
