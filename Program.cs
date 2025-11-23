@@ -4,18 +4,40 @@ class Program
 {
     static void Main(string[] args)
     {
-        int l = int.Parse(Console.ReadLine()!);
         StringBuilder output = new();
-        for (int i = 0; i < l; ++i)
+        while (true)
         {
-            string[] tokens = Console.ReadLine()!.Split();
-            int n = int.Parse(tokens[0]);
-            string x = tokens[1];
-            for (int j = 0; j < n; ++j)
+            float[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries), float.Parse);
+            float x = tokens[0];
+            float y = tokens[1];
+
+            string area;
+            if (x == 0 || y == 0)
             {
-                output.Append(x);
+                area = "AXIS";
             }
-            output.AppendLine();
+            else if (x > 0 && y > 0)
+            {
+                area = "Q1";
+            }
+            else if (x < 0 && y > 0)
+            {
+                area = "Q2";
+            }
+            else if (x < 0 && y < 0)
+            {
+                area = "Q3";
+            }
+            else// if (x > 0 && y < 0)
+            {
+                area = "Q4";
+            }
+            output.AppendLine(area);
+
+            if (x == 0 && y == 0)
+            {
+                break;
+            }
         }
         Console.Write(output);
     }
