@@ -2,18 +2,12 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = null!;
+        double[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), double.Parse);
+        double a = tokens[0];
+        double b = tokens[1];
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int ax = tokens[0];
-        int ay = tokens[1];
-        int az = tokens[2];
+        double m = (b - a) / 400;
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int cx = tokens[0];
-        int cy = tokens[1];
-        int cz = tokens[2];
-        
-        Console.Write($"{cx - az} {cy / ay} {cz - ax}");
+        Console.Write(1 / (1 + Math.Pow(10, m)));
     }
 }
