@@ -2,12 +2,10 @@
 {
     static void Main(string[] args)
     {
-        double[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), double.Parse);
-        double a = tokens[0];
-        double b = tokens[1];
+        int n = int.Parse(Console.ReadLine()!);
 
-        double m = (b - a) / 400;
+        int[] fingers = { 2, 1, 2, 3, 4, 5, 4, 3, 2, 1 };
 
-        Console.Write(1 / (1 + Math.Pow(10, m)));
+        Console.Write(fingers[n % 8]);
     }
 }
