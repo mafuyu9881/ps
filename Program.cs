@@ -2,10 +2,31 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int s = tokens[0];
+        int k = tokens[1];
+        int h = tokens[2];
+        int sum = s + k + h;
+        int min = Math.Min(s, Math.Min(k, h));
 
-        int[] fingers = { 2, 1, 2, 3, 4, 5, 4, 3, 2, 1 };
+        string output;
+        if (sum >= 100)
+        {
+            output = "OK";
+        }
+        else if (s == min)
+        {
+            output = "Soongsil";
+        }
+        else if (k == min)
+        {
+            output = "Korea";
+        }
+        else// if (h == min)
+        {
+            output = "Hanyang";
+        }
 
-        Console.Write(fingers[n % 8]);
+        Console.Write(output);
     }
 }
