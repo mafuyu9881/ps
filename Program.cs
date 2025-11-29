@@ -1,12 +1,28 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0];
-        int w = tokens[1];
-        int h = tokens[2];
-        int l = tokens[3];
-        Console.Write(Math.Min(n, (w / l) * (h / l)));
+        string input = Console.ReadLine()!;
+
+        int eCount = 0;
+        for (int i = 0; i < input.Length; ++i)
+        {
+            if (input[i] == 'e')
+            {
+                ++eCount;
+            }
+        }
+        eCount *= 2;
+
+        StringBuilder output = new();
+        output.Append('h');
+        for (int i = 0; i < eCount; ++i)
+        {
+            output.Append('e');
+        }
+        output.Append('y');
+        Console.Write(output);
     }
 }
