@@ -1,28 +1,33 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        string input = Console.ReadLine()!;
+        const string LionName = "Lion";
+        const string TigerName = "Tiger";
 
-        int eCount = 0;
-        for (int i = 0; i < input.Length; ++i)
+        int lionCount = 0;
+        int tigerCount = 0;
+        for (int i = 0; i < 9; ++i)
         {
-            if (input[i] == 'e')
+            if (Console.ReadLine()! == LionName)
             {
-                ++eCount;
+                ++lionCount;
+            }
+            else
+            {
+                ++tigerCount;
             }
         }
-        eCount *= 2;
 
-        StringBuilder output = new();
-        output.Append('h');
-        for (int i = 0; i < eCount; ++i)
+        string king;
+        if (lionCount > tigerCount)
         {
-            output.Append('e');
+            king = LionName;
         }
-        output.Append('y');
-        Console.Write(output);
+        else
+        {
+            king = TigerName;
+        }
+        Console.Write(king);
     }
 }
