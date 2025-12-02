@@ -2,10 +2,18 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0];
-        int h = tokens[1];
-        int v = tokens[2];
-        Console.Write(Math.Max(n - h, h) * Math.Max(n - v, v) * 4);
+        int n = int.Parse(Console.ReadLine()!);
+
+        int[] junks = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+
+        int waitingDays = 0;
+        for (int i = 0; i < junks.Length; ++i)
+        {
+            if (junks[waitingDays] > junks[i])
+            {
+                waitingDays = i;
+            }
+        }
+        Console.Write(waitingDays);
     }
 }
