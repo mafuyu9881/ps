@@ -1,19 +1,23 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int t = int.Parse(Console.ReadLine()!);
 
-        int[] junks = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        int waitingDays = 0;
-        for (int i = 0; i < junks.Length; ++i)
+        StringBuilder sb = new();
+        for (int i = 0; i < t; ++i)
         {
-            if (junks[waitingDays] > junks[i])
+            int n = int.Parse(Console.ReadLine()!);
+            for (int j = 0; j < n; ++j)
             {
-                waitingDays = i;
+                int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+                int a = tokens[0];
+                int b = tokens[1];
+                sb.AppendLine($"{a + b} {a * b}");
             }
         }
-        Console.Write(waitingDays);
+        Console.Write(sb);
     }
 }
