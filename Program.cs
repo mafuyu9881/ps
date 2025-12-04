@@ -1,23 +1,14 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!);
+        int k = int.Parse(Console.ReadLine()!);
 
-        StringBuilder sb = new();
-        for (int i = 0; i < t; ++i)
-        {
-            int n = int.Parse(Console.ReadLine()!);
-            for (int j = 0; j < n; ++j)
-            {
-                int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                int a = tokens[0];
-                int b = tokens[1];
-                sb.AppendLine($"{a + b} {a * b}");
-            }
-        }
-        Console.Write(sb);
+        int nextMonthQuota = k + 60;
+        int withinQuota = Math.Min(n, nextMonthQuota);
+        int extraQuota = Math.Max(0, n - nextMonthQuota);
+
+        Console.Write(withinQuota * 1500 + extraQuota * 3000);
     }
 }
