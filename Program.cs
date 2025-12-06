@@ -2,13 +2,29 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        int k = int.Parse(Console.ReadLine()!);
+        const char teamA = 'A';
+        const char teamB = 'B';
 
-        int nextMonthQuota = k + 60;
-        int withinQuota = Math.Min(n, nextMonthQuota);
-        int extraQuota = Math.Max(0, n - nextMonthQuota);
+        string input = Console.ReadLine()!;
 
-        Console.Write(withinQuota * 1500 + extraQuota * 3000);
+        int scoreA = 0;
+        int scoreB = 0;
+
+        for (int i = 0; i < input.Length / 2; ++i)
+        {
+            char team = input[i * 2 + 0];
+            int score = int.Parse($"{input[i * 2 + 1]}");
+
+            if (team == teamA)
+            {
+                scoreA += score;
+            }
+            else
+            {
+                scoreB += score;
+            }
+        }
+
+        Console.Write((scoreA > scoreB) ? teamA : teamB);
     }
 }
