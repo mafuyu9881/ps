@@ -2,29 +2,25 @@
 {
     static void Main(string[] args)
     {
-        const char teamA = 'A';
-        const char teamB = 'B';
+        // we can solve this problem with just three case works (without using loop)
 
-        string input = Console.ReadLine()!;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int x = tokens[0];
+        int l = tokens[1];
+        int r = tokens[2];
+        
+        int min = Math.Min(l, r);
+        int max = Math.Max(l, r);
 
-        int scoreA = 0;
-        int scoreB = 0;
-
-        for (int i = 0; i < input.Length / 2; ++i)
+        int nearest = min;
+        for (int i = min + 1; i <= max; ++i)
         {
-            char team = input[i * 2 + 0];
-            int score = int.Parse($"{input[i * 2 + 1]}");
+            if (Math.Abs(x - nearest) < Math.Abs(x - i))
+                break;
 
-            if (team == teamA)
-            {
-                scoreA += score;
-            }
-            else
-            {
-                scoreB += score;
-            }
+            nearest = i;
         }
 
-        Console.Write((scoreA > scoreB) ? teamA : teamB);
+        Console.Write(nearest);
     }
 }
