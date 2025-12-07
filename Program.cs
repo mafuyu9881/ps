@@ -1,26 +1,23 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        // we can solve this problem with just three case works (without using loop)
+        int[] multiples = new int[3] { 1, 3, 5 };
 
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int x = tokens[0];
-        int l = tokens[1];
-        int r = tokens[2];
-        
-        int min = Math.Min(l, r);
-        int max = Math.Max(l, r);
+        int t = int.Parse(Console.ReadLine()!);
 
-        int nearest = min;
-        for (int i = min + 1; i <= max; ++i)
+        StringBuilder output = new();
+        for (int i = 0; i < t; ++i)
         {
-            if (Math.Abs(x - nearest) < Math.Abs(x - i))
-                break;
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int g = tokens[0];
+            int c = tokens[1];
+            int e = tokens[2];
 
-            nearest = i;
+            output.AppendLine($"{Math.Max(0, e - c) * multiples[g - 1]}");
         }
-
-        Console.Write(nearest);
+        Console.Write(output);
     }
 }
