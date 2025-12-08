@@ -4,19 +4,22 @@ class Program
 {
     static void Main(string[] args)
     {
-        int[] multiples = new int[3] { 1, 3, 5 };
-
         int t = int.Parse(Console.ReadLine()!);
 
         StringBuilder output = new();
         for (int i = 0; i < t; ++i)
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            int g = tokens[0];
-            int c = tokens[1];
-            int e = tokens[2];
+            string input = Console.ReadLine()!;
 
-            output.AppendLine($"{Math.Max(0, e - c) * multiples[g - 1]}");
+            int steps = 0;
+            for (int j = 0; j < input.Length; ++j)
+            {
+                if (input[j] == 'D')
+                    break;
+                
+                ++steps;
+            }
+            output.AppendLine($"{steps}");
         }
         Console.Write(output);
     }
