@@ -1,26 +1,11 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int s = int.Parse(Console.ReadLine()!);
+        int m = int.Parse(Console.ReadLine()!);
+        int l = int.Parse(Console.ReadLine()!);
 
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
-        {
-            string input = Console.ReadLine()!;
-
-            int steps = 0;
-            for (int j = 0; j < input.Length; ++j)
-            {
-                if (input[j] == 'D')
-                    break;
-                
-                ++steps;
-            }
-            output.AppendLine($"{steps}");
-        }
-        Console.Write(output);
+        Console.Write(((1 * s + 2 * m + 3 * l) < 10) ? "sad" : "happy");
     }
 }
