@@ -2,10 +2,23 @@
 {
     static void Main(string[] args)
     {
-        int s = int.Parse(Console.ReadLine()!);
-        int m = int.Parse(Console.ReadLine()!);
-        int l = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0];
+        int m = tokens[1];
 
-        Console.Write(((1 * s + 2 * m + 3 * l) < 10) ? "sad" : "happy");
+        string output;
+        if (m < 3)
+        {
+            output = "NEWBIE!";
+        }
+        else if (m >= 3 && m <= n)
+        {
+            output = "OLDBIE!";
+        }
+        else
+        {
+            output = "TLE!";
+        }
+        Console.Write(output);
     }
 }
