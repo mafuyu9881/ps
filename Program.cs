@@ -2,22 +2,19 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0];
-        int m = tokens[1];
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split('/'), int.Parse);
+        int k = tokens[0];
+        int d = tokens[1];
+        int a = tokens[2];
 
         string output;
-        if (m < 3)
+        if (k + a < d || d == 0)
         {
-            output = "NEWBIE!";
-        }
-        else if (m >= 3 && m <= n)
-        {
-            output = "OLDBIE!";
+            output = "hasu";
         }
         else
         {
-            output = "TLE!";
+            output = "gosu";
         }
         Console.Write(output);
     }
