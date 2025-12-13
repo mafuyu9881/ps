@@ -1,20 +1,17 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split('/'), int.Parse);
-        int k = tokens[0];
-        int d = tokens[1];
-        int a = tokens[2];
+        int n = int.Parse(Console.ReadLine()!);
 
-        string output;
-        if (k + a < d || d == 0)
+        string s = Console.ReadLine()!;
+
+        StringBuilder output = new();
+        for (int i = n - 5; i < n; ++i)
         {
-            output = "hasu";
-        }
-        else
-        {
-            output = "gosu";
+            output.Append(s[i]);
         }
         Console.Write(output);
     }
