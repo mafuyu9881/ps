@@ -1,18 +1,16 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-
-        string s = Console.ReadLine()!;
-
-        StringBuilder output = new();
-        for (int i = n - 5; i < n; ++i)
+        int sum = 0;
+        while (true)
         {
-            output.Append(s[i]);
+            int n = int.Parse(Console.ReadLine()!);
+            if (n == -1)
+                break;
+
+            sum += n;
         }
-        Console.Write(output);
+        Console.Write(sum);
     }
 }
