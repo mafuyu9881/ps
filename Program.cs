@@ -2,15 +2,10 @@
 {
     static void Main(string[] args)
     {
-        int sum = 0;
-        while (true)
-        {
-            int n = int.Parse(Console.ReadLine()!);
-            if (n == -1)
-                break;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int s = tokens[0];
+        int a = tokens[1];
 
-            sum += n;
-        }
-        Console.Write(sum);
+        Console.Write(Math.Min(s / 2, a / 2));
     }
 }
