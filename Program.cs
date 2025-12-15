@@ -1,11 +1,14 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int s = tokens[0];
-        int a = tokens[1];
+        int n = int.Parse(Console.ReadLine()!);
 
-        Console.Write(Math.Min(s / 2, a / 2));
+        StringBuilder sb = new();
+        sb.AppendLine($"{n}");
+        sb.AppendLine("1");
+        Console.Write(sb);
     }
 }
