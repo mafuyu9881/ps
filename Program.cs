@@ -2,12 +2,10 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        float[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), float.Parse);
+        float a = tokens[0];
+        float b = tokens[1];
 
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int b = tokens[1];
-
-        Console.Write(Math.Min(n, a / 2 + b));
+        Console.Write(((a - a * b / 100) >= 100) ? 0 : 1);
     }
 }
