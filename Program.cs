@@ -2,17 +2,27 @@
 {
     static void Main(string[] args)
     {
-        int x = int.Parse(Console.ReadLine()!);
-        
+        const int InvalidMinute = -1;
+
         int n = int.Parse(Console.ReadLine()!);
 
-        int sum = 0;
+        int minimumMinute = InvalidMinute;
         for (int i = 0; i < n; ++i)
         {
             int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            sum += tokens[0] * tokens[1];
+            int a = tokens[0];
+            int b = tokens[1];
+
+            if (a > b)
+                continue;
+
+            if (minimumMinute != InvalidMinute &&
+                minimumMinute <= b)
+                continue;
+
+            minimumMinute = b;
         }
 
-        Console.Write((sum == x) ? "Yes" : "No");
+        Console.Write(minimumMinute);
     }
 }
