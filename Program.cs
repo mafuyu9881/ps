@@ -2,10 +2,10 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = tokens[0];
-        int width = tokens[1];
-        int index = tokens[2];
-        Console.Write($"{index / width} {index % width}");
+        double[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), double.Parse);
+        double a = tokens[0];
+        double b = tokens[1];
+        double c = tokens[2];
+        Console.Write((int)Math.Max(a * b / c, a / b * c));
     }
 }
