@@ -2,49 +2,26 @@
 {
     static void Main(string[] args)
     {
-        int blackScoreSum = 0;
-        int whiteScoreSum = 0;
+        int n = int.Parse(Console.ReadLine()!);
 
-        for (int row = 0; row < 8; ++row)
+        string output = "No";
+        for (int i = 0; i < n; ++i)
         {
             string s = Console.ReadLine()!;
-            for (int col = 0; col < 8; ++col)
-            {
-                char c = s[col];
 
-                int score = 0;
-                if (c == 'p' || c == 'P')
-                {
-                    score = 1;
-                }
-                else if (c == 'n' || c == 'N')
-                {
-                    score = 3;
-                }
-                else if (c == 'b' || c == 'B')
-                {
-                    score = 3;
-                }
-                else if (c == 'r' || c == 'R')
-                {
-                    score = 5;
-                }
-                else if (c == 'q' || c == 'Q')
-                {
-                    score = 9;
-                }
+            if (s == "Never gonna give you up" ||
+                s == "Never gonna let you down" ||
+                s == "Never gonna run around and desert you" ||
+                s == "Never gonna make you cry" ||
+                s == "Never gonna say goodbye" ||
+                s == "Never gonna tell a lie and hurt you" ||
+                s == "Never gonna stop")
+                continue;
 
-                if (c >= 'a')
-                {
-                    blackScoreSum += score;
-                }
-                else
-                {
-                    whiteScoreSum += score;
-                }
-            }
+            output = "Yes";
+            break;
         }
 
-        Console.Write(whiteScoreSum - blackScoreSum);
+        Console.Write(output);
     }
 }
