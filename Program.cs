@@ -2,26 +2,27 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        const string DKSH = "DKSH";
 
-        string output = "No";
-        for (int i = 0; i < n; ++i)
+        string s = Console.ReadLine()!;
+
+        int output = 0;
+        for (int i = 0; i < s.Length - (DKSH.Length - 1); ++i)
         {
-            string s = Console.ReadLine()!;
+            int combo = 0;
+            for (int j = 0; j < DKSH.Length && i + j < s.Length; ++j)
+            {
+                if (s[i + j] != DKSH[j])
+                    break;
 
-            if (s == "Never gonna give you up" ||
-                s == "Never gonna let you down" ||
-                s == "Never gonna run around and desert you" ||
-                s == "Never gonna make you cry" ||
-                s == "Never gonna say goodbye" ||
-                s == "Never gonna tell a lie and hurt you" ||
-                s == "Never gonna stop")
+                ++combo;
+            }
+
+            if (combo < DKSH.Length)
                 continue;
 
-            output = "Yes";
-            break;
+            ++output;
         }
-
         Console.Write(output);
     }
 }
