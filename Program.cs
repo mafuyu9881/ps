@@ -1,32 +1,33 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!);
 
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
+        int sum = 0;
+        for (int i = 0; i < n; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!);
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int width = tokens[0];
 
-            StringBuilder votes = new();
-            while (n > 0)
+            if (width == 136)
             {
-                if (n >= 5)
-                {
-                    votes.Append("++++ ");
-                    n -= 5;
-                }
-                else
-                {
-                    votes.Append("|");
-                    n -= 1;
-                }
+                sum += 1000;
             }
-            output.AppendLine(votes.ToString());
+            else if (width == 142)
+            {
+                sum += 5000;
+            }
+            else if (width == 148)
+            {
+                sum += 10000;
+            }
+            else if (width == 154)
+            {
+                sum += 50000;
+            }
         }
-        Console.Write(output);
+        
+        Console.Write(sum);
     }
 }
