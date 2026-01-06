@@ -2,15 +2,9 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-        for (int i = 0; i < n; ++i)
-        {
-            string name = Console.ReadLine()!;
-            if (name.Contains('S'))
-            {
-                Console.Write(name);
-                break;
-            }
-        }
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
+        int c = int.Parse(Console.ReadLine()!);
+        Console.Write((a + b == c || a + c == b || b + c == a) ? 1 : 0);
     }
 }
