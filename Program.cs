@@ -1,31 +1,32 @@
-﻿using System.Text;
-using System.Numerics;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        StringBuilder output = new();
-        for (int t = 0; t < 3; ++t)
-        {
-            int n = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!);
+        
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-            BigInteger sum = 0;
-            for (int i = 0; i < n; ++i)
-            {
-                sum += long.Parse(Console.ReadLine()!);
-            }
-            
-            string sign = "0";
-            if (sum > 0)
-            {
-                sign = "+";
-            }
-            else if (sum < 0)
-            {
-                sign = "-";
-            }
-            output.AppendLine(sign);
+        int ySum = 0;
+        int mSum = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            int token = tokens[i];
+            ySum += (token / 30 + 1) * 10;
+            mSum += (token / 60 + 1) * 15;
+        }
+        
+        string output;
+        if (ySum < mSum)
+        {
+            output = $"Y {ySum}";
+        }
+        else if (ySum > mSum)
+        {
+            output = $"M {mSum}";
+        }
+        else
+        {
+            output = $"Y M {ySum}";
         }
         Console.Write(output);
     }
