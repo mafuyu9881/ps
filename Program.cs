@@ -1,27 +1,22 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int[] digitWidths = { 4, 2, 3, 3, 3, 3, 3, 3, 3, 3 };
+        const int Width = 4;
 
-        StringBuilder output = new();
-        while (true)
-        {
-            string s = Console.ReadLine()!;
-            if (s == "0")
-                break;
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int a = tokens[0];
+        int b = tokens[1];
 
-            int width = s.Length + 1;
-            for (int i = 0; i < s.Length; ++i)
-            {
-                int digit = s[i] - '0';
-                width += digitWidths[digit];
-            }
-            
-            output.AppendLine($"{width}");
-        }
-        Console.Write(output);
+        int aIndex = a - 1;
+        int bIndex = b - 1;
+
+        int aRow = aIndex / Width;
+        int aCol = aIndex % Width;
+
+        int bRow = bIndex / Width;
+        int bCol = bIndex % Width;
+
+        Console.Write(Math.Abs(bRow - aRow) + Math.Abs(bCol - aCol));
     }
 }
