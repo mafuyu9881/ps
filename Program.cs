@@ -1,22 +1,30 @@
-﻿class Program
+﻿using System.Data;
+using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        const int Width = 4;
+        StringBuilder output = new();
+        while (true)
+        {
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int b = tokens[1];
+            int a = tokens[0];
+            if (a == 0)
+                break;
 
-        int aIndex = a - 1;
-        int bIndex = b - 1;
+            int growingPoints = 1;
+            for (int i = 0; i < a; ++i)
+            {
+                int splittingFactor = tokens[i * 2 + 1];
+                int cut = tokens[i * 2 + 2];
 
-        int aRow = aIndex / Width;
-        int aCol = aIndex % Width;
+                growingPoints = growingPoints * splittingFactor - cut;
+            }
 
-        int bRow = bIndex / Width;
-        int bCol = bIndex % Width;
-
-        Console.Write(Math.Abs(bRow - aRow) + Math.Abs(bCol - aCol));
+            output.AppendLine($"{growingPoints}");
+        }
+        Console.Write(output);
     }
 }
