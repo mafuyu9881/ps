@@ -1,30 +1,44 @@
-﻿using System.Data;
-using System.Text;
+﻿using System.Numerics;
 
 class Program
 {
     static void Main(string[] args)
     {
-        StringBuilder output = new();
-        while (true)
+        string[] tokens = Console.ReadLine()!.Split();
+        BigInteger p = BigInteger.Parse(tokens[0]);
+        int k = int.Parse(tokens[1]);
+
+        bool[] composite = new bool[k];
+        LinkedList<int> primes = new();
+        for (int i = 2; i < k; ++i) // max tc = 10^6
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            if (composite[i])
+                continue;
+            
+            primes.AddLast(i);
 
-            int a = tokens[0];
-            if (a == 0)
-                break;
-
-            int growingPoints = 1;
-            for (int i = 0; i < a; ++i)
+            long square = (long)i * i;
+            if (square < k)
             {
-                int splittingFactor = tokens[i * 2 + 1];
-                int cut = tokens[i * 2 + 2];
-
-                growingPoints = growingPoints * splittingFactor - cut;
+                for (int j = (int)square; j < k; j += i) // max tc = ln(ln(10^6))
+                {
+                    composite[j] = true;
+                }
             }
-
-            output.AppendLine($"{growingPoints}");
         }
+
+        string output = "GOOD";
+
+        for (var lln = primes.First; lln != null; lln = lln.Next)
+        {
+            int prime = lln.Value;
+            if (p % lln.Value == 0)
+            {
+                output = $"BAD {prime}";
+                break;
+            }
+        }
+
         Console.Write(output);
     }
 }
