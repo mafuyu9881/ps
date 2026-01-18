@@ -1,16 +1,22 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int freeSockets = 0;
-        for (int i = 0; i < n; ++i)
+        StringBuilder output = new();
+
+        for (int stars = n; stars > 0; --stars)
         {
-            freeSockets += int.Parse(Console.ReadLine()!) - 1;
+            for (int i = n; i > 0; --i)
+            {
+                output.Append((i <= stars) ? '*' : ' ');
+            }
+            output.AppendLine();
         }
-        ++freeSockets;
         
-        Console.Write(freeSockets);
+        Console.Write(output);
     }
 }
