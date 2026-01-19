@@ -6,17 +6,19 @@ class Program
     {
         int n = int.Parse(Console.ReadLine()!);
 
+        int width = 2 * (n - 1) + 1;
+        
         StringBuilder output = new();
-
-        for (int stars = n; stars > 0; --stars)
+        for (int i = 0; i < n; ++i)
         {
-            for (int i = n; i > 0; --i)
-            {
-                output.Append((i <= stars) ? '*' : ' ');
-            }
+            int stars = 2 * i + 1;
+
+            int blanks = (width - stars) / 2;
+
+            output.Append(' ', blanks);
+            output.Append('*', stars);
             output.AppendLine();
         }
-        
         Console.Write(output);
     }
 }
