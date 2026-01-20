@@ -9,9 +9,9 @@ class Program
         int width = 2 * (n - 1) + 1;
         
         StringBuilder output = new();
-        for (int i = 0; i < n; ++i)
+        for (int i = n; i > 0; --i)
         {
-            int stars = 2 * i + 1;
+            int stars = 2 * i - 1;
 
             int blanks = (width - stars) / 2;
 
