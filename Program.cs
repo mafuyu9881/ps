@@ -6,17 +6,25 @@ class Program
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int width = 2 * (n - 1) + 1;
+        int height = 2 * n - 1;
         
         StringBuilder output = new();
-        for (int i = width; i > 0; --i)
+        for (int i = 0; i < height; ++i)
         {
-            int stars = 2 * ((i > n) ? width - i : i - 1) + 1;
-
-            int blanks = (width - stars) / 2;
-
-            output.Append(' ', blanks);
-            output.Append('*', stars);
+            if (i < height / 2)
+            {
+                output.Append('*', i + 1);
+                output.Append(' ', n - (i + 1));
+                output.Append(' ', n - (i + 1));
+                output.Append('*', i + 1);
+            }
+            else
+            {
+                output.Append('*', n - ((i + 1) - n));
+                output.Append(' ', (i + 1) - n);
+                output.Append(' ', (i + 1) - n);
+                output.Append('*', n - ((i + 1) - n));
+            }
             output.AppendLine();
         }
         Console.Write(output);
