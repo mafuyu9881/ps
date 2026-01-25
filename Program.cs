@@ -2,7 +2,7 @@
 {
     static void Main(string[] args)
     {
-        const int Stations = 4;
+        const int Stations = 10;
 
         int maxPassengers = 0;
         int currPassengers = 0;
