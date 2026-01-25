@@ -1,29 +1,23 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        const int Stations = 4;
 
-        int height = 2 * n - 1;
-        int width = 2 * n - 1;
-
-        StringBuilder output = new();
-        for (int i = 0; i < height; ++i)
+        int maxPassengers = 0;
+        int currPassengers = 0;
+        for (int i = 0; i < Stations; ++i)
         {
-            if (i < height / 2)
-            {
-                output.Append(' ', i);
-                output.Append('*', width - i * 2);
-            }
-            else
-            {
-                output.Append(' ', width / 2 - (i - width / 2));
-                output.Append('*', 2 * (i - width / 2) + 1);
-            }
-            output.AppendLine();
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int alightings = tokens[0];
+            int boardings = tokens[1];
+            
+            currPassengers -= alightings;
+            currPassengers += boardings;
+            
+            maxPassengers = Math.Max(maxPassengers, currPassengers);
         }
-        Console.Write(output);
+        
+        Console.Write(maxPassengers);
     }
 }
