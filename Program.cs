@@ -1,26 +1,29 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        char[] lookup = new char[] { 'D', 'C', 'B', 'A', 'E' };
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int n = tokens[0];
+        int k = tokens[1];
 
-        StringBuilder output = new();
-
-        for (int i = 0; i < 3; ++i)
+        int kthDivisor = 0;
         {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            int order = 0;
+            for (int i = 1; i <= n; ++i)
+            {
+                if (n % i != 0)
+                    continue;
 
-            int count = 0;
-            count += tokens[0];
-            count += tokens[1];
-            count += tokens[2];
-            count += tokens[3];
+                ++order;
 
-            output.AppendLine($"{lookup[count]}");
+                if (order < k)
+                    continue;
+
+                kthDivisor = i;
+                break;
+            }
         }
 
-        Console.Write(output);
+        Console.WriteLine(kthDivisor);
     }
 }
