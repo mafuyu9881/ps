@@ -2,28 +2,27 @@
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0];
-        int k = tokens[1];
-
-        int kthDivisor = 0;
+        int n = int.Parse(Console.ReadLine()!);
+        int[] results = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        
+        int score = 0;
+        int streak = 0;
+        for (int i = 0; i < results.Length; ++i)
         {
-            int order = 0;
-            for (int i = 1; i <= n; ++i)
+            int result = results[i];
+
+            if (result == 1)
             {
-                if (n % i != 0)
-                    continue;
-
-                ++order;
-
-                if (order < k)
-                    continue;
-
-                kthDivisor = i;
-                break;
+                ++streak;
             }
+            else
+            {
+                streak = 0;
+            }
+
+            score += streak;
         }
 
-        Console.WriteLine(kthDivisor);
+        Console.Write(score);
     }
 }
