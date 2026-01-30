@@ -1,28 +1,24 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
-        int[] results = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        
-        int score = 0;
-        int streak = 0;
-        for (int i = 0; i < results.Length; ++i)
+
+        int height = 2 * n - 1;
+        int width = n;
+
+        StringBuilder output = new();
+        for (int row = 0; row < height; ++row)
         {
-            int result = results[i];
-
-            if (result == 1)
+            int blanks = (row < height / 2) ? (width - 1) - row : row - (width - 1);
+            for (int col = 0; col < width; ++col)
             {
-                ++streak;
+                output.Append((col < blanks) ? ' ' : '*');
             }
-            else
-            {
-                streak = 0;
-            }
-
-            score += streak;
+            output.AppendLine();
         }
-
-        Console.Write(score);
+        Console.Write(output);
     }
 }
