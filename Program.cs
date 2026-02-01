@@ -1,24 +1,16 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int startHour = tokens[0];
+        int startMinute = tokens[1];
 
-        int height = 2 * n - 1;
-        int width = n;
+        int cookingMinutes = int.Parse(Console.ReadLine()!);
 
-        StringBuilder output = new();
-        for (int row = 0; row < height; ++row)
-        {
-            int stars = (row < height / 2) ? (row + 1) : (width - (row + 1 - width));
-            for (int col = 0; col < stars; ++col)
-            {
-                output.Append('*');
-            }
-            output.AppendLine();
-        }
-        Console.Write(output);
+        int endHour = (startHour + (startMinute + cookingMinutes) / 60) % 24;
+        int endMinute = (startMinute + cookingMinutes) % 60;
+
+        Console.Write($"{endHour} {endMinute}");
     }
 }
