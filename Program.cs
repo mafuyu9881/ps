@@ -1,16 +1,32 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int startHour = tokens[0];
-        int startMinute = tokens[1];
+        const int GridSize = 9;
 
-        int cookingMinutes = int.Parse(Console.ReadLine()!);
+        int maxValue = 0;
+        int maxValueRow = 0;
+        int maxValueCol = 0;
+        for (int row = 0; row < GridSize; ++row)
+        {
+            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int col = 0; col < GridSize; ++col)
+            {
+                int value = tokens[col];
+                if (value < maxValue)
+                    continue;
 
-        int endHour = (startHour + (startMinute + cookingMinutes) / 60) % 24;
-        int endMinute = (startMinute + cookingMinutes) % 60;
+                maxValue = value;
+                maxValueRow = row;
+                maxValueCol = col;
+            }
+        }
 
-        Console.Write($"{endHour} {endMinute}");
+        StringBuilder output = new();
+        output.AppendLine($"{maxValue}");
+        output.AppendLine($"{maxValueRow + 1} {maxValueCol + 1}");
+        Console.Write(output);
     }
 }
