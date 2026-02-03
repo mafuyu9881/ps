@@ -4,29 +4,23 @@ class Program
 {
     static void Main(string[] args)
     {
-        const int GridSize = 9;
-
-        int maxValue = 0;
-        int maxValueRow = 0;
-        int maxValueCol = 0;
-        for (int row = 0; row < GridSize; ++row)
-        {
-            int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int col = 0; col < GridSize; ++col)
-            {
-                int value = tokens[col];
-                if (value < maxValue)
-                    continue;
-
-                maxValue = value;
-                maxValueRow = row;
-                maxValueCol = col;
-            }
-        }
+        int t = int.Parse(Console.ReadLine()!);
 
         StringBuilder output = new();
-        output.AppendLine($"{maxValue}");
-        output.AppendLine($"{maxValueRow + 1} {maxValueCol + 1}");
+        for (int i = 0; i < t; ++i)
+        {
+            Console.ReadLine();
+
+            long n = long.Parse(Console.ReadLine()!);
+
+            long moddedCandies = 0;
+            for (int j = 0; j < n; ++j)
+            {
+                moddedCandies = (moddedCandies + (long.Parse(Console.ReadLine()!) % n)) % n;
+            }
+
+            output.AppendLine((moddedCandies == 0) ? "YES" : "NO");
+        }
         Console.Write(output);
     }
 }
