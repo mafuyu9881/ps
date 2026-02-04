@@ -4,22 +4,30 @@ class Program
 {
     static void Main(string[] args)
     {
-        int t = int.Parse(Console.ReadLine()!);
+        const int Count = 7;
+        const int InvalidMax = 101;
 
-        StringBuilder output = new();
-        for (int i = 0; i < t; ++i)
+        int sum = 0;
+        int min = InvalidMax;
+        for (int i = 0; i < Count; ++i)
         {
-            Console.ReadLine();
+            int n = int.Parse(Console.ReadLine()!);
+            if (n % 2 == 0)
+                continue;
 
-            long n = long.Parse(Console.ReadLine()!);
-
-            long moddedCandies = 0;
-            for (int j = 0; j < n; ++j)
-            {
-                moddedCandies = (moddedCandies + (long.Parse(Console.ReadLine()!) % n)) % n;
-            }
-
-            output.AppendLine((moddedCandies == 0) ? "YES" : "NO");
+            sum += n;
+            min = Math.Min(min, n);
+        }
+        
+        StringBuilder output = new();
+        if (min == InvalidMax)
+        {
+            output.AppendLine("-1");
+        }
+        else
+        {
+            output.AppendLine($"{sum}");
+            output.AppendLine($"{min}");
         }
         Console.Write(output);
     }
