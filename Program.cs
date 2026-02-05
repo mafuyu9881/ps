@@ -4,31 +4,19 @@ class Program
 {
     static void Main(string[] args)
     {
-        const int Count = 7;
-        const int InvalidMax = 101;
+        int a = int.Parse(Console.ReadLine()!);
+        int b = int.Parse(Console.ReadLine()!);
 
-        int sum = 0;
-        int min = InvalidMax;
-        for (int i = 0; i < Count; ++i)
-        {
-            int n = int.Parse(Console.ReadLine()!);
-            if (n % 2 == 0)
-                continue;
-
-            sum += n;
-            min = Math.Min(min, n);
-        }
-        
         StringBuilder output = new();
-        if (min == InvalidMax)
-        {
-            output.AppendLine("-1");
-        }
-        else
-        {
-            output.AppendLine($"{sum}");
-            output.AppendLine($"{min}");
-        }
+        output.AppendLine($"{a * GetDigit(b, 10, 1)}");
+        output.AppendLine($"{a * GetDigit(b, 100, 10)}");
+        output.AppendLine($"{a * GetDigit(b, 1000, 100)}");
+        output.AppendLine($"{a * b}");
         Console.Write(output);
+    }
+
+    static int GetDigit(int n, int modulus, int divisor)
+    {
+        return (n % modulus) / divisor;
     }
 }
