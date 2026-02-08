@@ -10,16 +10,21 @@ class Program
         {
             for (int i = 0; i < t; ++i)
             {
-                int n = int.Parse(Console.ReadLine()!);
-
-                long result = 0;
+                int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+                int a = tokens[0];
+                int b = tokens[1];
+                
+                int index = 1;
+                for (int j = 0; j < b; ++j)
                 {
-                    for (int k = 1; k < n + 1; ++k)
+                    index = (index * a) % 10;
+
+                    if (index == 0)
                     {
-                        result += (long)k * (k + 1) * (k + 2) / 2;
+                        index = 10;
                     }
                 }
-                output.AppendLine($"{result}");
+                output.AppendLine($"{index}");
             }
         }
         Console.Write(output);
