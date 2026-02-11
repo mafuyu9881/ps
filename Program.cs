@@ -4,44 +4,26 @@ class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
-
-        int[] count = new int['z' - 'a' + 1];
-
-        for (int i = 0; i < n; ++i)
-        {
-            string name = Console.ReadLine()!;
-
-            char firstChar = name[0];
-
-            int firstCharHash = LowerCaseToIndex(firstChar);
-
-            ++count[firstCharHash];
-        }
+        string octal = Console.ReadLine()!;
 
         StringBuilder output = new();
-        for (int i = 0; i < count.Length; ++i)
+        for (int i = 0; i < octal.Length; ++i)
         {
-            if (count[i] < 5)
-                continue;
-
-            output.Append(IndexToLowerCase(i));
+            int digit = octal[i] - '0';
+            output.Append((digit >> 2) & 1);
+            output.Append((digit >> 1) & 1);
+            output.Append((digit >> 0) & 1);
         }
 
-        if (output.Length < 1)
+        int readStartIndex = 0;
+        while (readStartIndex < output.Length - 1)
         {
-            output.Append("PREDAJA");
+            if (output[readStartIndex] != '0')
+                break;
+            
+            ++readStartIndex;
         }
 
-        Console.Write(output);
-    }
-
-    static int LowerCaseToIndex(char c)
-    {
-        return c - 'a';
-    }
-    static char IndexToLowerCase(int index)
-    {
-        return (char)('a' + index);
+        Console.Write(output.ToString(readStartIndex, output.Length - readStartIndex));
     }
 }
