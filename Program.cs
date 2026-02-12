@@ -1,29 +1,21 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        string octal = Console.ReadLine()!;
+        int n = int.Parse(Console.ReadLine()!);
 
-        StringBuilder output = new();
-        for (int i = 0; i < octal.Length; ++i)
+        int f = int.Parse(Console.ReadLine()!);
+
+        for (int tens = 0; tens < 10; ++tens)
         {
-            int digit = octal[i] - '0';
-            output.Append((digit >> 2) & 1);
-            output.Append((digit >> 1) & 1);
-            output.Append((digit >> 0) & 1);
+            for (int ones = 0; ones < 10; ++ones)
+            {
+                if ((((n / 100) * 100) + (tens * 10) + (ones)) % f == 0)
+                {
+                    Console.Write($"{tens}{ones}");
+                    return;
+                }
+            }
         }
-
-        int readStartIndex = 0;
-        while (readStartIndex < output.Length - 1)
-        {
-            if (output[readStartIndex] != '0')
-                break;
-            
-            ++readStartIndex;
-        }
-
-        Console.Write(output.ToString(readStartIndex, output.Length - readStartIndex));
     }
 }
