@@ -4,18 +4,31 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int f = int.Parse(Console.ReadLine()!);
-
-        for (int tens = 0; tens < 10; ++tens)
+        string[] names = new string[n];
+        for (int i = 0; i < n; ++i)
         {
-            for (int ones = 0; ones < 10; ++ones)
+            names[i] = Console.ReadLine()!;
+        }
+
+        int nameLength = names[0].Length;
+
+        char[] output = new char[nameLength];
+        {
+            for (int i = 0; i < nameLength; ++i)
             {
-                if ((((n / 100) * 100) + (tens * 10) + (ones)) % f == 0)
+                char c = names[0][i];
+                for (int j = 1; j < n; ++j)
                 {
-                    Console.Write($"{tens}{ones}");
-                    return;
+                    if (c != names[j][i])
+                    {
+                        c = '?';
+                        break;
+                    }
                 }
+                output[i] = c;
             }
         }
+
+        Console.Write(output);
     }
 }
