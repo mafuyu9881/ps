@@ -2,33 +2,25 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        Console.ReadLine();
 
-        string[] names = new string[n];
-        for (int i = 0; i < n; ++i)
+        int[] divisors = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        Array.Sort(divisors);
+
+        int divisorsLength = divisors.Length;
+
+        string output;
         {
-            names[i] = Console.ReadLine()!;
-        }
-
-        int nameLength = names[0].Length;
-
-        char[] output = new char[nameLength];
-        {
-            for (int i = 0; i < nameLength; ++i)
+            if (divisorsLength % 2 == 0)
             {
-                char c = names[0][i];
-                for (int j = 1; j < n; ++j)
-                {
-                    if (c != names[j][i])
-                    {
-                        c = '?';
-                        break;
-                    }
-                }
-                output[i] = c;
+                output = (divisors[0] * divisors[divisorsLength - 1]).ToString();
+            }
+            else
+            {
+                output = (divisors[divisorsLength / 2] * divisors[divisorsLength / 2]).ToString();
             }
         }
-
+        
         Console.Write(output);
     }
 }
