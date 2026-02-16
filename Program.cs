@@ -2,25 +2,23 @@
 {
     static void Main(string[] args)
     {
-        Console.ReadLine();
+        int n = int.Parse(Console.ReadLine()!);
 
-        int[] divisors = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        Array.Sort(divisors);
-
-        int divisorsLength = divisors.Length;
-
-        string output;
+        int cycles = 0;
         {
-            if (divisorsLength % 2 == 0)
+            int temp = n;
+            do
             {
-                output = (divisors[0] * divisors[divisorsLength - 1]).ToString();
+                int a = temp / 10;
+                int b = temp % 10;
+                int sum = a + b;
+
+                temp = (b * 10) + (sum % 10);
+                ++cycles;
             }
-            else
-            {
-                output = (divisors[divisorsLength / 2] * divisors[divisorsLength / 2]).ToString();
-            }
+            while (temp != n);
         }
-        
-        Console.Write(output);
+
+        Console.Write(cycles);
     }
 }
