@@ -2,23 +2,46 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] naturals = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int cycles = 0;
+        int naturalsLength = naturals.Length;
+
+        const int Invalid = -1;
+        int output = Invalid;
+        for (int i = 0; i < naturalsLength; ++i)
         {
-            int temp = n;
-            do
+            for (int j = i + 1; j < naturalsLength; ++j)
             {
-                int a = temp / 10;
-                int b = temp % 10;
-                int sum = a + b;
-
-                temp = (b * 10) + (sum % 10);
-                ++cycles;
+                for (int k = j + 1; k < naturalsLength; ++k)
+                {
+                    int lcd = LCD(LCD(naturals[i], naturals[j]), naturals[k]);
+                    if (output == Invalid || lcd < output)
+                    {
+                        output = lcd;
+                    }
+                }
             }
-            while (temp != n);
+        }
+        Console.Write(output);
+    }
+
+    static int GCD(int a, int b)
+    {
+        int min = Math.Min(a, b);
+
+        for (int i = min; i > 0; --i)
+        {
+            if (a % i == 0 && b % i == 0)
+            {
+                return i;
+            }
         }
 
-        Console.Write(cycles);
+        return 1;
+    }
+
+    static int LCD(int a, int b)
+    {
+        return a * b / GCD(a, b);
     }
 }
