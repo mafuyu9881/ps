@@ -2,46 +2,48 @@
 {
     static void Main(string[] args)
     {
-        int[] naturals = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        string word = Console.ReadLine()!;
 
-        int naturalsLength = naturals.Length;
+        int[] counts = new int['Z' - 'A' + 1];
 
-        const int Invalid = -1;
-        int output = Invalid;
-        for (int i = 0; i < naturalsLength; ++i)
+        for (int i = 0; i < word.Length; ++i)
         {
-            for (int j = i + 1; j < naturalsLength; ++j)
-            {
-                for (int k = j + 1; k < naturalsLength; ++k)
-                {
-                    int lcd = LCD(LCD(naturals[i], naturals[j]), naturals[k]);
-                    if (output == Invalid || lcd < output)
-                    {
-                        output = lcd;
-                    }
-                }
-            }
-        }
-        Console.Write(output);
-    }
+            char c = word[i];
 
-    static int GCD(int a, int b)
-    {
-        int min = Math.Min(a, b);
-
-        for (int i = min; i > 0; --i)
-        {
-            if (a % i == 0 && b % i == 0)
+            if (c >= 'a' && c <= 'z')
             {
-                return i;
+                c = (char)(c + ('A' - 'a'));
             }
+
+            int index = c - 'A';
+
+            ++counts[index];
         }
 
-        return 1;
-    }
+        const int InvalidIndex = -1;
+        int maxIndex = InvalidIndex;
+        bool tied = false;
+        for (int i = 0; i < counts.Length; ++i)
+        {
+            if (maxIndex == InvalidIndex ||
+                counts[i] > counts[maxIndex])
+            {
+                maxIndex = i;
+                tied = false;
+            }
+            else if (counts[i] == counts[maxIndex])
+            {
+                tied = true;
+            }
+        }
 
-    static int LCD(int a, int b)
-    {
-        return a * b / GCD(a, b);
+        if (tied)
+        {
+            Console.Write("?");
+        }
+        else
+        {
+            Console.Write((char)('A' + maxIndex));
+        }
     }
 }
