@@ -2,48 +2,47 @@
 {
     static void Main(string[] args)
     {
-        string word = Console.ReadLine()!;
+        const char Guard = 'X';
 
-        int[] counts = new int['Z' - 'A' + 1];
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int height = tokens[0];
+        int width = tokens[1];
 
-        for (int i = 0; i < word.Length; ++i)
+        bool[] rowFilled = new bool[height];
+        bool[] colFilled = new bool[width];
+
+        for (int row = 0; row < height; ++row)
         {
-            char c = word[i];
-
-            if (c >= 'a' && c <= 'z')
+            string line = Console.ReadLine()!;
+            for (int col = 0; col < width; ++col)
             {
-                c = (char)(c + ('A' - 'a'));
-            }
-
-            int index = c - 'A';
-
-            ++counts[index];
-        }
-
-        const int InvalidIndex = -1;
-        int maxIndex = InvalidIndex;
-        bool tied = false;
-        for (int i = 0; i < counts.Length; ++i)
-        {
-            if (maxIndex == InvalidIndex ||
-                counts[i] > counts[maxIndex])
-            {
-                maxIndex = i;
-                tied = false;
-            }
-            else if (counts[i] == counts[maxIndex])
-            {
-                tied = true;
+                char c = line[col];
+                if (c == Guard)
+                {
+                    rowFilled[row] = true;
+                    colFilled[col] = true;
+                }
             }
         }
 
-        if (tied)
+        int rowBlanks = 0;
+        for (int i = 0; i < rowFilled.Length; ++i)
         {
-            Console.Write("?");
+            if (rowFilled[i] == false)
+            {
+                ++rowBlanks;
+            }
         }
-        else
+
+        int colBlanks = 0;
+        for (int i = 0; i < colFilled.Length; ++i)
         {
-            Console.Write((char)('A' + maxIndex));
+            if (colFilled[i] == false)
+            {
+                ++colBlanks;
+            }
         }
+
+        Console.Write(Math.Max(rowBlanks, colBlanks));
     }
 }
