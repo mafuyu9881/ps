@@ -2,47 +2,31 @@
 {
     static void Main(string[] args)
     {
-        const char Guard = 'X';
-
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int height = tokens[0];
-        int width = tokens[1];
+        int a = tokens[0];
+        int b = tokens[1];
 
-        bool[] rowFilled = new bool[height];
-        bool[] colFilled = new bool[width];
-
-        for (int row = 0; row < height; ++row)
+        int[] sequence = new int[b + 1];
         {
-            string line = Console.ReadLine()!;
-            for (int col = 0; col < width; ++col)
+            int writingIndex = 1;
+            for (int number = 1; writingIndex < sequence.Length; ++number)
             {
-                char c = line[col];
-                if (c == Guard)
+                for (int i = 0; i < number && writingIndex < sequence.Length; ++i)
                 {
-                    rowFilled[row] = true;
-                    colFilled[col] = true;
+                    sequence[writingIndex] = number;
+                    ++writingIndex;
                 }
             }
         }
 
-        int rowBlanks = 0;
-        for (int i = 0; i < rowFilled.Length; ++i)
+        int sum = 0;
         {
-            if (rowFilled[i] == false)
+            for (int i = a; i < sequence.Length; ++i)
             {
-                ++rowBlanks;
+                sum += sequence[i];
             }
         }
 
-        int colBlanks = 0;
-        for (int i = 0; i < colFilled.Length; ++i)
-        {
-            if (colFilled[i] == false)
-            {
-                ++colBlanks;
-            }
-        }
-
-        Console.Write(Math.Max(rowBlanks, colBlanks));
+        Console.Write(sum);
     }
 }
