@@ -1,29 +1,28 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        string serial = Console.ReadLine()!;
+        int n = int.Parse(Console.ReadLine()!);
+        
+        StringBuilder output = new();
+        {
+            for (int i = 0; i < n; ++i)
+            {
+                string[] words = Console.ReadLine()!.Split();
 
-        char typecode = serial[0];
+                int wordsLength = words.Length;
 
-        string type;
-        if (typecode == 'F')
-        {
-            type = "Foundation";
-        }
-        else if (typecode == 'C')
-        {
-            type = "Claves";
-        }
-        else if (typecode == 'V')
-        {
-            type = "Veritas";
-        }
-        else // if (type == 'E')
-        {
-            type = "Exploration";
+                output.Append($"Case #{i + 1}: ");
+                for (int j = 0; j < wordsLength; ++j)
+                {
+                    output.Append($"{words[wordsLength - 1 - j]} ");
+                }
+                output.AppendLine();
+            }
         }
 
-        Console.Write(type);
+        Console.Write(output);
     }
 }
