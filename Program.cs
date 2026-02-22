@@ -1,32 +1,21 @@
-﻿class Program
+﻿using System.Numerics;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int b = tokens[1];
+        int n = int.Parse(Console.ReadLine()!);
+        
+        BigInteger a = 1;
+        BigInteger b = 1;
 
-        int[] sequence = new int[b + 1];
+        for (int i = 3; i <= n; ++i)
         {
-            int writingIndex = 1;
-            for (int number = 1; writingIndex < sequence.Length; ++number)
-            {
-                for (int i = 0; i < number && writingIndex < sequence.Length; ++i)
-                {
-                    sequence[writingIndex] = number;
-                    ++writingIndex;
-                }
-            }
+            BigInteger temp = a + b;
+            a = b;
+            b = temp;
         }
 
-        int sum = 0;
-        {
-            for (int i = a; i < sequence.Length; ++i)
-            {
-                sum += sequence[i];
-            }
-        }
-
-        Console.Write(sum);
+        Console.Write(b);
     }
 }
