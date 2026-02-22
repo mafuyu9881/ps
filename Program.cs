@@ -2,8 +2,28 @@
 {
     static void Main(string[] args)
     {
-        string a = Console.ReadLine()!;
-        string b = Console.ReadLine()!;
-        Console.Write((a == b) ? "0" : "1550");
+        string serial = Console.ReadLine()!;
+
+        char typecode = serial[0];
+
+        string type;
+        if (typecode == 'F')
+        {
+            type = "Foundation";
+        }
+        else if (typecode == 'C')
+        {
+            type = "Claves";
+        }
+        else if (typecode == 'V')
+        {
+            type = "Veritas";
+        }
+        else // if (type == 'E')
+        {
+            type = "Exploration";
+        }
+
+        Console.Write(type);
     }
 }
