@@ -1,33 +1,29 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int students = int.Parse(Console.ReadLine()!);
 
-        string[] requiredIngredients = Console.ReadLine()!.Split();
-        string[] usedIngredients = Console.ReadLine()!.Split();
+        int[] numbers = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        for (int i = 0; i < requiredIngredients.Length; ++i)
+        List<int> line = new();
         {
-            string requiredIngredient = requiredIngredients[i];
-
-            bool contained = false;
+            for (int i = 1; i <= students; ++i)
             {
-                for (int j = 0; j < usedIngredients.Length; ++j)
-                {
-                    if (requiredIngredient == usedIngredients[j])
-                    {
-                        contained = true;
-                        break;
-                    }
-                }
-            }
-
-            if (contained == false)
-            {
-                Console.Write(requiredIngredient);
-                return;
+                line.Insert(line.Count - numbers[i - 1], i);
             }
         }
+        
+        StringBuilder output = new();
+        {
+            for (int i = 0; i < line.Count; ++i)
+            {
+                output.Append($"{line[i]} ");
+            }
+        }
+
+        Console.Write(output);
     }
 }
