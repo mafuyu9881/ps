@@ -1,28 +1,30 @@
-﻿using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
-        
-        StringBuilder output = new();
+
+        int[] sticks = new int[n];
+        for (int i = 0; i < n; ++i)
         {
-            for (int i = 0; i < n; ++i)
+            sticks[i] = int.Parse(Console.ReadLine()!);
+        }
+
+        int visible = 0;
+        {
+            int maxStick = 0;
+            for (int i = sticks.Length - 1; i >= 0; --i)
             {
-                string[] words = Console.ReadLine()!.Split();
+                int stick = sticks[i];
 
-                int wordsLength = words.Length;
-
-                output.Append($"Case #{i + 1}: ");
-                for (int j = 0; j < wordsLength; ++j)
+                if (stick > maxStick)
                 {
-                    output.Append($"{words[wordsLength - 1 - j]} ");
+                    ++visible;
+                    maxStick = stick;
                 }
-                output.AppendLine();
             }
         }
 
-        Console.Write(output);
+        Console.Write(visible);
     }
 }
