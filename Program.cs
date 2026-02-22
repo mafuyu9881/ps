@@ -1,20 +1,31 @@
-﻿using System.Numerics;
+﻿using System.Text;
 
 class Program
 {
     static void Main(string[] args)
     {
-        BigInteger n = BigInteger.Parse(Console.ReadLine()!);
+        const int MaxPassedMonths = 45;
 
-        BigInteger a = 0;
-        BigInteger b = 1;
-        for (int i = 2; i <= n; ++i)
+        long[] fibonacci = new long[MaxPassedMonths + 1];
         {
-            BigInteger temp = a + b;
-            a = b;
-            b = temp;
+            fibonacci[0] = 1;
+            fibonacci[1] = 1;
+            for (int i = 2; i <= MaxPassedMonths; ++i)
+            {
+                fibonacci[i] = fibonacci[i - 1] + fibonacci[i - 2];
+            }
         }
 
-        Console.Write(b);
+        int t = int.Parse(Console.ReadLine()!);
+
+        StringBuilder output = new();
+        {
+            for (int i = 0; i < t; ++i)
+            {
+                output.AppendLine($"{fibonacci[int.Parse(Console.ReadLine()!)]}");
+            }
+        }
+
+        Console.Write(output);
     }
 }
