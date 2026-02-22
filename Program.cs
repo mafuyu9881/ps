@@ -1,35 +1,84 @@
-﻿using System.Numerics;
-using System.Text;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        const int Max = 490;
+        string yeondu = Console.ReadLine()!;
 
-        BigInteger[] fibonacci = new BigInteger[Max + 1];
+        int n = int.Parse(Console.ReadLine()!);
+
+        List<string> teams = new();
+        for (int i = 0; i < n; ++i)
         {
-            fibonacci[0] = 0;
-            fibonacci[1] = 1;
-            fibonacci[2] = 1;
-            for (int i = 3; i <= Max; ++i)
+            teams.Add(Console.ReadLine()!);
+        }
+
+        string bestTeam = "";
+        int bestScore = -1;
+        for (int i = 0; i < teams.Count; ++i)
+        {
+            string team = teams[i];
+
+            int score = GetScore(yeondu, team);
+
+            if (score > bestScore)
             {
-                fibonacci[i] = fibonacci[i - 1] + fibonacci[i - 2];
+                bestScore = score;
+                bestTeam = team;
+            }
+            else if (score == bestScore)
+            {
+                if (string.Compare(team, bestTeam, StringComparison.Ordinal) < 0)
+                {
+                    bestTeam = team;
+                }
             }
         }
 
-        StringBuilder output = new();
-        {
-            while (true)
-            {
-                int x = int.Parse(Console.ReadLine()!);
-                if (x == -1)
-                    break;
+        Console.Write(bestTeam);
+    }
 
-                output.AppendLine($"Hour {x}: {fibonacci[x]} cow(s) affected");
+    static void CountLOVE(string s, ref int lCount, ref int oCount, ref int vCount, ref int eCount)
+    {
+        for (int i = 0; i < s.Length; ++i)
+        {
+            char c = s[i];
+            if (c == 'L')
+            {
+                ++lCount;
+            }
+            else if (c == 'O')
+            {
+                ++oCount;
+            }
+            else if (c == 'V')
+            {
+                ++vCount;
+            }
+            else if (c == 'E')
+            {
+                ++eCount;
             }
         }
+    }
 
-        Console.Write(output);
+    static int GetScore(string a, string b)
+    {
+        int lCount = 0;
+        int oCount = 0;
+        int vCount = 0;
+        int eCount = 0;
+
+        CountLOVE(a, ref lCount, ref oCount, ref vCount, ref eCount);
+        CountLOVE(b, ref lCount, ref oCount, ref vCount, ref eCount);
+
+        return (int)
+        (
+            (long)(lCount + oCount) *
+            (lCount + vCount) *
+            (lCount + eCount) *
+            (oCount + vCount) *
+            (oCount + eCount) *
+            (vCount + eCount)
+        ) % 100;
     }
 }
