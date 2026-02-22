@@ -1,29 +1,20 @@
-﻿using System.Text;
+﻿using System.Numerics;
 
 class Program
 {
     static void Main(string[] args)
     {
-        int students = int.Parse(Console.ReadLine()!);
+        BigInteger n = BigInteger.Parse(Console.ReadLine()!);
 
-        int[] numbers = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-
-        List<int> line = new();
+        BigInteger a = 0;
+        BigInteger b = 1;
+        for (int i = 2; i <= n; ++i)
         {
-            for (int i = 1; i <= students; ++i)
-            {
-                line.Insert(line.Count - numbers[i - 1], i);
-            }
-        }
-        
-        StringBuilder output = new();
-        {
-            for (int i = 0; i < line.Count; ++i)
-            {
-                output.Append($"{line[i]} ");
-            }
+            BigInteger temp = a + b;
+            a = b;
+            b = temp;
         }
 
-        Console.Write(output);
+        Console.Write(b);
     }
 }
