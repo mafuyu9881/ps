@@ -4,27 +4,30 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int[] sticks = new int[n];
-        for (int i = 0; i < n; ++i)
-        {
-            sticks[i] = int.Parse(Console.ReadLine()!);
-        }
+        string[] requiredIngredients = Console.ReadLine()!.Split();
+        string[] usedIngredients = Console.ReadLine()!.Split();
 
-        int visible = 0;
+        for (int i = 0; i < requiredIngredients.Length; ++i)
         {
-            int maxStick = 0;
-            for (int i = sticks.Length - 1; i >= 0; --i)
+            string requiredIngredient = requiredIngredients[i];
+
+            bool contained = false;
             {
-                int stick = sticks[i];
-
-                if (stick > maxStick)
+                for (int j = 0; j < usedIngredients.Length; ++j)
                 {
-                    ++visible;
-                    maxStick = stick;
+                    if (requiredIngredient == usedIngredients[j])
+                    {
+                        contained = true;
+                        break;
+                    }
                 }
             }
-        }
 
-        Console.Write(visible);
+            if (contained == false)
+            {
+                Console.Write(requiredIngredient);
+                return;
+            }
+        }
     }
 }
