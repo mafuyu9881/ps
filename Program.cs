@@ -2,30 +2,37 @@
 {
     static void Main(string[] args)
     {
-        // 1-based
+        string word = Console.ReadLine()!;
 
-        int x = int.Parse(Console.ReadLine()!);
+        int wordLength = word.Length;
 
-        int diagonalRow = 1;
-        int lastIndexUntilPrevDiagonalRow = 0;
-
-        while (diagonalRow + lastIndexUntilPrevDiagonalRow < x)
+        string elected = null!;
         {
-            lastIndexUntilPrevDiagonalRow += diagonalRow;
-            diagonalRow += 1;
+            for (int i = 1; i < wordLength - 1; ++i)
+            {
+                for (int j = i + 1; j < wordLength; ++j)
+                {
+                    string a = Reverse(word.Substring(0, i));
+                    string b = Reverse(word.Substring(i, j - i));
+                    string c = Reverse(word.Substring(j));
+
+                    string candidate = a + b + c;
+
+                    if (elected == null || string.CompareOrdinal(candidate, elected) < 0)
+                    {
+                        elected = candidate;
+                    }
+                }
+            }
         }
 
-        int diagonalCol = x - lastIndexUntilPrevDiagonalRow;
+        Console.Write(elected);
+    }
 
-        int numerator = diagonalRow - diagonalCol + 1;
-        int denominator = diagonalCol;
-        if (diagonalRow % 2 == 0)
-        {
-            int temp = numerator;
-            numerator = denominator;
-            denominator = temp;
-        }
-
-        Console.Write($"{numerator}/{denominator}");
+    static string Reverse(string s)
+    {
+        char[] ca = s.ToCharArray();
+        Array.Reverse(ca);
+        return new(ca);
     }
 }
