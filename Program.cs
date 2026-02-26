@@ -2,37 +2,55 @@
 {
     static void Main(string[] args)
     {
-        string word = Console.ReadLine()!;
+        const int Grades = 5;
 
-        int wordLength = word.Length;
+        int students = int.Parse(Console.ReadLine()!);
 
-        string elected = null!;
+        int[,] table = new int[students, Grades];
+
+        for (int i = 0; i < students; ++i)
         {
-            for (int i = 1; i < wordLength - 1; ++i)
+            int[] history = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+            for (int grade = 0; grade < Grades; ++grade)
             {
-                for (int j = i + 1; j < wordLength; ++j)
-                {
-                    string a = Reverse(word.Substring(0, i));
-                    string b = Reverse(word.Substring(i, j - i));
-                    string c = Reverse(word.Substring(j));
-
-                    string candidate = a + b + c;
-
-                    if (elected == null || string.CompareOrdinal(candidate, elected) < 0)
-                    {
-                        elected = candidate;
-                    }
-                }
+                table[i, grade] = history[grade];
             }
         }
 
-        Console.Write(elected);
-    }
+        int best = 0;
+        int bestCount = -1;
+        
+        int[] candidates = new int[students];
+        for (int i = 0; i < students; ++i)
+        {
+            bool[] met = new bool[students];
+            int count = 0;
 
-    static string Reverse(string s)
-    {
-        char[] ca = s.ToCharArray();
-        Array.Reverse(ca);
-        return new(ca);
+            for (int grade = 0; grade < Grades; ++grade)
+            {
+                for (int j = 0; j < students; ++j)
+                {
+                    if (i == j)
+                        continue;
+
+                    if (met[j] == true)
+                        continue;
+
+                    if (table[i, grade] != table[j, grade])
+                        continue;
+
+                    ++count;
+                    met[j] = true;
+                }
+            }
+
+            if (count > bestCount)
+            {
+                bestCount = count;
+                best = i;
+            }
+        }
+
+        Console.Write(best + 1);
     }
 }
