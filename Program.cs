@@ -2,55 +2,23 @@
 {
     static void Main(string[] args)
     {
-        const int Grades = 5;
+        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        long a = tokens[0];
+        long b = tokens[1];
+        long n = tokens[2];
 
-        int students = int.Parse(Console.ReadLine()!);
-
-        int[,] table = new int[students, Grades];
-
-        for (int i = 0; i < students; ++i)
+        long digit = 0;
         {
-            int[] history = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-            for (int grade = 0; grade < Grades; ++grade)
+            long r = a % b;
+
+            for (int i = 0; i < n; ++i)
             {
-                table[i, grade] = history[grade];
+                r *= 10;
+                digit = r / b;
+                r %= b;
             }
         }
 
-        int best = 0;
-        int bestCount = -1;
-        
-        int[] candidates = new int[students];
-        for (int i = 0; i < students; ++i)
-        {
-            bool[] met = new bool[students];
-            int count = 0;
-
-            for (int grade = 0; grade < Grades; ++grade)
-            {
-                for (int j = 0; j < students; ++j)
-                {
-                    if (i == j)
-                        continue;
-
-                    if (met[j] == true)
-                        continue;
-
-                    if (table[i, grade] != table[j, grade])
-                        continue;
-
-                    ++count;
-                    met[j] = true;
-                }
-            }
-
-            if (count > bestCount)
-            {
-                bestCount = count;
-                best = i;
-            }
-        }
-
-        Console.Write(best + 1);
+        Console.Write(digit);
     }
 }
