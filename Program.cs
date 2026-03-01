@@ -2,48 +2,22 @@
 {
     static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        long a = tokens[0];
+        long b = tokens[1];
 
-        int output = 0;
+        long s = Math.Max(4, (a % 2 == 0) ? a : a + 1);
+        long e = (b % 2 == 0) ? b : b - 1;
+        
+        long sum = 0;
         {
-            for (int i = 0; i < n; ++i)
+            if (e >= s)
             {
-                string word = Console.ReadLine()!;
-
-                bool grouped = true;
-                {
-                    bool[] found = new bool['z' - 'a' + 1];
-
-                    found[word[0] - 'a'] = true;
-
-                    for (int j = 1; j < word.Length; ++j)
-                    {
-                        char prev = word[j - 1];
-                        char curr = word[j];
-
-                        if (prev == curr)
-                            continue;
-
-                        int currIndex = curr - 'a';
-                        if (found[currIndex])
-                        {
-                            grouped = false;
-                            break;
-                        }
-                        else
-                        {
-                            found[curr - 'a'] = true;
-                        }
-                    }
-                }
-
-                if (grouped)
-                {
-                    ++output;
-                }
+                long count = (e - s) / 2 + 1;
+                sum = count * (e + s) / 2;
             }
         }
 
-        Console.Write(output);
+        Console.Write(sum);
     }
 }
