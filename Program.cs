@@ -2,23 +2,48 @@
 {
     static void Main(string[] args)
     {
-        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
-        long a = tokens[0];
-        long b = tokens[1];
-        long n = tokens[2];
+        int n = int.Parse(Console.ReadLine()!);
 
-        long digit = 0;
+        int output = 0;
         {
-            long r = a % b;
-
             for (int i = 0; i < n; ++i)
             {
-                r *= 10;
-                digit = r / b;
-                r %= b;
+                string word = Console.ReadLine()!;
+
+                bool grouped = true;
+                {
+                    bool[] found = new bool['z' - 'a' + 1];
+
+                    found[word[0] - 'a'] = true;
+
+                    for (int j = 1; j < word.Length; ++j)
+                    {
+                        char prev = word[j - 1];
+                        char curr = word[j];
+
+                        if (prev == curr)
+                            continue;
+
+                        int currIndex = curr - 'a';
+                        if (found[currIndex])
+                        {
+                            grouped = false;
+                            break;
+                        }
+                        else
+                        {
+                            found[curr - 'a'] = true;
+                        }
+                    }
+                }
+
+                if (grouped)
+                {
+                    ++output;
+                }
             }
         }
 
-        Console.Write(digit);
+        Console.Write(output);
     }
 }
