@@ -5,19 +5,23 @@
         long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
         long a = tokens[0];
         long b = tokens[1];
+        long c = tokens[2];
 
-        long s = Math.Max(4, (a % 2 == 0) ? a : a + 1);
-        long e = (b % 2 == 0) ? b : b - 1;
-        
-        long sum = 0;
+        long rhs = (a * a - b * b) * (a * a - c * c);
+
+        long output = -1;
         {
-            if (e >= s)
+            for (long x = 1; x < a; ++x)
             {
-                long count = (e - s) / 2 + 1;
-                sum = count * (e + s) / 2;
+                long lhsSqrt = a * x + b * c;
+                if (lhsSqrt * lhsSqrt == rhs)
+                {
+                    output = x;
+                    break;
+                }
             }
         }
 
-        Console.Write(sum);
+        Console.Write(output);
     }
 }
