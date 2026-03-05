@@ -1,34 +1,30 @@
-﻿public class Program
+﻿using System.Text;
+
+public class Program
 {
     public static void Main(string[] args)
     {
-        int[] tokens = null!;
+        string input = Console.ReadLine()!;
+        int inputLength = input.Length;
 
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int b = tokens[1];
-
-        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int c = tokens[0];
-        int d = tokens[1];
-
-        int hanyangRequiredTime = a + c;
-        int yongdapRequiredTime = b + d;
-
-        string output;
-        if (hanyangRequiredTime < yongdapRequiredTime)
+        int[] numbers = new int[inputLength];
         {
-            output = "Hanyang Univ.";
+            for (int i = 0; i < inputLength; ++i)
+            {
+                numbers[i] = input[i] - '0';
+            }
+
+            Array.Sort(numbers, Comparer<int>.Create((a, b) => b.CompareTo(a)));
         }
-        else if (hanyangRequiredTime > yongdapRequiredTime)
+
+        StringBuilder output = new();
         {
-            output = "Yongdap";
+            for (int i = 0; i < numbers.Length; ++i)
+            {
+                output.Append(numbers[i]);
+            }
         }
-        else
-        {
-            output = "Either";
-        }
-        
+
         Console.Write(output);
     }
 }
