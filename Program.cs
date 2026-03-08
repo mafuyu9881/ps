@@ -2,45 +2,32 @@
 {
     public static void Main(string[] args)
     {
-        string input = Console.ReadLine()!;
+        int[] tokens = null!;
         
-        int[] counts = new int[10];
-        
-        for (int i = 0; i < input.Length; ++i)
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int y0 = tokens[0];
+        int m0 = tokens[1];
+        int d0 = tokens[2];
+
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int y1 = tokens[0];
+        int m1 = tokens[1];
+        int d1 = tokens[2];
+
+        DateTime today = new DateTime(y0, m0, d0);
+        DateTime dday = new DateTime(y1, m1, d1);
+
+        string output;
+        if ((y1 > y0 + 1000) ||
+            (y1 == y0 + 1000 && m1 > m0) ||
+            (y1 == y0 + 1000 && m1 == m0 && d1 >= d0))
         {
-            ++counts[input[i] - '0'];
+            output = "gg";
         }
-
-        const int InvalidCount = -1;
-        int setCount = InvalidCount;
+        else
         {
-            for (int i = 0; i < counts.Length; ++i)
-            {
-                if (i == 6 || i == 9)
-                {
-                    continue;
-                }
-
-                int count = counts[i];
-
-                if (setCount == InvalidCount || setCount < count)
-                {
-                    setCount = count;
-                }
-            }
-
-            int sixnineSetCount = counts[6] + counts[9];
-            {
-                if (sixnineSetCount % 2 == 1)
-                {
-                    sixnineSetCount += 1;
-                }
-                sixnineSetCount /= 2;
-            }
-            
-            setCount = Math.Max(setCount, sixnineSetCount);
+            output = $"D-{(dday - today).Days}";
         }
-
-        Console.Write(setCount);
+        Console.Write(output);
     }
 }
