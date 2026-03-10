@@ -4,40 +4,14 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        int scenario = 1;
+        int n = int.Parse(Console.ReadLine()!);
 
         StringBuilder output = new();
-        while (true)
+        for (int i = 0; i < n; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!);
-            if (n == 0)
-                break;
-            
-            string[] names = new string[n];
-            for (int i = 0; i < n; ++i)
-            {
-                names[i] = Console.ReadLine()!;
-            }
-
-            int[] count = new int[n];
-            for (int i = 0; i < 2 * n - 1; ++i)
-            {
-                string[] indexState = Console.ReadLine()!.Split();
-                int index = int.Parse(indexState[0]) - 1;
-                ++count[index];
-            }
-
-            for (int i = 0; i < n; ++i)
-            {
-                if (count[i] % 2 == 1)
-                {
-                    output.AppendLine($"{scenario} {names[i]}");
-                }
-            }
-
-            ++scenario;
+            output.AppendLine("I love DGU");
         }
-
+        
         Console.Write(output);
     }
 }
