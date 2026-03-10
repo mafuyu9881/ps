@@ -1,17 +1,18 @@
-﻿using System.Text;
-
-public class Program
+﻿public class Program
 {
     public static void Main(string[] args)
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        StringBuilder output = new();
-        for (int i = 0; i < n; ++i)
+        long prev = 1;
+        long curr = 1;
+        for (int i = 3; i <= n; ++i)
         {
-            output.AppendLine("I love DGU");
+            long next = (prev + curr) % 1000000007;
+            prev = curr;
+            curr = next;
         }
-        
-        Console.Write(output);
+
+        Console.Write($"{curr} {n - 2}");
     }
 }
