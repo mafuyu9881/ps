@@ -1,17 +1,29 @@
-﻿public class Program
+﻿using System.Text;
+
+public class Program
 {
     public static void Main(string[] args)
     {
-        long n = long.Parse(Console.ReadLine()!);
+        StringBuilder output = new();
 
-        string output;
-        if (n * n > 100000000)
+        while (true)
         {
-            output = "Time limit exceeded";
-        }
-        else
-        {
-            output = "Accepted";
+            string input = Console.ReadLine()!;
+            if (input == "end")
+                break;
+            
+            if (input == "animal")
+            {
+                output.AppendLine("Panthera tigris");
+            }
+            else if (input == "tree")
+            {
+                output.AppendLine("Pinus densiflora");
+            }
+            else
+            {
+                output.AppendLine("Forsythia koreana");
+            }
         }
 
         Console.Write(output);
