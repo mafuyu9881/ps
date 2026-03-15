@@ -1,31 +1,10 @@
-﻿using System.Text;
-
-public class Program
+﻿public class Program
 {
     public static void Main(string[] args)
     {
-        StringBuilder output = new();
-
-        while (true)
-        {
-            string input = Console.ReadLine()!;
-            if (input == "end")
-                break;
-            
-            if (input == "animal")
-            {
-                output.AppendLine("Panthera tigris");
-            }
-            else if (input == "tree")
-            {
-                output.AppendLine("Pinus densiflora");
-            }
-            else
-            {
-                output.AppendLine("Forsythia koreana");
-            }
-        }
-
-        Console.Write(output);
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int a = tokens[0];
+        int t = tokens[1];
+        Console.Write(Math.Max(0, 10 + 2 * (25 - a + t)));
     }
 }
