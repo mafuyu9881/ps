@@ -3,8 +3,15 @@
     public static void Main(string[] args)
     {
         int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int t = tokens[1];
-        Console.Write(Math.Max(0, 10 + 2 * (25 - a + t)));
+        int n = tokens[0];
+        int m = tokens[1];
+        
+        int boxes = n / m;
+        if (n % m > 0)
+        {
+            ++boxes;
+        }
+
+        Console.Write(boxes);
     }
 }
