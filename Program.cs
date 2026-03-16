@@ -2,16 +2,10 @@
 {
     public static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int n = tokens[0];
-        int m = tokens[1];
-        
-        int boxes = n / m;
-        if (n % m > 0)
-        {
-            ++boxes;
-        }
+        int n = int.Parse(Console.ReadLine()!);
 
-        Console.Write(boxes);
+        int side = (1 << n) + 1;
+
+        Console.Write(side * side);
     }
 }
