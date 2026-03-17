@@ -1,11 +1,38 @@
-﻿public class Program
+﻿using System.Text;
+
+public class Program
 {
     public static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        List<int> fbiIndices = new(5);
+        {
+            for (int i = 0; i < 5; ++i)
+            {
+                string input = Console.ReadLine()!;
 
-        int side = (1 << n) + 1;
+                if (input.Contains("FBI") == false)
+                    continue;
 
-        Console.Write(side * side);
+                fbiIndices.Add(i + 1);
+            }
+        }
+
+        StringBuilder output;
+        {
+            if (fbiIndices.Count > 0)
+            {
+                output = new();
+                for (int i = 0; i < fbiIndices.Count; ++i)
+                {
+                    output.Append($"{fbiIndices[i]} ");
+                }
+            }
+            else
+            {
+                output = new("HE GOT AWAY!");
+            }
+        }
+
+        Console.Write(output);
     }
 }
