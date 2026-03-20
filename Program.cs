@@ -6,21 +6,15 @@ public class Program
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        StringBuilder sb = new();
-        for (int i = 0; i < n; ++i)
-        {
-            string s = Console.ReadLine()!;
+        string[] tokens = Console.ReadLine()!.Split();
 
-            if (s[s.Length - 1] != '.')
+        StringBuilder sb = new();
+        {
+            for (int i = 0; i < tokens.Length; ++i)
             {
-                sb.AppendLine($"{s}.");
-            }
-            else
-            {
-                sb.AppendLine(s);
+                sb.Append($"{tokens[i]}DORO ");
             }
         }
-
         Console.Write(sb);
     }
 }
