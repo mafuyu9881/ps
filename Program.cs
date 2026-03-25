@@ -1,28 +1,22 @@
-﻿public class Program
+﻿using System.Text;
+
+public class Program
 {
     public static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int a = tokens[0];
-        int b = tokens[1];
-        int c = tokens[2];
+        StringBuilder output = new();
+        {
+            int n = int.Parse(Console.ReadLine()!);
 
-        string output;
-        if (a + b == c ||
-            b + c == a ||
-            c + a == b)
-        {
-            output = "1";
-        }
-        else if (a * b == c ||
-                 b * c == a ||
-                 c * a == b)
-        {
-            output = "2";
-        }
-        else
-        {
-            output = "3";
+            for (int i = 0; i < (n / 5); ++i)
+            {
+                output.Append("V");
+            }
+
+            for (int i = 0; i < (n % 5); ++i)
+            {
+                output.Append("I");
+            }
         }
         Console.Write(output);
     }
