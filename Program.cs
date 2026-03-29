@@ -2,13 +2,26 @@
 {
     public static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int s1 = tokens[0];
-        int s2 = tokens[1];
-        if (s2 % 2 == 1)
+        string s = Console.ReadLine()!;
+        int n = int.Parse(s);
+
+        string output;
+        if (s.Contains("7") == false && n % 7 != 0)
         {
-            s2 += 1;
+            output = "0";
         }
-        Console.Write((s1 >= s2 / 2) ? "E" : "H");
+        else if (s.Contains("7") == false && n % 7 == 0)
+        {
+            output = "1";
+        }
+        else if (n % 7 != 0)
+        {
+            output = "2";
+        }
+        else
+        {
+            output = "3";
+        }
+        Console.Write(output);
     }
 }
