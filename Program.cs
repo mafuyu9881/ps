@@ -2,8 +2,12 @@
 {
     public static void Main(string[] args)
     {
-        int x = int.Parse(Console.ReadLine()!);
+        int n = int.Parse(Console.ReadLine()!);
 
-        Console.Write(x < 6 ? "Oh My God!" : "Success!");
+        int c = int.Parse(Console.ReadLine()!);
+
+        int p = int.Parse(Console.ReadLine()!);
+
+        Console.Write(n > c * p ? "no" : "yes");
     }
 }
