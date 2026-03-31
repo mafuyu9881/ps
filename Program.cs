@@ -2,12 +2,12 @@
 {
     public static void Main(string[] args)
     {
+        int m = int.Parse(Console.ReadLine()!);
+
         int n = int.Parse(Console.ReadLine()!);
 
-        int c = int.Parse(Console.ReadLine()!);
+        int y = int.Parse(Console.ReadLine()!);
 
-        int p = int.Parse(Console.ReadLine()!);
-
-        Console.Write(n > c * p ? "no" : "yes");
+        Console.Write(m * n);
     }
 }
