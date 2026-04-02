@@ -2,12 +2,10 @@
 {
     public static void Main(string[] args)
     {
-        int m = int.Parse(Console.ReadLine()!);
-
         int n = int.Parse(Console.ReadLine()!);
 
-        int y = int.Parse(Console.ReadLine()!);
+        int x = int.Parse(Console.ReadLine()!);
 
-        Console.Write(m * n);
+        Console.Write((n - 1) * x);
     }
 }
