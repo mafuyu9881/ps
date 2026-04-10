@@ -45,7 +45,7 @@
         {
             output = "6 556";
         }
-        else //  if (n == 11)
+        else // if (n == 11)
         {
             output = "6 773";
         }
