@@ -2,54 +2,33 @@
 {
     public static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        int[] tokens = null!;
 
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int t1 = tokens[0];
+        int e1 = tokens[1];
+        int f1 = tokens[2];
+        int sum1 = t1 * 3 + e1 * 20 + f1 * 120;
+        
+        tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int t2 = tokens[0];
+        int e2 = tokens[1];
+        int f2 = tokens[2];
+        int sum2 = t2 * 3 + e2 * 20 + f2 * 120;
+        
         string output;
-        if (n == 1)
+        if (sum1 > sum2)
         {
-            output = "12 1600";
+            output = "Max";
         }
-        else if (n == 2)
+        else if (sum1 < sum2)
         {
-            output = "11 894";
+            output = "Mel";
         }
-        else if (n == 3)
+        else
         {
-            output = "11 1327";
+            output = "Draw";
         }
-        else if (n == 4)
-        {
-            output = "10 1311";
-        }
-        else if (n == 5)
-        {
-            output = "9 1004";
-        }
-        else if (n == 6)
-        {
-            output = "9 1178";
-        }
-        else if (n == 7)
-        {
-            output = "9 1357";
-        }
-        else if (n == 8)
-        {
-            output = "8 837";
-        }
-        else if (n == 9)
-        {
-            output = "7 1055";
-        }
-        else if (n == 10)
-        {
-            output = "6 556";
-        }
-        else // if (n == 11)
-        {
-            output = "6 773";
-        }
-
         Console.Write(output);
     }
 }
