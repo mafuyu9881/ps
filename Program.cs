@@ -9,25 +9,20 @@
         
         tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
 
-        int sum = 0;
+        int odds = 0;
+        int evens = 0;
         for (int i = 0; i < n; ++i)
         {
-            sum += tokens[i];
+            if (tokens[i] % 2 == 0)
+            {
+                ++evens;
+            }
+            else
+            {
+                ++odds;
+            }
         }
 
-        string output;
-        if (sum < 0)
-        {
-            output = "Left";
-        }
-        else if (sum > 0)
-        {
-            output = "Right";
-        }
-        else
-        {
-            output = "Stay";
-        }
-        Console.Write(output);
+        Console.Write((evens > odds) ? "Happy" : "Sad");
     }
 }
