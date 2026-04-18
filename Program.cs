@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Numerics;
 
 public class Program
 {
@@ -7,13 +6,20 @@ public class Program
     {
         StringBuilder output = new();
         {
-            while (true)
+            int t = int.Parse(Console.ReadLine()!);
+            for (int i = 0; i < t; ++i)
             {
-                BigInteger n = BigInteger.Parse(Console.ReadLine()!);
-                if (n == 0)
-                    break;
-
-                output.AppendLine((n % 42 == 0) ? "PREMIADO" : "TENTE NOVAMENTE");
+                int sum = 0;
+                {
+                    int n = int.Parse(Console.ReadLine()!);
+                    int[] numbers = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+                    for (int j = 0; j < n; ++j)
+                    {
+                        sum += numbers[j];
+                    }
+                }
+                
+                output.AppendLine($"{sum}");
             }
         }
 
