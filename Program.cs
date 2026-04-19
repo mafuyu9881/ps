@@ -1,28 +1,12 @@
-﻿using System.Text;
-
-public class Program
+﻿public class Program
 {
     public static void Main(string[] args)
     {
-        StringBuilder output = new();
-        {
-            int t = int.Parse(Console.ReadLine()!);
-            for (int i = 0; i < t; ++i)
-            {
-                int sum = 0;
-                {
-                    int n = int.Parse(Console.ReadLine()!);
-                    int[] numbers = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-                    for (int j = 0; j < n; ++j)
-                    {
-                        sum += numbers[j];
-                    }
-                }
-                
-                output.AppendLine($"{sum}");
-            }
-        }
+        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
+        int s = tokens[0];
+        int t = tokens[1];
+        int d = tokens[2];
 
-        Console.Write(output);
+        Console.Write(t * (d / (s * 2)));
     }
 }
