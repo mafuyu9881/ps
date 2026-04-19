@@ -2,11 +2,10 @@
 {
     public static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int s = tokens[0];
-        int t = tokens[1];
-        int d = tokens[2];
+        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
+        long n = tokens[0];
+        long m = tokens[1];
 
-        Console.Write(t * (d / (s * 2)));
+        Console.Write((n * m) / 2);
     }
 }
