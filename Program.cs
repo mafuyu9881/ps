@@ -2,10 +2,20 @@
 {
     public static void Main(string[] args)
     {
-        long[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), long.Parse);
-        long n = tokens[0];
-        long m = tokens[1];
+        string mbti = Console.ReadLine()!;
 
-        Console.Write((n * m) / 2);
+        int matches = 0;
+        {
+            int n = int.Parse(Console.ReadLine()!);
+            for (int i = 0; i < n; ++i)
+            {
+                if (mbti == Console.ReadLine()!)
+                {
+                    ++matches;
+                }
+            }
+        }
+
+        Console.Write(matches);
     }
 }
