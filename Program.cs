@@ -2,20 +2,18 @@
 {
     public static void Main(string[] args)
     {
-        string mbti = Console.ReadLine()!;
+        int n = int.Parse(Console.ReadLine()!);
 
-        int matches = 0;
+        int output = 0;
+        for (int i = 0; i < n; ++i)
         {
-            int n = int.Parse(Console.ReadLine()!);
-            for (int i = 0; i < n; ++i)
-            {
-                if (mbti == Console.ReadLine()!)
-                {
-                    ++matches;
-                }
-            }
+            int xi = int.Parse(Console.ReadLine()!.Substring(2));
+            if (xi > 90)
+                continue;
+            
+            ++output;
         }
-
-        Console.Write(matches);
+        
+        Console.Write(output);
     }
 }
