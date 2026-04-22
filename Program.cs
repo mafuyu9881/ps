@@ -4,16 +4,13 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        int output = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            int xi = int.Parse(Console.ReadLine()!.Substring(2));
-            if (xi > 90)
-                continue;
-            
-            ++output;
-        }
+        int[] preferences = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
         
-        Console.Write(output);
+        Console.Write
+        (
+            Math.Min(preferences[0], n) +
+            Math.Min(preferences[1], n) +
+            Math.Min(preferences[2], n)
+        );
     }
 }
