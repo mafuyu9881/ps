@@ -2,24 +2,14 @@
 {
     public static void Main(string[] args)
     {
-        int[] tokens = Array.ConvertAll(Console.ReadLine()!.Split(), int.Parse);
-        int x0 = tokens[0];
-        int n = tokens[1];
+        int n = int.Parse(Console.ReadLine()!);
 
-        int xn = x0;
-        for (int t = 0; t < n; ++t)
+        long output = 1;
+        for (int i = 2; i <= n; ++i)
         {
-            if (xn % 2 == 0)
-            {
-                xn /= 2;
-            }
-            else
-            {
-                xn *= 2;
-            }
-            xn ^= 6;
+            output *= i;
         }
 
-        Console.Write(xn);
+        Console.Write(output / 604800);
     }
 }
