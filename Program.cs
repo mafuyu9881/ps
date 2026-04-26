@@ -4,12 +4,25 @@
     {
         int n = int.Parse(Console.ReadLine()!);
 
-        long output = 1;
-        for (int i = 2; i <= n; ++i)
+        int d = 0;
+        int p = 0;
+        for (int i = 0; i < n; ++i)
         {
-            output *= i;
-        }
+            if (Console.ReadLine()! == "D")
+            {
+                ++d;
+            }
+            else
+            {
+                ++p;
+            }
 
-        Console.Write(output / 604800);
+            if (Math.Abs(p - d) >= 2)
+            {
+                break;
+            }
+        }
+        
+        Console.Write($"{d}:{p}");
     }
 }
