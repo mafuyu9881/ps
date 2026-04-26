@@ -2,27 +2,14 @@
 {
     public static void Main(string[] args)
     {
-        int n = int.Parse(Console.ReadLine()!);
+        string s = Console.ReadLine()!;
 
-        int d = 0;
-        int p = 0;
-        for (int i = 0; i < n; ++i)
+        SortedSet<char> mobis = new SortedSet<char>() { 'M', 'O', 'B', 'I', 'S' };
+        for (int i = 0; i < s.Length; ++i)
         {
-            if (Console.ReadLine()! == "D")
-            {
-                ++d;
-            }
-            else
-            {
-                ++p;
-            }
-
-            if (Math.Abs(p - d) >= 2)
-            {
-                break;
-            }
+            mobis.Remove(s[i]);
         }
-        
-        Console.Write($"{d}:{p}");
+
+        Console.Write(mobis.Count > 0 ? "NO" : "YES");
     }
 }
